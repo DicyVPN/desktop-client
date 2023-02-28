@@ -1,9 +1,11 @@
-<svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_270_67458" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="24">
-<rect width="32" height="24" fill="white"/>
-</mask>
-<g mask="url(#mask0_270_67458)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H32V24H0V0Z" fill="#56C6F5"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M16.1788 14.7174L12.4148 17.1105L13.6773 12.9212L10.9927 10.1841L14.694 10.1032L16.3315 5.96737L17.8237 10.1578L21.5162 10.2223L18.7414 13.0096L20.0371 16.995L16.1788 14.7174Z" fill="#F7FCFF"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-so" viewBox="0 0 640 480">
+  <defs>
+    <clipPath id="a">
+      <path fill-opacity=".7" d="M-85.3 0h682.6v512H-85.3z"/>
+    </clipPath>
+  </defs>
+  <g fill-rule="evenodd" clip-path="url(#a)" transform="translate(80) scale(.9375)">
+    <path fill="#40a6ff" d="M-128 0h768v512h-768z"/>
+    <path fill="#fff" d="M336.5 381.2 254 327.7l-82.1 54 30.5-87.7-82-54.2L222 239l31.4-87.5 32.1 87.3 101.4.1-81.5 54.7 31.2 87.6z"/>
+  </g>
 </svg>

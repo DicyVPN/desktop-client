@@ -1,12 +1,14 @@
-<svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_270_67418" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="24">
-<rect width="32" height="24" fill="white"/>
-</mask>
-<g mask="url(#mask0_270_67418)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V24H32V0H0Z" fill="#C51918"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V24L32 0H0Z" fill="#5EAA22"/>
-<path d="M0.635865 27.9521L1.35923 28.759L2.2606 28.1574L38.5215 3.95392L39.7207 3.15348L38.7584 2.07989L33.4376 -3.85576L32.7142 -4.66272L31.8128 -4.06107L-4.44811 20.1424L-5.64731 20.9428L-4.68493 22.0164L0.635865 27.9521Z" fill="#272727" stroke="#FFD018" stroke-width="2.5"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.0886 16.9183L11 18.813L10.3048 16.6786L8.14267 15.9914L9.94432 14.8907L9.72724 12.6583L11.5054 14.0254L13.3471 13.0045L12.8306 15.2785L14.3083 16.9791L12.0886 16.9183Z" fill="#F7FCFF"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M22.0886 10.3651L21 12.2598L20.3048 10.1255L18.1427 9.43821L19.9443 8.33757L19.7272 6.10515L21.5054 7.47225L23.3471 6.45135L22.8306 8.72536L24.3083 10.426L22.0886 10.3651Z" fill="#F7FCFF"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-kn" viewBox="0 0 640 480">
+  <defs>
+    <clipPath id="a">
+      <path fill-opacity=".7" d="M-80.1 0h682.7v512H-80.1z"/>
+    </clipPath>
+  </defs>
+  <g fill-rule="evenodd" clip-path="url(#a)" transform="translate(75.1) scale(.9375)">
+    <path fill="#ffe900" d="M-107.8.2h737.6v511.3h-737.6z"/>
+    <path fill="#35a100" d="m-108.2.2.8 368.6L466.6 0l-574.8.2z"/>
+    <path fill="#c70000" d="m630.7 511.5-1.4-383.2-579 383.5 580.4-.3z"/>
+    <path d="m-107.9 396.6.5 115.4 125.3-.2 611.7-410.1L629 1.4 505.2.2l-613 396.4z"/>
+    <path fill="#fff" d="m380.4 156.6-9.8-42.2 33.3 27 38-24.6-17.4 41.3 33.4 27-44.2-1.5-17.3 41.3-9.9-42.2-44.1-1.5zm-275.2 179-9.9-42.3 33.3 27 38-24.6-17.4 41.3 33.4 27-44.1-1.5-17.4 41.3-9.8-42.2-44.1-1.5z"/>
+  </g>
 </svg>

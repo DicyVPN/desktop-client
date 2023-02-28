@@ -1,13 +1,16 @@
-<svg width="32" height="24" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_270_67513" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="24">
-<rect width="32" height="24" fill="white"/>
-</mask>
-<g mask="url(#mask0_270_67513)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V24H32V0H0Z" fill="#FBCD17"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V8H32V0H0Z" fill="#73BE4A"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 16V24H32V16H0Z" fill="#73BE4A"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V24L10 12L0 0Z" fill="#C51918"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M17.0018 13.8707L15.1311 15L15.5578 12.7962L14 11.1469L16.1094 11.0578L17.0018 9L17.8942 11.0578H20L18.4458 12.7962L18.9137 15L17.0018 13.8707Z" fill="#272727"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M25.0018 13.8707L23.1311 15L23.5578 12.7962L22 11.1469L24.1094 11.0578L25.0018 9L25.8942 11.0578H28L26.4458 12.7962L26.9137 15L25.0018 13.8707Z" fill="#272727"/>
-</g>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="flag-icons-st" viewBox="0 0 640 480">
+  <path fill="#12ad2b" d="M0 0h640v480H0z"/>
+  <path fill="#ffce00" d="M0 137.1h640V343H0z"/>
+  <path fill="#d21034" d="M0 0v480l240-240"/>
+  <g id="c" transform="translate(351.6 240) scale(.34286)">
+    <g id="b">
+      <path id="a" d="M0-200V0h100" transform="rotate(18 0 -200)"/>
+      <use xlink:href="#a" width="100%" height="100%" transform="scale(-1 1)"/>
+    </g>
+    <use xlink:href="#b" width="100%" height="100%" transform="rotate(72)"/>
+    <use xlink:href="#b" width="100%" height="100%" transform="rotate(144)"/>
+    <use xlink:href="#b" width="100%" height="100%" transform="rotate(-144)"/>
+    <use xlink:href="#b" width="100%" height="100%" transform="rotate(-72)"/>
+  </g>
+  <use xlink:href="#c" width="100%" height="100%" x="700" transform="translate(-523.2)"/>
 </svg>
