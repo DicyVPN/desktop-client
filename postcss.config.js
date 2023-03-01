@@ -15,7 +15,8 @@ const tailwindcss = {
             'subtitle': ['1.25rem', {lineHeight: '1.75rem'}], // 20px
             'medium': ['1.125rem', {lineHeight: '1.75rem'}], // 18px
             'normal': ['1rem', {lineHeight: '1.5rem'}], // 16px
-            'small': ['0.875rem', {lineHeight: '1.25rem'}], // 14px
+            'small': ['0.875rem', {lineHeight: '1.25rem', fontWeight: '300'}], // 14px
+            'tiny': ['0.75rem', {lineHeight: '1rem'}], // 12px
         },
         colors: {
             'inherit': 'inherit',
