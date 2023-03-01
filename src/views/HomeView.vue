@@ -1,9 +1,23 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import Logo from "@/components/Logo.vue";
+import Sidebar from "@/components/Sidebar.vue";
+
+defineProps<{
+  msg: string
+}>()
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <div class="flex min-h-screen">
+    <Sidebar/>
+
+    <div class="flex-1 p-8">
+      <div class="bg-gray-600 rounded p-8">
+        <Logo />
+      </div>
+    </div>
+  </div>
+
+
 </template>
+
