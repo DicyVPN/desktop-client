@@ -2,7 +2,7 @@
   <div class="bg-gray-900 flex w-full p-8 rounded items-center">
     <p class="city text-small text-ellipsis overflow-hidden flex-1">{{ city }}</p>
     <div class="flex justify-end gap-8">
-      <p class="location-text text-tiny">DE-01</p>
+      <p class="location-text text-tiny">{{tag}}</p>
       <Flag :small="true" :country="country"/>
     </div>
   </div>
@@ -21,7 +21,16 @@ export default {
       type: String,
       required: true
     },
+    id: {
+      type: Number,
+      required: true
+    }
   },
+  computed: {
+    tag() {
+      return this.country.toUpperCase() + "_0" + this.id
+    }
+  }
 }
 </script>
 

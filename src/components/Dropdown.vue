@@ -1,27 +1,12 @@
 <template>
-  <DropdownCountry country="ar" @click="open('ar')"/>
-  <Transition name="expand">
-    <div v-if="selectedCountry === 'ar'" class="flex flex-col gap-y-[2px]">
-      <Server city="Buonasires" country="ar"/>
-      <Server city="San Rafael" country="ar"/>
-      <Server city="Rafael Castillo" country="ar"/>
-      <Server city="Rafael Castilfhidhfuidsfibsdifbsdifbisdfibsdi sdbfsb dfilo" country="ar"/>
-    </div>
-  </Transition>
-
-  <DropdownCountry country="it"/>
-  <DropdownCountry country="gb"/>
-  <DropdownCountry country="us"/>
-  <DropdownCountry country="ru"/>
-  <DropdownCountry country="tz"/>
-  <DropdownCountry country="tk"/>
-  <DropdownCountry country="pk"/>
-  <DropdownCountry country="uz"/>
-  <DropdownCountry country="ag"/>
-  <DropdownCountry country="mx"/>
-  <DropdownCountry country="il"/>
-  <DropdownCountry country="lu"/>
-  <DropdownCountry country="rs"/>
+  <div v-for="(serverList, country) in list.other">
+    <DropdownCountry :country="serverList.tag"  @click="open(serverList.tag)" :is-open="selectedCountry === selectedCountry" :name="country"/>
+    <Transition name="expand">
+      <div v-if="selectedCountry === serverList.tag" class="flex flex-col gap-y-[2px]">
+        <Server v-for="(server, city) in serverList.server" :city="city" :country="serverList.tag" :id="server.id"/>
+      </div>
+    </Transition>
+  </div>
 </template>
 <script>
 import Server from "@/components/Server.vue";
@@ -30,6 +15,12 @@ import DropdownCountry from "@/components/DropdownCountry.vue";
 export default {
   name: 'Dropdown',
   components: {DropdownCountry, Server},
+  props: {
+    list: {
+      type: Object,
+      required: true
+    },
+  },
   data() {
     return {
       selectedCountry: null,
@@ -51,9 +42,9 @@ export default {
   transition: all 0.2s;
   height: 100%;
 }
+
 .expand-enter-from,
-.expand-leave-to
-{
+.expand-leave-to {
   opacity: 0;
   height: 0;
 }

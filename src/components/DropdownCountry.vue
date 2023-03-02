@@ -1,10 +1,10 @@
 <template>
   <div class="flex gap-8 m-8">
-    <div @click="open()" class="flex w-full items-center gap-8">
+    <div class="flex w-full items-center gap-8">
       <Flag :country="country" :small="true"/>
-      <p class="text-small">Argentina</p>
+      <p class="text-small">{{name }}</p>
       <div class="ml-auto">
-        <fa-chevron-down/>
+        <fa-chevron-down :class="status"/>
       </div>
     </div>
   </div>
@@ -16,10 +16,23 @@ import Flag from "@/components/Flag.vue";
 export default {
   components: {Flag, FaChevronDown},
   props: {
+    name: {
+      type: String,
+      required: true
+    },
     country: {
       type: String,
       required: true
-    }
+    },
+    isOpen: {
+      type: Boolean,
+      required: true
+    },
   },
+  computed: {
+    status() {
+      return this.isOpen ? "rotate-180" : "rotate-0"
+    }
+  }
 }
 </script>
