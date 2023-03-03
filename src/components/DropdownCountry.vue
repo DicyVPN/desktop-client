@@ -4,7 +4,7 @@
       <Flag :country="country" :small="true"/>
       <p class="text-small">{{name }}</p>
       <div class="ml-auto">
-        <fa-chevron-down :class="status"/>
+        <font-awesome-icon icon="fa-solid fa-chevron-down" class="ml-auto icon text-small" :rotation="rotate"/>
       </div>
     </div>
   </div>
@@ -30,8 +30,8 @@ export default {
     },
   },
   computed: {
-    status() {
-      return this.isOpen ? "rotate-180" : "rotate-0"
+    rotate() {
+      return this.isOpen ? 180 : 0
     }
   }
 }

@@ -22,7 +22,11 @@
 @tailwind utilities;
 
 .sidebar-card {
-    @apply w-full bg-gray-800 rounded;
+    @apply w-full bg-gray-800 rounded shadow-4;
+}
+
+.icon {
+    @apply text-gray-200;
 }
 
 .location-text {

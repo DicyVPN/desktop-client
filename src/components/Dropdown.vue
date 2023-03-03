@@ -1,6 +1,6 @@
 <template>
   <div v-for="(serverList, country) in list.other">
-    <DropdownCountry :country="serverList.tag"  @click="open(serverList.tag)" :is-open="selectedCountry === selectedCountry" :name="country"/>
+    <DropdownCountry :country="serverList.tag"  @click="open(serverList.tag)" :is-open="serverList.tag === selectedCountry" :name="country"/>
     <Transition name="expand">
       <div v-if="selectedCountry === serverList.tag" class="flex flex-col gap-y-[2px]">
         <Server v-for="(server, city) in serverList.server" :city="city" :country="serverList.tag" :id="server.id"/>

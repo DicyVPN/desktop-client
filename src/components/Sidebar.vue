@@ -1,6 +1,9 @@
 <template>
-  <div class="bg-gray-600 w-256 h-screen p-8 flex flex-col gap-8 select-none">
-    <AccountSelector/>
+  <div class="bg-gray-600 w-256 h-screen p-8 flex flex-col gap-8 select-none shadow-4-lg">
+    <div>
+      <AccountSelector @click="account()"/>
+      <DropdownSettings :is-open="isOpen"/>
+    </div>
     <Status/>
     <div class="sidebar-card h-full p-8 flex flex-col gap-8 w-full overflow-y-auto">
       <p class="ml-8 mt-8 text-small font-light">Server Consigliati</p>
@@ -22,12 +25,15 @@ import AccountSelector from "@/components/AccountSelector.vue";
 import Status from "@/components/Status.vue";
 import Server from "@/components/Server.vue";
 import Dropdown from "@/components/Dropdown.vue";
+import UserIcon from "@/components/UserIcon.vue";
+import DropdownSettings from "@/components/DropdownSettings.vue";
 </script>
 
 <script>
 export default {
   data() {
     return {
+      isOpen: false,
       serverList: {
         "suggest": {
           "Germany": {
@@ -202,6 +208,11 @@ export default {
         }
       },
     }
+  },
+  methods: {
+    account() {
+      this.isOpen = !this.isOpen;
+    }
   }
 }
 </script>
@@ -224,4 +235,5 @@ export default {
 .sidebar-card::-webkit-scrollbar-thumb:hover {
   background: black;
 }
+
 </style>

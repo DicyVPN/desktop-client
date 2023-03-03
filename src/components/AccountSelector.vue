@@ -1,14 +1,19 @@
 <template>
-  <div>
-    <select class="sidebar-card h-64 p-8">
-      <option>Home</option>
-    </select>
+  <div class="sidebar-card h-64 p-16 flex items-center">
+    <div class="flex gap-x-16 items-center">
+      <UserIcon/>
+      <p class="font-medium flex">Mariangelo</p>
+    </div>
+    <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="ml-auto icon"/>
   </div>
 </template>
 <script>
-//TODO - Change select whit a custom mechanism to select an account
+import UserIcon from "@/components/UserIcon.vue";
+import FaChevronDown from "@/components/FaChevronDown.vue";
+
 export default {
-  name: 'AccountSelector'
+  name: 'AccountSelector',
+  components: {FaChevronDown, UserIcon}
 }
 </script>
 <style scoped>
