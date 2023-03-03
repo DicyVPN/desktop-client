@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Logo from "@/components/Logo.vue";
-import Sidebar from "@/components/Sidebar.vue";
+import Logo from "@/components/icons/Logo.vue";
+import Sidebar from "@/components/Sidebar/Sidebar.vue";
 
 defineProps<{
   msg: string

@@ -27,9 +27,9 @@
   </div>
 </template>
 <script>
-import CheckCircle from "@/components/CheckCircle.vue";
-import Flag from "@/components/Flag.vue";
-import Button from "@/components/Button.vue";
+import CheckCircle from "@/components/icons/CheckCircle.vue";
+import Flag from "@/components/icons/Flag.vue";
+import Button from "@/components/icons/Button.vue";
 
 export default {
   name: 'Status',

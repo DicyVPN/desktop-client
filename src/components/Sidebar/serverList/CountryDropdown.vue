@@ -10,8 +10,8 @@
   </div>
 </template>
 <script>
-import FaChevronDown from "@/components/FaChevronDown.vue";
-import Flag from "@/components/Flag.vue";
+import FaChevronDown from "@/components/icons/FaChevronDown.vue";
+import Flag from "@/components/icons/Flag.vue";
 
 export default {
   components: {Flag, FaChevronDown},

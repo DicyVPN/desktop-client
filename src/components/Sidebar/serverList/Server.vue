@@ -8,7 +8,7 @@
   </div>
 </template>
 <script>
-import Flag from "@/components/Flag.vue";
+import Flag from "@/components/icons/Flag.vue";
 
 export default {
   components: {Flag},

@@ -8,8 +8,8 @@
   </div>
 </template>
 <script>
-import UserIcon from "@/components/UserIcon.vue";
-import FaChevronDown from "@/components/FaChevronDown.vue";
+import UserIcon from "@/components/icons/UserIcon.vue";
+import FaChevronDown from "@/components/icons/FaChevronDown.vue";
 
 export default {
   name: 'AccountSelector',
