@@ -23,10 +23,15 @@
 
 .sidebar-card {
     @apply w-full bg-gray-800 rounded shadow-4;
+
 }
 
 .icon {
     @apply text-gray-200;
+}
+
+.shadow-personal {
+    @apply bg-gradient-to-b from-transparent via-transparent to-gray-900 rounded pointer-events-none;
 }
 
 .location-text {

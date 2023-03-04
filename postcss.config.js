@@ -60,6 +60,7 @@ const tailwindcss = {
             'sky-blue': 'hsl(192, 95%, 65%)'
         },
         spacing: {
+            2: '0.125rem', // 2px
             4: '0.25rem', // 4px
             8: '0.5rem', // 8px
             12: '0.75rem', // 12px

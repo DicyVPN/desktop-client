@@ -3,7 +3,7 @@
     <div class="sidebar-card p-16 rounded grid gap-16">
       <div class="flex items-center gap-8">
         <CheckCircle/>
-        <p class="text-small font-light"> Connesso</p>
+        <p class="text-small font-light">Connesso</p>
       </div>
 
       <div class="bg-bright-green w-full h-[1px]"></div>

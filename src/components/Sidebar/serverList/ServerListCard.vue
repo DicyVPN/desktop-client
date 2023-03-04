@@ -1,14 +1,19 @@
 <template>
-  <div class="sidebar-card h-full p-8 flex flex-col gap-8 w-full overflow-y-auto">
-    <p class="ml-8 mt-8 text-small font-light">Server Consigliati</p>
-    <div class="flex flex-col gap-y-[2px]" v-for="country in serverList.suggest">
-      <Server v-for="(city, name) in country.server" :country="country.tag" :city="name" :id="city.id"/>
+  <div class="sidebar-card h-full w-full relative overflow-hidden">
+    <div class="sidebar-card-inner p-8 h-full flex flex-col gap-8 overflow-y-auto">
+      <p class="ml-8 mt-8 text-small font-light">Server Consigliati</p>
+      <div class="flex flex-col gap-y-[2px]" v-for="country in serverList.suggest">
+        <Server v-for="(city, name) in country.server" :country="country.tag" :city="name" :id="city.id"/>
+      </div>
+      <div>
+        <p class="ml-8 text-small font-light">Altri Server</p>
+        <div class="mt-8 bg-gray-600 w-full h-[1px]"></div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <Dropdown :list="serverList"/>
+      </div>
     </div>
-    <div>
-      <p class="ml-8 text-small font-light">Altri Server</p>
-      <div class="mt-8 bg-gray-600 w-full h-[1px]"></div>
-    </div>
-    <Dropdown :list="serverList"/>
+    <div class="bottom-shadow absolute shadow-personal"></div>
   </div>
 </template>
 <script>
@@ -24,22 +29,30 @@ export default {
 }
 </script>
 <style scoped>
-.sidebar-card::-webkit-scrollbar {
+.sidebar-card-inner::-webkit-scrollbar {
   width: 8px;
 }
 
-.sidebar-card::-webkit-scrollbar-track {
+.sidebar-card-inner::-webkit-scrollbar-track {
   border-bottom-right-radius: theme('borderRadius.DEFAULT');
   border-top-right-radius: theme('borderRadius.DEFAULT');
 }
 
-.sidebar-card::-webkit-scrollbar-thumb {
+.sidebar-card-inner::-webkit-scrollbar-thumb {
   background: theme('colors.gray.900');
   border-radius: theme('borderRadius.DEFAULT');
 }
 
-.sidebar-card::-webkit-scrollbar-thumb:hover {
+.sidebar-card-inner::-webkit-scrollbar-thumb:hover {
   background: black;
 }
 
+.bottom-shadow {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: linear-gradient(to top, hsl(222, 10%, 5%), rgb(0 0 0 / 0) 3.6rem, rgb(0 0 0 / 0));
+  pointer-events: none;
+}
 </style>

@@ -1,21 +1,18 @@
 <template>
   <div class="bg-gray-600 w-256 h-screen p-8 flex flex-col gap-8 select-none shadow-4-lg">
     <div>
-      <AccountSelector @click="account()"/>
+      <SettingsCard @click="account()"/>
       <DropdownSettings :is-open="isOpen"/>
     </div>
-    <Status/>
+    <StatusCard/>
+
     <ServerListCard :server-list="serverList"/>
   </div>
 </template>
 
-
 <script setup>
-import AccountSelector from "@/components/Sidebar/settings/SettingsCard.vue";
-import Status from "@/components/Sidebar/StatusCard.vue";
-import Server from "@/components/Sidebar/serverList/Server.vue";
-import Dropdown from "@/components/Sidebar/serverList/Dropdown.vue";
-import UserIcon from "@/components/icons/UserIcon.vue";
+import SettingsCard from "@/components/Sidebar/settings/SettingsCard.vue";
+import StatusCard from "@/components/Sidebar/StatusCard.vue";
 import DropdownSettings from "@/components/Sidebar/settings/DropdownSettings.vue";
 import ServerListCard from "@/components/Sidebar/serverList/ServerListCard.vue";
 </script>

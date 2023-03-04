@@ -3,9 +3,7 @@
     <div class="flex w-full items-center gap-8">
       <Flag :country="country" :small="true"/>
       <p class="text-small">{{name }}</p>
-      <div class="ml-auto">
-        <font-awesome-icon icon="fa-solid fa-chevron-down" class="ml-auto icon text-small" :rotation="rotate"/>
-      </div>
+      <font-awesome-icon icon="fa-solid fa-chevron-down" class="ml-auto icon text-small" :rotation="rotate"/>
     </div>
   </div>
 </template>
