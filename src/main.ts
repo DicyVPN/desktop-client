@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import router from './router'
 
@@ -8,9 +8,10 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import {  faEllipsisVertical, faChevronDown, faRightFromBracket, faGear,  } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faEllipsisVertical, faChevronDown, faRightFromBracket, faGear)
+import {  faEllipsisVertical, faChevronDown, faRightFromBracket, faGear,  faRectangleXmark, faEarthAmericas} from '@fortawesome/free-solid-svg-icons'
+
+library.add(faEllipsisVertical, faChevronDown, faRightFromBracket, faGear, faRectangleXmark, faEarthAmericas)
 
 
 import './assets/main.css'

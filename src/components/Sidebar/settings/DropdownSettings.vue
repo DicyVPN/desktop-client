@@ -1,32 +1,48 @@
 <template>
-  <div class="relative" v-if="isOpen">
+  <div class="relative">
     <div class="dropdown">
-      <div class="flex flex-col gap-4 p-8">
-        <div class="flex items-center w-full">
-          <p>Impostazioni</p>
-          <font-awesome-icon icon="fa-solid fa-gear" class="ml-auto icon"/>
-        </div>
-        <div class="bg-gray-600 h-[1px]"></div>
-        <div class="flex items-center w-full">
-          <p>Esci</p>
-          <font-awesome-icon icon="fa-solid fa-right-from-bracket" class="ml-auto icon"/>
-        </div>
+      <div class="flex flex-col gap-12 p-16">
+        <DropdownElement icon="gear" text="Impostazioni"/>
+        <DropdownElement icon="earth-americas" text="About"/>
+        <DropdownElement icon="right-from-bracket" text="Logout"/>
+        <DropdownElement icon="rectangle-xmark" text="Chiudi"/>
       </div>
     </div>
   </div>
 </template>
 <script>
+import DropdownElement from "@/components/Sidebar/settings/DropdownElement.vue";
+
 export default {
   name: 'DropdownSettings',
+  components: {DropdownElement},
   props: {
-    isOpen: {}
-  }
+    toggle: {
+      type: Function,
+      required: true,
+    },
+  },
+  beforeMount() {
+    document.addEventListener('click', this.close);
+  },
+  unmounted() {
+    document.removeEventListener('click', this.close);
+  },
+  methods: {
+    close(evt) {
+      const parent = this.$el.parentElement;
+      if (!(parent === evt.target || parent.contains(evt.target))) {
+        this.toggle();
+      }
+    },
+  },
+
 }
 </script>
 <style scoped>
 
 .dropdown {
-  @apply bg-gray-400 rounded absolute inset-x-8 shadow-xl z-20;
+  @apply bg-gray-500 rounded absolute inset-x-8 shadow-xl z-20;
   top: calc(-1 * theme('spacing.8'));
 }
 </style>

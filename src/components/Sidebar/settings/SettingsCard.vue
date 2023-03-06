@@ -4,7 +4,8 @@
       <UserIcon/>
       <p class="font-medium flex">Mariangelo</p>
     </div>
-    <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="ml-auto icon"/>
+
+    <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="ml-auto icon p-4" @click="toggle()"/>
   </div>
 </template>
 <script>
@@ -13,7 +14,13 @@ import FaChevronDown from "@/components/icons/FaChevronDown.vue";
 
 export default {
   name: 'AccountSelector',
-  components: {FaChevronDown, UserIcon}
+  components: {FaChevronDown, UserIcon},
+  props: {
+    toggle: {
+      type: Function,
+      required: true,
+    },
+  },
 }
 </script>
 <style scoped>
