@@ -5,7 +5,9 @@
       <p class="font-medium flex">Mariangelo</p>
     </div>
 
-    <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="ml-auto icon p-4" @click="toggle()"/>
+    <div @click="toggle()" class="toggle-icon">
+      <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="icon "/>
+    </div>
   </div>
 </template>
 <script>
@@ -44,5 +46,13 @@ h3 {
   .greetings h3 {
     text-align: left;
   }
+}
+
+.toggle-icon{
+  @apply ml-auto rounded-full h-28 w-28 flex items-center justify-center cursor-pointer;
+}
+
+.toggle-icon:hover {
+  @apply bg-gray-600;
 }
 </style>
