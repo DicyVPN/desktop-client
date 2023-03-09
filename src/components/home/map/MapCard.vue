@@ -4,7 +4,7 @@
   </div>
 </template>
 <script>
-import WorldMap from "@/components/home/WorldMap.vue";
+import WorldMap from "@/components/home/map/WorldMap.vue";
 
 export default {
   name: 'MapCard',

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <svg width="627" height="393" viewBox="0 0 641 402" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="900" height="670" viewBox="0 0 641 402" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g id="world" clip-path="url(#clip0_10_1829)">
         <path id="kalimantan"
               d="M535.914 226.557L534.301 232.619L525.55 235.573L522.931 232.5L521.66 232.849L524.035 242.012L527.59 242.41L532.332 244.205V246L534.504 245.602L537.667 241.223V237.64L539.448 234.057L541.425 234.455L539.05 229.476L538.687 226.27L535.914 226.557Z"

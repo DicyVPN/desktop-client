@@ -77,6 +77,7 @@ const tailwindcss = {
             128: '8rem',
             192: '12rem',
             256: '16rem',
+            320: '20rem',
             384: '24rem'
         },
         boxShadow: {

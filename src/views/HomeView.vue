@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Logo from "@/components/icons/Logo.vue";
-import Sidebar from "@/components/Sidebar/Sidebar.vue";
-import MapCard from "@/components/home/MapCard.vue";
+import Sidebar from "@/components/home/sidebar/Sidebar.vue";
+import MapCard from "@/components/home/map/MapCard.vue";
 import InformationCard from "@/components/home/InformationCard.vue";
 
 defineProps<{

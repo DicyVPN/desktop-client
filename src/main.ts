@@ -9,9 +9,9 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 
-import {  faEllipsisVertical, faChevronDown, faRightFromBracket, faGear,  faRectangleXmark, faEarthAmericas} from '@fortawesome/free-solid-svg-icons'
+import {  faEllipsisVertical, faChevronDown, faRightFromBracket, faGear,  faRectangleXmark, faEarthAmericas, faUser, faEye, faEyeSlash} from '@fortawesome/free-solid-svg-icons'
 
-library.add(faEllipsisVertical, faChevronDown, faRightFromBracket, faGear, faRectangleXmark, faEarthAmericas)
+library.add(faEllipsisVertical, faChevronDown, faRightFromBracket, faGear, faRectangleXmark, faEarthAmericas, faUser, faEye, faEyeSlash)
 
 
 import './assets/main.css'
