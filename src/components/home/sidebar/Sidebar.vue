@@ -13,10 +13,10 @@
 </template>
 
 <script setup>
-import SettingsCard from "@/components/Sidebar/settings/SettingsCard.vue";
-import StatusCard from "@/components/Sidebar/StatusCard.vue";
-import DropdownSettings from "@/components/Sidebar/settings/DropdownSettings.vue";
-import ServerListCard from "@/components/Sidebar/serverList/ServerListCard.vue";
+import SettingsCard from "@/components/home/sidebar/settings/SettingsCard.vue";
+import StatusCard from "@/components/home/sidebar/StatusCard.vue";
+import DropdownSettings from "@/components/home/sidebar/settings/DropdownSettings.vue";
+import ServerListCard from "@/components/home/sidebar/serverList/ServerListCard.vue";
 </script>
 
 <script>

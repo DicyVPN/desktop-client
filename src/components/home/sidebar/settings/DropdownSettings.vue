@@ -11,7 +11,7 @@
   </div>
 </template>
 <script>
-import DropdownElement from "@/components/Sidebar/settings/DropdownElement.vue";
+import DropdownElement from "@/components/home/sidebar/settings/DropdownElement.vue";
 
 export default {
   name: 'DropdownSettings',

@@ -9,8 +9,8 @@
   </div>
 </template>
 <script>
-import Server from "@/components/Sidebar/serverList/Server.vue";
-import DropdownCountry from "@/components/Sidebar/serverList/CountryDropdown.vue";
+import Server from "@/components/home/sidebar/serverList/Server.vue";
+import DropdownCountry from "@/components/home/sidebar/serverList/CountryDropdown.vue";
 
 export default {
   name: 'Dropdown',
