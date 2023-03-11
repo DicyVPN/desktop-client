@@ -1,6 +1,7 @@
 <template>
   <div>
-    <svg width="900" height="670" viewBox="0 0 641 402" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg ref="map" class="map" width="900" height="670" viewBox="0 0 641 402" fill="none"
+         xmlns="http://www.w3.org/2000/svg">
       <g id="world" clip-path="url(#clip0_10_1829)">
         <path id="kalimantan"
               d="M535.914 226.557L534.301 232.619L525.55 235.573L522.931 232.5L521.66 232.849L524.035 242.012L527.59 242.41L532.332 244.205V246L534.504 245.602L537.667 241.223V237.64L539.448 234.057L541.425 234.455L539.05 229.476L538.687 226.27L535.914 226.557Z"
@@ -903,6 +904,81 @@
 </template>
 <script>
 export default {
-  name: 'WorldMap'
+  name: 'WorldMap',
+  data() {
+    return {
+      mapX: 0,
+      mapY: 0,
+      mapScaleMin: 0.5,
+      mapScaleMax: 2,
+      dragging: false,
+      dragStartX: 0,
+      dragStartY: 0,
+    }
+  },
+  props: {
+    mapScale: {
+      type: Number,
+      default: 1,
+    },
+  },
+  mounted() {
+    this.$el.addEventListener('click', this.onClick);
+    this.$el.addEventListener('mousedown', this.onDragStart);
+    this.$el.addEventListener('mouseup', this.onDragEnd);
+    this.$el.addEventListener('mousemove', this.onDrag);
+    // center the SVG based on the $el bounding box using $refs.map.style with transform translate
+    const {width, height} = this.$el.getBoundingClientRect();
+    const {width: mapWidth, height: mapHeight} = this.$refs.map.getBoundingClientRect();
+    this.mapX = (width - mapWidth) / 2;
+    this.mapY = (height - mapHeight) / 2;
+  },
+  unmounted() {
+    this.$el.removeEventListener('click', this.onClick);
+    this.$el.removeEventListener('mousedown', this.onDragStart);
+    this.$el.removeEventListener('mouseup', this.onDragEnd);
+    this.$el.removeEventListener('mousemove', this.onDrag);
+  },
+  methods: {
+    onClick(e) {
+      console.log("test")
+    },
+    onDragStart(e) {
+      e.preventDefault();
+      const {clientX, clientY} = e;
+      this.dragStartX = clientX;
+      this.dragStartY = clientY;
+      this.dragging = true;
+    },
+    onDragEnd(e) {
+      e.preventDefault();
+      this.dragging = false;
+    },
+    onDrag(e) {
+      e.preventDefault();
+      if (!this.dragging) return;
+      const {clientX, clientY} = e;
+      this.mapX += clientX - this.dragStartX;
+      this.mapY += clientY - this.dragStartY;
+      this.dragStartX = clientX;
+      this.dragStartY = clientY;
+    },
+  },
+  watch: {
+    mapX(val) {
+      this.$refs.map.style.transform = `translate(${val}px, ${this.mapY}px) scale(${this.mapScale})`;
+    },
+    mapY(val) {
+      this.$refs.map.style.transform = `translate(${this.mapX}px, ${val}px) scale(${this.mapScale})`;
+    },
+    mapScale(val) {
+      this.$refs.map.style.transform = `translate(${this.mapX}px, ${this.mapY}px) scale(${val})`;
+    }
+  }
 }
 </script>
+<style scoped>
+.map {
+  transform-origin: center;
+}
+</style>
