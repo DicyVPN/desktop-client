@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-600 w-256 h-screen p-8 flex flex-col gap-8 select-none shadow-4-lg">
+  <div class="bg-gray-600 h-screen p-8 flex flex-col gap-8 select-none shadow-4-lg">
     <div>
       <SettingsCard :toggle="toggle"/>
       <Transition name="expand">
@@ -7,7 +7,6 @@
       </Transition>
     </div>
     <StatusCard/>
-
     <ServerListCard :server-list="serverList"/>
   </div>
 </template>

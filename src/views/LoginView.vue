@@ -35,7 +35,7 @@
         <img src="@/components/icons/outh2/btn_google.svg" alt="logo">
         <img src="@/components/icons/outh2/btn_github.svg" alt="logo">
         <img src="@/components/icons/outh2/btn_twitter.svg" alt="logo">
-        <img src="@/components/icons/outh2/btn_facebook.svg" alt="logo">
+        <img src="@/components/icons/outh2/btn_facebook.svg" alt="logo">s
         <img src="@/components/icons/outh2/btn_reddit.svg" alt="logo">
       </div>
     </div>
