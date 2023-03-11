@@ -5,14 +5,18 @@ import {electronAPI} from '@electron-toolkit/preload'
 import ping from 'ping'
 import {exec, spawn} from "child_process";
 import * as fs from "fs";
+import * as electron from "electron";
+import ipcRenderer = Electron.ipcRenderer;
 
-// Custom APIs for renderer
+let appDataPath = "";
+
+
 const api = {
-    startVPN() {
-        const path = "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe";
-        const args = ["run", "-config", "test.conf"];
-
-        this.checkInstallation(path);
+    startVPN(configTag: string) {
+        //this.checkInstallation(appDataPath);
+        makeConfig(configTag).then(() => {
+            const path = "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe";
+            const args = ["run", "-config", appDataPath + "/vpn.conf"];
 
             let child = spawn(path, args);
 
@@ -25,9 +29,12 @@ const api = {
             });
 
 
-            setTimeout(() => {
-                console.log(child.kill('SIGINT'))
-            }, 10000)
+          //setTimeout(() => {
+          //    console.log(child.kill('SIGINT'))
+          //}, 20000)
+
+
+        });
     },
 
     checkInstallation(path: string) {
@@ -54,10 +61,25 @@ const api = {
             console.log(`stdout: ${stdout}`);
             console.error(`stderr: ${stderr}`);
         });
-    }
+    },
 }
 
-// Use `contextBridge` APIs to expose Electron APIs to
+const makeConfig = async (configTag: string) => {
+
+
+    const endpoint = 'https://api.dicyvpn.com/beta/getWireGuardConfig/' + configTag;
+    const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
+    appDataPath = appData + "/DicyVPN"
+
+    let data = await fetch(endpoint, {method: 'GET'}).then(response => response.json());
+
+
+    //Make conf file
+    fs.mkdirSync(appDataPath, {recursive: true})
+    fs.writeFileSync(appDataPath + "/vpn.conf", data.configString)
+}
+
+// Use `contextBridge` APIs to expose Electron APIs to`
 // renderer only if context isolation is enabled, otherwise
 // just add to the DOM global.
 if (process.contextIsolated) {

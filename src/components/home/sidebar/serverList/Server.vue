@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 flex w-full p-8 rounded items-center">
+  <div class="bg-gray-900 flex w-full p-8 rounded items-center" @click="connect(tag)">
     <p class="city text-small text-ellipsis overflow-hidden flex-1">{{ city }}</p>
     <div class="flex justify-end gap-8">
       <p class="location-text text-tiny">{{tag}}</p>
@@ -30,7 +30,12 @@ export default {
     tag() {
       return this.country.toUpperCase() + "_0" + this.id
     }
-  }
+  },
+  methods: {
+    connect(confTag) {
+      window.api.startVPN(confTag)
+    }
+  },
 }
 </script>
 

@@ -19,7 +19,7 @@
         </div>
       </div>
 
-      <Button :color=" currentServer.connected ? 'red' : 'green' " @click="currentServer.$patch({connected: !currentServer.connected})">
+      <Button :color=" currentServer.connected ? 'red' : 'green' ">
         <div> {{ currentServer.connected ? "Disconnetti" : "Connetti" }} </div>
       </Button>
     </div>

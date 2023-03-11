@@ -14,17 +14,17 @@
                 <feMergeNode in="SourceGraphic"></feMergeNode>
             </feMerge>
         </filter>
-        <rect id="path-2" x="0" y="0" width="40" height="40" rx="2"></rect>
+        <rect id="appDataPath-2" x="0" y="0" width="40" height="40" rx="2"></rect>
     </defs>
     <g id="Google-Button" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <g id="9-PATCH" transform="translate(-608.000000, -160.000000)"></g>
         <g id="btn_google_light_normal" transform="translate(-1.000000, -1.000000)">
             <g id="button" transform="translate(4.000000, 4.000000)" filter="url(#filter-1)">
                 <g id="button-bg">
-                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-2"></use>
-                    <use fill="none" xlink:href="#path-2"></use>
-                    <use fill="none" xlink:href="#path-2"></use>
-                    <use fill="none" xlink:href="#path-2"></use>
+                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#appDataPath-2"></use>
+                    <use fill="none" xlink:href="#appDataPath-2"></use>
+                    <use fill="none" xlink:href="#appDataPath-2"></use>
+                    <use fill="none" xlink:href="#appDataPath-2"></use>
                 </g>
             </g>
             <g id="logo_googleg_48dp" transform="translate(15.000000, 15.000000)">
