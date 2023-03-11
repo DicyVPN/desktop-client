@@ -12,9 +12,9 @@ let appDataPath = "";
 
 
 const api = {
-    startVPN(configTag: string) {
+    async startVPN(configTag: string) {
         //this.checkInstallation(appDataPath);
-        makeConfig(configTag).then(() => {
+        await makeConfig(configTag).then(() => {
             const path = "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe";
             const args = ["run", "-config", appDataPath + "/vpn.conf"];
 
@@ -27,14 +27,10 @@ const api = {
             child.stderr.on('data', (data) => {
                 console.error(`child stderr:\n${data}`);
             });
-
-
-          //setTimeout(() => {
-          //    console.log(child.kill('SIGINT'))
-          //}, 20000)
-
-
-        });
+            //setTimeout(() => {
+            //    console.log(child.kill('SIGINT'))
+            //}, 20000)
+        })
     },
 
     checkInstallation(path: string) {

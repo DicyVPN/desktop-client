@@ -9,6 +9,7 @@
 </template>
 <script>
 import Flag from "@/components/icons/Flag.vue";
+import {useCurrentServerStore} from "@/stores/currentServer";
 
 export default {
   components: {Flag},
@@ -33,9 +34,24 @@ export default {
   },
   methods: {
     connect(confTag) {
-      window.api.startVPN(confTag)
+      window.api.startVPN(confTag).then( () =>
+          this.currentServer.$patch({
+                connected: true,
+                serverTag: confTag,
+                country: this.country,
+                city: this.city
+              },
+          ))
+
+
     }
   },
+  setup() {
+    const currentServer = useCurrentServerStore();
+    return {
+      currentServer
+    }
+  }
 }
 </script>
 
