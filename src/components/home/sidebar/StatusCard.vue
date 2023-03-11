@@ -19,7 +19,7 @@
         </div>
       </div>
 
-      <Button :color=" currentServer.connected ? 'red' : 'green' ">
+      <Button :color=" currentServer.connected ? 'red' : 'green'" @click="connection" :class="unknownButton">
         <div> {{ currentServer.connected ? "Disconnetti" : "Connetti" }} </div>
       </Button>
     </div>
@@ -44,10 +44,42 @@ export default {
     return {
     }
   },
+  computed: {
+    unknownButton() {
+      if (this.currentServer.serverTag === "unknown") {
+        return "opacity-50"
+      } else {
+        return ""
+      }
+    }
+
+  },
   setup() {
     const currentServer = useCurrentServerStore();
     return {
       currentServer
+    }
+  },
+  methods: {
+    connection() {
+      console.log(this.currentServer.connected)
+
+      window.api.stopVPN().then(() =>
+          this.currentServer.$patch({
+            connected: false,
+          }))
+
+
+      if (this.currentServer.connected === true) {
+      } else {
+        window.api.startVPN(this.currentServer.serverTag).then(() =>
+            this.currentServer.$patch({
+              connected: true,
+            }))
+      }
+    },
+    log() {
+      console.log(this.currentServer.connected, this.currentServer.serverTag, this.currentServer.country, this.currentServer.city)
     }
   }
 }

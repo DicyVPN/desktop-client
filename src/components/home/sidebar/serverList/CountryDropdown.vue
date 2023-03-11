@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     rotate() {
-      return this.isOpen ? 180 : 0
+      return this.isOpen ? 180 : null
     }
   }
 }

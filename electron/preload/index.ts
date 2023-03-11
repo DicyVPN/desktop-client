@@ -4,11 +4,12 @@ import {electronAPI} from '@electron-toolkit/preload'
 // @ts-ignore
 import ping from 'ping'
 import {exec, spawn} from "child_process";
+import type {ChildProcessWithoutNullStreams} from "child_process";
 import * as fs from "fs";
 import * as electron from "electron";
-import ipcRenderer = Electron.ipcRenderer;
 
 let appDataPath = "";
+let child: ChildProcessWithoutNullStreams | null;
 
 
 const api = {
@@ -18,7 +19,7 @@ const api = {
             const path = "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe";
             const args = ["run", "-config", appDataPath + "/vpn.conf"];
 
-            let child = spawn(path, args);
+            child = spawn(path, args);
 
             child.stdout.on('data', (data) => {
                 console.log(`child stdout:\n${data}`);
@@ -27,10 +28,16 @@ const api = {
             child.stderr.on('data', (data) => {
                 console.error(`child stderr:\n${data}`);
             });
-            //setTimeout(() => {
-            //    console.log(child.kill('SIGINT'))
-            //}, 20000)
         })
+    },
+
+    async stopVPN() {
+        child?.kill('SIGINT')
+        child = null;
+    },
+
+    isChildAlive() {
+        return child != null;
     },
 
     checkInstallation(path: string) {
@@ -38,7 +45,7 @@ const api = {
             if (err) {
                 console.error(err)
                 this.installWiresock()
-            }else {
+            } else {
                 return;
             }
         });

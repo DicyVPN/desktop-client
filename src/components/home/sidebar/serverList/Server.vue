@@ -42,8 +42,6 @@ export default {
                 city: this.city
               },
           ))
-
-
     }
   },
   setup() {
