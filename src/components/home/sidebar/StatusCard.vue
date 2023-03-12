@@ -62,7 +62,6 @@ export default {
   },
   methods: {
     connection() {
-      console.log(this.currentServer.connected)
 
       window.api.stopVPN().then(() =>
           this.currentServer.$patch({
@@ -78,9 +77,6 @@ export default {
             }))
       }
     },
-    log() {
-      console.log(this.currentServer.connected, this.currentServer.serverTag, this.currentServer.country, this.currentServer.city)
-    }
   }
 }
 </script>

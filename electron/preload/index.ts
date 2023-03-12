@@ -4,13 +4,13 @@ import {electronAPI} from '@electron-toolkit/preload'
 // @ts-ignore
 import ping from 'ping'
 import {exec, spawn} from "child_process";
-import type {ChildProcessWithoutNullStreams} from "child_process";
+import {getChild, setChild} from "./childProcess";
 import * as fs from "fs";
 import * as electron from "electron";
+import {apiGet} from "../../src/assets/api";
+
 
 let appDataPath = "";
-let child: ChildProcessWithoutNullStreams | null;
-
 
 const api = {
     async startVPN(configTag: string) {
@@ -19,25 +19,27 @@ const api = {
             const path = "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe";
             const args = ["run", "-config", appDataPath + "/vpn.conf"];
 
-            child = spawn(path, args);
+            const child = spawn(path, args);
 
             child.stdout.on('data', (data) => {
-                console.log(`child stdout:\n${data}`);
+                console.debug(`child stdout:\n${data}`);
             });
 
             child.stderr.on('data', (data) => {
                 console.error(`child stderr:\n${data}`);
             });
+
+            setChild(child)
         })
     },
 
     async stopVPN() {
-        child?.kill('SIGINT')
-        child = null;
+        getChild()?.kill('SIGINT')
+        setChild(null)
     },
 
     isChildAlive() {
-        return child != null;
+        return getChild() != null;
     },
 
     checkInstallation(path: string) {
@@ -61,20 +63,27 @@ const api = {
                 console.error(`exec error: ${error}`);
                 return;
             }
-            console.log(`stdout: ${stdout}`);
+            console.debug(`stdout: ${stdout}`);
             console.error(`stderr: ${stderr}`);
         });
+    },
+
+
+    externalLink(url: string) {
+        electron.shell.openExternal(url).then(r => console.debug(r))
     },
 }
 
 const makeConfig = async (configTag: string) => {
 
 
-    const endpoint = 'https://api.dicyvpn.com/beta/getWireGuardConfig/' + configTag;
+    const endpoint = '/beta/getWireGuardConfig/' + configTag;
     const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
     appDataPath = appData + "/DicyVPN"
 
-    let data = await fetch(endpoint, {method: 'GET'}).then(response => response.json());
+
+    let data = await apiGet(endpoint).then(res => res.json())
+    //let data = await fetch(endpoint, {method: 'GET'}).then(response => response.json());
 
 
     //Make conf file

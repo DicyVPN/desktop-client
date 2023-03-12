@@ -51,7 +51,6 @@ const pinia = createPinia()
 watch(pinia.state, (state) => {
     if(state.currentServer){
         localStorage.setItem('currentServer', JSON.stringify(state.currentServer))
-        console.log(JSON.stringify(state.currentServer), localStorage.getItem('currentServer'))
     }
 }, {deep : true});
 

@@ -1,5 +1,6 @@
 import {defineStore} from 'pinia'
 
+
 export const useCurrentServerStore = defineStore('currentServer', {
     state: () => {
         if (localStorage.getItem('currentServer'))

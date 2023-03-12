@@ -4,14 +4,16 @@
       <div class="flex flex-col gap-12 p-16">
         <DropdownElement icon="gear" text="Impostazioni"/>
         <DropdownElement icon="earth-americas" text="About"/>
-        <DropdownElement icon="right-from-bracket" text="Logout"/>
-        <DropdownElement icon="rectangle-xmark" text="Chiudi"/>
+        <DropdownElement icon="right-from-bracket" text="Logout" @click="logout"/>
+        <DropdownElement icon="rectangle-xmark" text="Chiudi" @click="closeApp"/>
       </div>
     </div>
   </div>
+  z
 </template>
 <script>
 import DropdownElement from "@/components/home/sidebar/settings/DropdownElement.vue";
+import {apiGet} from "@/assets/api";
 
 export default {
   name: 'DropdownSettings',
@@ -35,6 +37,16 @@ export default {
         this.toggle();
       }
     },
+    closeApp() {
+      close()
+    },
+    logout() {
+      apiGet("/v1/logout").then(() => {
+            localStorage.removeItem('token')
+            this.$router.push('/login')
+          }
+      )
+    }
   },
 
 }
