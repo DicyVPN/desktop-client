@@ -7,7 +7,8 @@
         <p class="text-small font-light">{{ currentServer.connected ? "Connesso" : "Disconnesso" }}</p>
       </div>
 
-      <div class="w-full h-[1px]" :class="{'bg-bright-green' : currentServer.connected, 'bg-red-300' : !currentServer.connected}"></div>
+      <div class="w-full h-[1px]"
+           :class="{'bg-bright-green' : currentServer.connected, 'bg-red-300' : !currentServer.connected}"></div>
       <div class="flex w-full">
         <p>{{ currentServer.city }}</p>
         <div class="flex sr w-full justify-end">
@@ -20,7 +21,7 @@
       </div>
 
       <Button :color=" currentServer.connected ? 'red' : 'green'" @click="connection" :class="unknownButton">
-        <div> {{ currentServer.connected ? "Disconnetti" : "Connetti" }} </div>
+        <div> {{ currentServer.connected ? "Disconnetti" : "Connetti" }}</div>
       </Button>
     </div>
   </div>
@@ -31,6 +32,8 @@ import Flag from "@/components/icons/Flag.vue";
 import Button from "@/components/icons/Button.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {useCurrentServerStore} from "@/stores/currentServer";
+import {useInformationStore} from "@/stores/information";
+import {refreshIp} from "@/assets/api";
 
 export default {
   name: 'Status',
@@ -41,8 +44,7 @@ export default {
     Button
   },
   data() {
-    return {
-    }
+    return {}
   },
   computed: {
     unknownButton() {
@@ -56,27 +58,43 @@ export default {
   },
   setup() {
     const currentServer = useCurrentServerStore();
+    const information = useInformationStore();
     return {
-      currentServer
+      currentServer,
+      information
     }
   },
   methods: {
     connection() {
-
-      window.api.stopVPN().then(() =>
+      if (this.currentServer.connected === true) {
+        window.api.stopVPN().then(() => {
           this.currentServer.$patch({
             connected: false,
-          }))
+
+          })
+          setTimeout(() => this.refreshIp(), 2000)
+        })
 
 
-      if (this.currentServer.connected === true) {
       } else {
-        window.api.startVPN(this.currentServer.serverTag).then(() =>
-            this.currentServer.$patch({
-              connected: true,
-            }))
+        window.api.startVPN(this.currentServer.serverTag).then(() => {
+          this.currentServer.$patch({
+            connected: true,
+          })
+
+          setTimeout(() => this.refreshIp(), 2000)
+        })
+
       }
     },
+    refreshIp() {
+      refreshIp().then((ip) => {
+        console.log(ip)
+        this.information.$patch({
+          ip: ip
+        })
+      })
+    }
   }
 }
 </script>

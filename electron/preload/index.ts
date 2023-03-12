@@ -7,7 +7,7 @@ import {exec, spawn} from "child_process";
 import {getChild, setChild} from "./childProcess";
 import * as fs from "fs";
 import * as electron from "electron";
-import {apiGet} from "../../src/assets/api";
+import {apiGet, refreshIp} from "../../src/assets/api";
 
 
 let appDataPath = "";
@@ -30,6 +30,8 @@ const api = {
             });
 
             setChild(child)
+
+            refreshIp()
         })
     },
 

@@ -14,7 +14,6 @@ export function apiGet(path: string): Promise<Response>{
     })
 }
 
-
 async function apiRefresh(rToken: string) {
     let res = await fetch(apiUrl + "/v1/public/refresh-token", {
         method: 'POST',
@@ -67,3 +66,24 @@ function getRefreshToken(): string {
  function setNewToken(token: string) {
      localStorage.setItem("token", JSON.stringify({token: token, refreshToken: getRefreshToken(), refreshTokenId: getRefreshTokenId(), accountId: getAccountId()} ))
  }
+
+export async function refreshIp() {
+    let ip = '';
+
+    await fetch('https://dicyvpn.com/cdn-cgi/trace')
+        .then(response => response.text())
+        .then(text => {
+            text.split('\n').forEach(line => {
+                line.split('=').forEach((value, index) => {
+                    if (value === 'ip') {
+                        ip = (line.split('=')[1])
+                        console.log(ip)
+
+                    }
+                })
+            })
+        })
+
+    return ip
+
+}
