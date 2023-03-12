@@ -940,9 +940,6 @@ export default {
     this.$el.removeEventListener('mousemove', this.onDrag);
   },
   methods: {
-    onClick(e) {
-      console.log("test")
-    },
     onDragStart(e) {
       e.preventDefault();
       const {clientX, clientY} = e;

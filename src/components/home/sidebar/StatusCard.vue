@@ -89,7 +89,6 @@ export default {
     },
     refreshIp() {
       refreshIp().then((ip) => {
-        console.log(ip)
         this.information.$patch({
           ip: ip
         })

@@ -13,13 +13,13 @@ export function apiGet(path: string): Promise<Response>{
         return res
     })
 }
-export function apiPost(path: string, body: any): Promise<Response>{
+export function apiPost(path: string, body: any, isPublic = false): Promise<Response>{
     return fetch(apiUrl + path, {
         method: 'POST',
         body: body,
         headers: getHeaders()
     }).then((res) => {
-        if (res.status === 401) {
+        if (res.status === 401 && !isPublic) {
             apiRefresh(getRefreshToken()).then(async () => {
                 return await apiGet(path)
             })
@@ -91,8 +91,6 @@ export async function refreshIp() {
                 line.split('=').forEach((value, index) => {
                     if (value === 'ip') {
                         ip = (line.split('=')[1])
-                        console.log(ip)
-
                     }
                 })
             })

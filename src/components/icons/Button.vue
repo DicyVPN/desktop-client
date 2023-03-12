@@ -37,6 +37,10 @@ export default {
   &.big {
     @apply font-medium text-medium;
   }
+
+  &.disabled {
+    @apply opacity-50 cursor-default;
+  }
 }
 
 :slotted(:not(.override-py)) {
@@ -54,7 +58,7 @@ export default {
 .button.blue {
   @apply bg-blue-500;
 
-  &:hover {
+  &:hover:not(.disabled) {
     @apply bg-blue-600;
   }
 
@@ -62,7 +66,7 @@ export default {
     @apply bg-blue-100 text-blue-600;
   }
 
-  &.light:hover {
+  &.light:hover:not(.disabled) {
     @apply bg-blue-200 text-blue-700;
   }
 }
@@ -70,7 +74,7 @@ export default {
 .button.red {
   @apply bg-red-500;
 
-  &:hover {
+  &:hover:not(.disabled) {
     @apply bg-red-600;
   }
 
@@ -78,7 +82,7 @@ export default {
     @apply bg-red-100 text-red-600;
   }
 
-  &.light:hover {
+  &.light:hover:not(.disabled) {
     filter: brightness(0.9);
   }
 }
@@ -86,7 +90,7 @@ export default {
 .button.green {
   @apply bg-green-500;
 
-  &:hover {
+  &:hover:not(.disabled) {
     @apply bg-green-600;
   }
 
@@ -94,7 +98,7 @@ export default {
     @apply bg-green-100 text-green-600;
   }
 
-  &.light:hover {
+  &.light:hover:not(.disabled) {
     filter: brightness(0.9);
   }
 }

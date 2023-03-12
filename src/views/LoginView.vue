@@ -22,7 +22,7 @@
             </div>
           </div>
         </div>
-        <Button color="blue" @click="login">
+        <Button color="blue" @click="login" class="cursor-pointer" :disabled="loading">
           <div class="h-33">
             Accedi
           </div>
@@ -59,6 +59,7 @@ export default {
       password: "",
       email: "",
       errorClass: "",
+      loading: false,
     };
   },
   methods: {
@@ -70,9 +71,11 @@ export default {
       this.type = this.show ? "text" : "password";
     },
     async login() {
-      apiPost("/v1/public/login",  JSON.stringify({ email: this.email, password: this.password,}))
+      this.loading = true
+      apiPost("/v1/public/login",  JSON.stringify({ email: this.email, password: this.password,}), true)
           .then(
           (res) => {
+            this.loading = false
             if (res.status === 400 || res.status === 401) {
               this.errorClass = "border-red-400 border-2 rounded"
               return
@@ -91,13 +94,16 @@ export default {
               refreshTokenId = json.refreshTokenId;
               accountId = json._id;
             } catch (e) {
-              console.log("Error parsing token", e);
+              console.debug("Error parsing token", e);
             }
 
             localStorage.setItem("token", JSON.stringify({token: token, refreshToken: refreshToken, refreshTokenId: refreshTokenId, accountId: accountId} ))
             this.$router.push({name: "placeholder"})
           },
-      )
+      ).catch(() => {
+        this.loading = false
+        alert("Errore di connessione")
+      })
     },
   },
 }
