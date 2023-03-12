@@ -13,6 +13,20 @@ export function apiGet(path: string): Promise<Response>{
         return res
     })
 }
+export function apiPost(path: string, body: any): Promise<Response>{
+    return fetch(apiUrl + path, {
+        method: 'POST',
+        body: body,
+        headers: getHeaders()
+    }).then((res) => {
+        if (res.status === 401) {
+            apiRefresh(getRefreshToken()).then(async () => {
+                return await apiGet(path)
+            })
+        }
+        return res
+    })
+}
 
 async function apiRefresh(rToken: string) {
     let res = await fetch(apiUrl + "/v1/public/refresh-token", {

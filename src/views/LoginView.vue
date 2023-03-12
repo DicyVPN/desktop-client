@@ -47,6 +47,7 @@
 import ShowIcon from "@/views/ShowIcon.vue";
 import Button from "@/components/icons/Button.vue";
 import WorldMap from "@/components/home/map/WorldMap.vue";
+import {apiPost} from "@/assets/api";
 
 export default {
   name: "LoginView",
@@ -69,14 +70,8 @@ export default {
       this.type = this.show ? "text" : "password";
     },
     async login() {
-
-      await fetch("https://api.dicyvpn.com/v1/public/login", {
-        method: "POST",
-        body: JSON.stringify({
-          email: this.email,
-          password: this.password,
-        }),
-      }).then(
+      apiPost("/v1/public/login",  JSON.stringify({ email: this.email, password: this.password,}))
+          .then(
           (res) => {
             if (res.status === 400 || res.status === 401) {
               this.errorClass = "border-red-400 border-2 rounded"
