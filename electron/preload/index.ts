@@ -79,7 +79,7 @@ const api = {
 const makeConfig = async (configTag: string) => {
 
 
-    const endpoint = '/beta/getWireGuardConfig/' + configTag;
+    const endpoint = '/v1/getWireGuardConfig/' + configTag;
     const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
     appDataPath = appData + "/DicyVPN"
 

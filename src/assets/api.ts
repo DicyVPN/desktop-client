@@ -57,24 +57,23 @@ async function apiRefresh(rToken: string) {
 function getHeaders() {
     return {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + (localStorage.getItem("token") || ""),
+        "Authorization": "Bearer " + (getToken() || ""),
     };
 }
 
 function getRefreshToken(): string {
-    return JSON.parse(localStorage.getItem("token") as string).refreshToken
+    return JSON.parse(localStorage.getItem("token")  || "{}").refreshToken
 }
 
-// Function to get elements from local storage
 
-// function getToken(): string {
-//     return JSON.parse(localStorage.getItem("token") as string).token
-// }
+ function getToken(): string {
+     return JSON.parse(localStorage.getItem("token") || "{}").token
+ }
  function getAccountId(): string {
-     return JSON.parse(localStorage.getItem("token") as string).accountId
+     return JSON.parse(localStorage.getItem("token")  || "{}").accountId
  }
  function getRefreshTokenId(): string {
-     return JSON.parse(localStorage.getItem("token") as string).refreshTokenId
+     return JSON.parse(localStorage.getItem("token")  || "{}").refreshTokenId
  }
 
  function setNewToken(token: string) {
