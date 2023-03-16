@@ -7,6 +7,7 @@ function createWindow(): void {
     const mainWindow = new BrowserWindow({
         width: 900,
         height: 670,
+        title: "Dicy VPN",
         show: false,
         autoHideMenuBar: true,
         ...(process.platform === 'linux'
