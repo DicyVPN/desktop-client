@@ -28,3 +28,5 @@ coverage
 
 out/
 
+build/icon.ico
+
