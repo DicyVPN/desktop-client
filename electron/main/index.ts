@@ -1,10 +1,12 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron'
 import * as path from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import * as electron from "electron";
 
+let mainWindow :BrowserWindow | null;
 function createWindow(): void {
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 900,
         height: 670,
         title: "Dicy VPN",
@@ -15,16 +17,20 @@ function createWindow(): void {
                 icon: path.join(__dirname, '../../build/icon.png')
             }
             : {
-                icon: path.join(__dirname, '../../build/icon.png')
+                icon: path.join(__dirname, '../../build/icon.ico')
             }),
         webPreferences: {
             preload: path.join(__dirname, '../preload/index.js'),
-            sandbox: false
+            sandbox: false,
         }
     })
 
     mainWindow.on('ready-to-show', () => {
-        mainWindow.show()
+        mainWindow?.show()
+    })
+
+    mainWindow.on('closed', function () {
+        mainWindow = null
     })
 
     mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -39,20 +45,12 @@ function createWindow(): void {
     } else {
         mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
     }
+
 }
 
-
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+let tray: Tray;
 app.whenReady().then(() => {
-    // Set app user model id for windows
     electronApp.setAppUserModelId('com.electron')
-
-    // Default open or close DevTools by F12 in development
-    // and ignore CommandOrControl + R in production.
-    // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
     app.on('browser-window-created', (_, window) => {
         optimizer.watchWindowShortcuts(window)
     })
@@ -60,20 +58,46 @@ app.whenReady().then(() => {
     createWindow()
 
     app.on('activate', function () {
-        // On macOS it's common to re-create a window in the app when the
-        // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
+
+    trayMaker()
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+ipcMain.on('connection', () => {
+    connectionBottom = "Disconnetti";
+    tray.setContextMenu(contextMenu())
+})
+
+ipcMain.on('disconnection', () => {
+    connectionBottom = "Riconnetti";
+    tray.setContextMenu(contextMenu())
+})
+
+
+
+let connectionBottom: string = 'Riconetti';
+function trayMaker(){
+    const img = nativeImage.createFromPath(path.join(__dirname, '../../build/icon.ico'))
+    let connectionBottom = "Connetti";
+
+    tray = new Tray(img);
+    tray.setToolTip("DicyVPN")
+    tray.setContextMenu(contextMenu())
+
+    return tray
+}
+function contextMenu(){
+    mainWindow?.webContents.send("connect-preload")
+    mainWindow?.webContents.send("disconnect-preload")
+
+    return Menu.buildFromTemplate([
+        {label: connectionBottom, click: () => {}},
+        {label: 'Close', role: "quit"},
+        {label: 'Close', click: () => { createWindow() }}
+    ])
+}
+
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit()
-    }
+    app.dock?.hide()
 })
-
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.

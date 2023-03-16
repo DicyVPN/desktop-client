@@ -72,7 +72,7 @@ export default {
     },
     async login() {
       this.loading = true
-      apiPost("/v1/public/login",  JSON.stringify({ email: this.email, password: this.password,}), true)
+      apiPost("/v1/public/login",  JSON.stringify({ email: this.email, password: this.password,}), false)
           .then(
           (res) => {
             this.loading = false

@@ -1,4 +1,4 @@
-import {contextBridge} from 'electron'
+import {contextBridge, ipcRenderer} from 'electron'
 import {electronAPI} from '@electron-toolkit/preload'
 
 // @ts-ignore
@@ -10,11 +10,11 @@ import * as electron from "electron";
 import {apiGet, refreshIp} from "../../src/assets/api";
 
 
-let appDataPath = "";
 
 const api = {
-    async startVPN(configTag: string) {
+    async startVPN(configTag: string | "", last: boolean) {
         //this.checkInstallation(appDataPath);
+
         await makeConfig(configTag).then(() => {
             const path = "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe";
             const args = ["run", "-config", appDataPath + "/vpn.conf"];
@@ -32,17 +32,22 @@ const api = {
             setChild(child)
 
             refreshIp()
+
+            ipcRenderer.send('connection');
+
         })
     },
 
     async stopVPN() {
         getChild()?.kill('SIGINT')
         setChild(null)
+        ipcRenderer.send('disconnection');
     },
 
     isChildAlive() {
         return getChild() != null;
     },
+
 
     checkInstallation(path: string) {
         fs.access(path, fs.constants.F_OK, (err) => {
