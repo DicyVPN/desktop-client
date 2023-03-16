@@ -1,27 +1,27 @@
 const apiUrl = "https://api.dicyvpn.com"
 
-export function apiGet(path: string): Promise<Response>{
+export function apiGet(path: string, shouldRefreshToken = true): Promise<Response>{
     return fetch(apiUrl + path, {
         method: 'GET',
         headers: getHeaders()
     }).then((res) => {
-        if (res.status === 401) {
+        if (res.status === 401 && shouldRefreshToken) {
             apiRefresh(getRefreshToken()).then(async () => {
-                return await apiGet(path)
+                return await apiGet(path, false)
             })
         }
         return res
     })
 }
-export function apiPost(path: string, body: any, isPublic = false): Promise<Response>{
+export function apiPost(path: string, body: any, shouldRefreshToken = true): Promise<Response>{
     return fetch(apiUrl + path, {
         method: 'POST',
         body: body,
         headers: getHeaders()
     }).then((res) => {
-        if (res.status === 401 && !isPublic) {
+        if (res.status === 401 && shouldRefreshToken) {
             apiRefresh(getRefreshToken()).then(async () => {
-                return await apiGet(path)
+                return await apiPost(path, body, false)
             })
         }
         return res
