@@ -15,11 +15,11 @@ export default {
   },
   computed: {
     flag() {
-      return `src/assets/flags/${this.country}.svg`;
+      return `./assets/flags/${this.country}.svg`;
     }
   }
 }
-</script>
+</script>d
 <style scoped>
 .flag {
   height: 1.125rem; /* 18px */

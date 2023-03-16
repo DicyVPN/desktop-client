@@ -33,11 +33,11 @@
         <p class="bottom-link" @click="openLink('https://dicyvpn.com/recover-password')">Recupera la password</p>
       </div>
       <div class="flex mt-64 gap-8">
-        <img src="@/components/icons/outh2/btn_google.svg" alt="logo">
-        <img src="@/components/icons/outh2/btn_github.svg" alt="logo">
-        <img src="@/components/icons/outh2/btn_twitter.svg" alt="logo">
-        <img src="@/components/icons/outh2/btn_facebook.svg" alt="logo">
-        <img src="@/components/icons/outh2/btn_reddit.svg" alt="logo">
+        <img src="@/assets/outh2/btn_google.svg" alt="logo">
+        <img src="@/assets/outh2/btn_github.svg" alt="logo">
+        <img src="@/assets/outh2/btn_twitter.svg" alt="logo">
+        <img src="@/assets/outh2/btn_facebook.svg" alt="logo">
+        <img src="@/assets/outh2/btn_reddit.svg" alt="logo">
       </div>
     </div>
   </div>
