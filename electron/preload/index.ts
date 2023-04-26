@@ -10,9 +10,27 @@ import * as electron from "electron";
 import {apiGet, refreshIp} from "../../src/assets/api";
 
 
+let appDataPath = "";
+let lastTag = "";
+
+ipcRenderer.on("disconnect-preload", () => {
+    api.stopVPN().then();
+})
+
+ipcRenderer.on("connect-preload", () => {
+    api.startVPN(lastTag).then()
+    console.log(lastTag)
+})
+
+
 
 const api = {
-    async startVPN(configTag: string | "", last: boolean) {
+    saveTag(tag: string){
+        lastTag = tag;
+    },
+
+
+    async startVPN(configTag: string) {
         //this.checkInstallation(appDataPath);
 
         await makeConfig(configTag).then(() => {

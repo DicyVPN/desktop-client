@@ -7,9 +7,9 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "prebuild": "electron-vite build",
-    "build:win": "npm run build && electron-builder --win --config",
-    "build:mac": "npm run build && electron-builder --mac --config",
-    "build:linux": "npm run build && electron-builder --linux --config"
+    "build:win": "npm run prebuild && electron-builder --win --config",
+    "build:mac": "npm run prebuild && electron-builder --mac --config",
+    "build:linux": "npm run prebuild && electron-builder --linux --config"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^1.0.3",
@@ -18,6 +18,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
+    "electron-window-state": "^5.0.3",
     "ping": "^0.4.2",
     "pinia": "^2.0.33",
     "svg-pan-zoom-container": "^0.6.1",

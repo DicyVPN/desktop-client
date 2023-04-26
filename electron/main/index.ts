@@ -1,17 +1,26 @@
-import { app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain } from 'electron'
+import {app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain} from 'electron'
 import * as path from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import {electronApp, optimizer, is} from '@electron-toolkit/utils'
 import * as electron from "electron";
+import windowStateKeeper from "electron-window-state";
 
-let mainWindow :BrowserWindow | null;
+let mainWindow: BrowserWindow | null;
+let mainWindowState: windowStateKeeper.State;
+
+
+/** window creation **/
 function createWindow(): void {
-    // Create the browser window.
+    console.log(mainWindowState.x, mainWindowState.y, mainWindowState.width, mainWindowState.height);
+
+    //set window dimension, title, icon and other
     mainWindow = new BrowserWindow({
-        width: 900,
-        height: 670,
         title: "Dicy VPN",
         show: false,
         autoHideMenuBar: true,
+        x: mainWindowState.x,
+        y: mainWindowState.y,
+        width: mainWindowState.width,
+        height: mainWindowState.height,
         ...(process.platform === 'linux'
             ? {
                 icon: path.join(__dirname, '../../build/icon.png')
@@ -24,18 +33,23 @@ function createWindow(): void {
             sandbox: false,
         }
     })
+    mainWindowState.manage(mainWindow);
 
+
+    //show main window when is ready
     mainWindow.on('ready-to-show', () => {
         mainWindow?.show()
     })
 
-    mainWindow.on('closed', function () {
+    //before window close
+    mainWindow.on('close', function () {
         mainWindow = null
     })
 
+
     mainWindow.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url)
-        return { action: 'deny' }
+        return {action: 'deny'}
     })
 
     // HMR for renderer base on electron-vite cli.
@@ -54,6 +68,11 @@ app.whenReady().then(() => {
     app.on('browser-window-created', (_, window) => {
         optimizer.watchWindowShortcuts(window)
     })
+
+    mainWindowState = windowStateKeeper({
+        defaultWidth: 900,
+        defaultHeight: 670
+    });
 
     createWindow()
 
@@ -75,11 +94,10 @@ ipcMain.on('disconnection', () => {
 })
 
 
-
 let connectionBottom: string = 'Riconetti';
-function trayMaker(){
+
+function trayMaker() {
     const img = nativeImage.createFromPath(path.join(__dirname, '../../build/icon.ico'))
-    let connectionBottom = "Connetti";
 
     tray = new Tray(img);
     tray.setToolTip("DicyVPN")
@@ -87,17 +105,28 @@ function trayMaker(){
 
     return tray
 }
-function contextMenu(){
-    mainWindow?.webContents.send("connect-preload")
-    mainWindow?.webContents.send("disconnect-preload")
 
+function contextMenu() {
     return Menu.buildFromTemplate([
-        {label: connectionBottom, click: () => {}},
+        {
+            label: 'Apri', click: () => {
+                if (mainWindow != null) {
+                    mainWindow.focus();
+                } else {
+                    createWindow();
+                }
+            }
+        },
+        {
+            label: connectionBottom, click: () => {
+                (connectionBottom === 'Riconetti') ? mainWindow?.webContents.send("connect-preload") : mainWindow?.webContents.send("disconnect-preload")
+            }
+        },
         {label: 'Close', role: "quit"},
-        {label: 'Close', click: () => { createWindow() }}
     ])
 }
 
 app.on('window-all-closed', () => {
     app.dock?.hide()
 })
+
