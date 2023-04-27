@@ -3,14 +3,15 @@ import {electronAPI} from '@electron-toolkit/preload'
 
 // @ts-ignore
 import ping from 'ping'
-import {exec, spawn} from "child_process";
-import {getChild, setChild} from "./childProcess";
+import {getChild} from "./childProcess";
 import * as fs from "fs";
 import * as electron from "electron";
-import {apiGet, refreshIp} from "../../src/assets/api";
+import {apiPost} from "../../src/assets/api";
+import {gen} from "./configurationGenerator";
 
 
-let appDataPath = "";
+const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
+const appDataPath = appData + "/DicyVPN"
 let lastTag = "";
 
 ipcRenderer.on("disconnect-preload", () => {
@@ -18,48 +19,95 @@ ipcRenderer.on("disconnect-preload", () => {
 })
 
 ipcRenderer.on("connect-preload", () => {
-    api.startVPN(lastTag).then()
+    //api.startVPN(lastTag).then()
     console.log(lastTag)
 })
 
 
-
 const api = {
-    saveTag(tag: string){
+    saveTag(tag: string) {
         lastTag = tag;
     },
 
 
-    async startVPN(configTag: string) {
-        //this.checkInstallation(appDataPath);
+    /**
+     * Check if directory exists or program is installed and redirect to correct start function based on protocol
+     *  @param id - id of the server
+     *  @param type - type of the server (Primary or Secondary)
+     *  @param protocol - protocol of the server (openvpn or wireguard)
+     */
+    async startVPN(id: number, type: string, protocol: string) {
+        //TODO: Check if wiresock or openvpn is installed
 
-        await makeConfig(configTag).then(() => {
-            const path = "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe";
-            const args = ["run", "-config", appDataPath + "/vpn.conf"];
+        await api.stopVPN()
 
-            const child = spawn(path, args);
-
-            child.stdout.on('data', (data) => {
-                console.debug(`child stdout:\n${data}`);
-            });
-
-            child.stderr.on('data', (data) => {
-                console.error(`child stderr:\n${data}`);
-            });
-
-            setChild(child)
-
-            refreshIp()
-
-            ipcRenderer.send('connection');
-
-        })
+        api.makePath();
+        (protocol == 'openvpn') ? await api.startOpenVPN(id, type) : api.startWireGuard(id, type)
     },
 
-    async stopVPN() {
-        getChild()?.kill('SIGINT')
-        setChild(null)
-        ipcRenderer.send('disconnection');
+    /** Make path when config is saved */
+    makePath() {
+        fs.mkdirSync(appDataPath + '/OpenVPN/', {recursive: true})
+        fs.mkdirSync(appDataPath + '/WireGuard/', {recursive: true})
+    },
+
+
+    async startOpenVPN(id: number, type: string) {
+        let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({"type": type, "protocol": "openvpn"}))
+            .then((r) => r.json()).catch((e) => {
+                console.error(e);
+            })
+
+        const config = gen(con.serverIp, con.ports.tcp[0], 'tcp')
+        fs.writeFileSync(appDataPath + '/OpenVPN/config.ovpn', config)
+        fs.writeFileSync(appDataPath + '/OpenVPN/vpn-user', `${con.username}\n${con.password}`)
+
+        let file = fs.openSync('\\\\.\\pipe\\openvpn\\service', 'r+')
+        // @ts-ignore
+        fs.writeSync(file, Buffer.from(appDataPath + '\\OpenVPN\\\u0000--config config.ovpn --log logs.log\u0000\u0000', 'utf-16le'))
+        const buff = Buffer.alloc(1024)
+        fs.readSync(file, buff, 0, 1024, null)
+        // @ts-ignore
+        const output = buff.toString('utf-16le')
+        console.log()
+        fs.writeFileSync(appDataPath + '/pid.pid', Number(output.split('\n')[1]).toString())
+        //process.kill(4268)
+
+
+        //setChild(spawn("C:\\Program Files\\OpenVPN\\bin\\openvpn.exe", ["--config", "config.ovpn"], {cwd: appDataPath + '/OpenVPN/'}))
+        //getChild()?.stdout.on('data', (data) => {
+        //   console.log(data.toString())
+        //})
+    },
+
+
+    stopVPN() {
+        if(!fs.existsSync(appDataPath + '/pid.pid')) return;
+
+        return new Promise<void>((resolve, reject) => {
+            const pid = Number(fs.readFileSync(appDataPath + '/pid.pid'))
+
+            try {
+                process.kill(pid, 'SIGTERM');
+            } catch (e) {
+                // the process does not exist anymore
+                resolve();
+            }
+
+            let count = 0;
+            setInterval(() => {
+                try {
+                    process.kill(pid, 0);
+                } catch (e) {
+                    // the process does not exist anymore
+                    resolve();
+                }
+                ipcRenderer.send('disconnection');
+                if ((count += 100) > 10000) {
+                    reject(new Error("Timeout process kill"))
+                }
+            }, 100)
+        })
     },
 
     isChildAlive() {
@@ -67,53 +115,12 @@ const api = {
     },
 
 
-    checkInstallation(path: string) {
-        fs.access(path, fs.constants.F_OK, (err) => {
-            if (err) {
-                console.error(err)
-                this.installWiresock()
-            } else {
-                return;
-            }
-        });
-    },
-
-    installWiresock() {
-        const path = "@/assets/wiresock.msi"
-        const command = `msiexec /i ${path} /quiet /qn /norestart /log winsocklogs.log`
-
-
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`exec error: ${error}`);
-                return;
-            }
-            console.debug(`stdout: ${stdout}`);
-            console.error(`stderr: ${stderr}`);
-        });
-    },
-
-
     externalLink(url: string) {
         electron.shell.openExternal(url).then(r => console.debug(r))
     },
-}
+    startWireGuard(id: number, type: string) {
 
-const makeConfig = async (configTag: string) => {
-
-
-    const endpoint = '/v1/getWireGuardConfig/' + configTag;
-    const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
-    appDataPath = appData + "/DicyVPN"
-
-
-    let data = await apiGet(endpoint).then(res => res.json())
-    //let data = await fetch(endpoint, {method: 'GET'}).then(response => response.json());
-
-
-    //Make conf file
-    fs.mkdirSync(appDataPath, {recursive: true})
-    fs.writeFileSync(appDataPath + "/vpn.conf", data.configString)
+    }
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to`

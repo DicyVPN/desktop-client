@@ -3,7 +3,7 @@
     <CountryDropdown :country="country"  @click="open(country)" :is-open="country === selectedCountry"/>
     <Transition name="expand">
       <div v-if="selectedCountry === country" class="flex flex-col gap-y-[2px]">
-        <Server v-for="server in serverList.sort((a, b) => a.city.localeCompare(b.city))" :city="server.city" :country="country" :id="server.id"/>
+        <Server v-for="server in serverList.sort((a, b) => a.city.localeCompare(b.city))" :city="server.city" :country="country" :id="server.id" @click="connect(server.id, server.type)"/>
       </div>
     </Transition>
   </div>
@@ -31,6 +31,9 @@ export default {
       if (country === this.selectedCountry) {
         this.selectedCountry = null
       } else this.selectedCountry = country
+    },
+    connect(id, type) {
+      window.api.startVPN(id, type, 'openvpn')
     }
   }
 }
