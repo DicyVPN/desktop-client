@@ -30,7 +30,7 @@
       </div>
       <div class="flex flex-col gap-2">
         <p class="bottom-link" @click="openLink('https://dicyvpn.com/register')">Crea un account</p>
-        <p class="bottom-link" @click="openLink('https://dicyvpn.com/recover-password')">Recupera la password</p>
+        <p class="bottom-link" @click="openLink('https://dicyvpn.com/login/request-password-reset')">Recupera la password</p>
       </div>
       <div class="flex mt-64 gap-8">
         <img src="@/assets/outh2/btn_google.svg" alt="logo">
