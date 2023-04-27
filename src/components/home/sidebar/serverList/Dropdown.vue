@@ -1,20 +1,20 @@
 <template>
-  <div v-for="(serverList, country) in list.other">
-    <DropdownCountry :country="serverList.tag"  @click="open(serverList.tag)" :is-open="serverList.tag === selectedCountry" :name="country"/>
+  <div v-for="(serverList, country) in list.secondary">
+    <CountryDropdown :country="country"  @click="open(country)" :is-open="country === selectedCountry"/>
     <Transition name="expand">
-      <div v-if="selectedCountry === serverList.tag" class="flex flex-col gap-y-[2px]">
-        <Server v-for="(server, city) in serverList.server" :city="city" :country="serverList.tag" :id="server.id"/>
+      <div v-if="selectedCountry === country" class="flex flex-col gap-y-[2px]">
+        <Server v-for="server in serverList.sort((a, b) => a.city.localeCompare(b.city))" :city="server.city" :country="country" :id="server.id"/>
       </div>
     </Transition>
   </div>
 </template>
 <script>
 import Server from "@/components/home/sidebar/serverList/Server.vue";
-import DropdownCountry from "@/components/home/sidebar/serverList/CountryDropdown.vue";
+import CountryDropdown from "@/components/home/sidebar/serverList/CountryDropdown.vue";
 
 export default {
   name: 'Dropdown',
-  components: {DropdownCountry, Server},
+  components: {CountryDropdown, Server},
   props: {
     list: {
       type: Object,

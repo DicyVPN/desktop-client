@@ -8,7 +8,7 @@ let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
 
 
-/** window creation **/
+/** window creation */
 function createWindow(): void {
     console.log(mainWindowState.x, mainWindowState.y, mainWindowState.width, mainWindowState.height);
 
@@ -106,6 +106,7 @@ function trayMaker() {
     return tray
 }
 
+/** Create context menu for trey */
 function contextMenu() {
     return Menu.buildFromTemplate([
         {

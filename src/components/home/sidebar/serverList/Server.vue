@@ -2,7 +2,7 @@
   <div class="bg-gray-900 flex w-full p-8 rounded items-center" @click="connect(tag)">
     <p class="city text-small text-ellipsis overflow-hidden flex-1">{{ city }}</p>
     <div class="flex justify-end gap-8">
-      <p class="location-text text-tiny">{{tag}}</p>
+      <p class="location-text text-tiny">{{ tag }}</p>
       <Flag :small="true" :country="country"/>
     </div>
   </div>
@@ -28,13 +28,19 @@ export default {
     }
   },
   computed: {
+    /** Adds 0 to id*/
     tag() {
-      return this.country.toUpperCase() + "_0" + this.id
+      if (this.id <= 99) {
+        if (this.id <= 9) return this.country.toUpperCase() + "_00" + this.id
+        else return this.country.toUpperCase() + "_0" + this.id
+      }else {
+        return this.country.toUpperCase() + "_" + this.id
+      }
     }
   },
   methods: {
     connect(confTag) {
-      window.api.startVPN(confTag).then( () =>
+      window.api.startVPN(confTag).then(() =>
           this.currentServer.$patch({
                 connected: true,
                 serverTag: confTag,

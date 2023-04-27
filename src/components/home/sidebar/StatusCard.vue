@@ -77,7 +77,7 @@ export default {
 
 
       } else {
-        window.api.startVPN(this.currentServer.serverTag).then(() => {
+        window.api.startVPN(this.currentServer.serverTag, this.currentServer).then(() => {
           this.currentServer.$patch({
             connected: true,
           })
