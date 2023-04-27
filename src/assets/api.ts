@@ -6,8 +6,8 @@ export function apiGet(path: string, shouldRefreshToken = true): Promise<Respons
         headers: getHeaders()
     }).then((res) => {
         if (res.status === 401 && shouldRefreshToken) {
-            apiRefresh(getRefreshToken()).then(async () => {
-                return await apiGet(path, false)
+            return apiRefresh(getRefreshToken()).then(() => {
+                return apiGet(path, false)
             })
         }
         return res
@@ -20,8 +20,8 @@ export function apiPost(path: string, body: any, shouldRefreshToken = true): Pro
         headers: getHeaders()
     }).then((res) => {
         if (res.status === 401 && shouldRefreshToken) {
-            apiRefresh(getRefreshToken()).then(async () => {
-                return await apiPost(path, body, false)
+            return apiRefresh(getRefreshToken()).then(() => {
+                return apiPost(path, body, false)
             })
         }
         return res
