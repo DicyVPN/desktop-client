@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     flag() {
-      return `./assets/flags/${this.country}.svg`;
+      return `./assets/flags/${this.country.toLowerCase()}.svg`;
     }
   }
 }
