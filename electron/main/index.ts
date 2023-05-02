@@ -1,8 +1,9 @@
-import {app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain} from 'electron'
+import {app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain, ipcRenderer} from 'electron'
 import * as path from 'path'
 import {electronApp, optimizer, is} from '@electron-toolkit/utils'
 import * as electron from "electron";
 import windowStateKeeper from "electron-window-state";
+import fs from "fs";
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
@@ -34,7 +35,7 @@ function createWindow(): void {
         }
     })
     mainWindowState.manage(mainWindow);
-
+    mainWindow.webContents.openDevTools()
 
     //show main window when is ready
     mainWindow.on('ready-to-show', () => {
@@ -88,11 +89,6 @@ ipcMain.on('connection', () => {
     tray.setContextMenu(contextMenu())
 })
 
-ipcMain.on('disconnection', () => {
-    connectionBottom = "Riconnetti";
-    tray.setContextMenu(contextMenu())
-})
-
 
 let connectionBottom: string = 'Riconetti';
 
@@ -113,6 +109,8 @@ function contextMenu() {
             label: 'Apri', click: () => {
                 if (mainWindow != null) {
                     mainWindow.focus();
+                    ipcMain.emit('disconnect')
+
                 } else {
                     createWindow();
                 }
@@ -129,5 +127,48 @@ function contextMenu() {
 
 app.on('window-all-closed', () => {
     app.dock?.hide()
+})
+
+app.on('before-quit', () => {
+    ipcMain.emit('disconnect')
+    console.log("Emitted quit")
+})
+
+/** Stop VPN */
+ipcMain.on('disconnect', () => {
+    const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
+    const appDataPath = appData + "/DicyVPN"
+
+
+
+    if (!fs.existsSync(appDataPath + '/pid.pid')) return;
+
+    return new Promise<void>((resolve, reject) => {
+        const pid = Number(fs.readFileSync(appDataPath + '/pid.pid'))
+
+        try {
+            process.kill(pid, 'SIGTERM');
+        } catch (e) {
+            // the process does not exist anymore
+            resolve();
+        }
+
+        let count = 0;
+        setInterval(() => {
+            try {
+                process.kill(pid, 0);
+            } catch (e) {
+                // the process does not exist anymore
+                resolve();
+            }
+
+            connectionBottom = "Riconnetti";
+            tray.setContextMenu(contextMenu())
+
+            if ((count += 100) > 10000) {
+                reject(new Error("Timeout process kill"))
+            }
+        }, 100)
+    })
 })
 

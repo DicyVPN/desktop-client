@@ -8,14 +8,17 @@ import * as fs from "fs";
 import * as electron from "electron";
 import {apiPost} from "../../src/assets/api";
 import {gen} from "./configurationGenerator";
+import {exec} from "child_process";
 
 
 const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
 const appDataPath = appData + "/DicyVPN"
 let lastTag = "";
 
-ipcRenderer.on("disconnect-preload", () => {
-    api.stopVPN().then();
+ipcRenderer.on("disconnect", async () => {
+    console.log("Received disconnect event")
+    await api.stopVPN()
+    console.log("Stopped VPN")
 })
 
 ipcRenderer.on("connect-preload", () => {
@@ -52,6 +55,11 @@ const api = {
     },
 
 
+
+    /** Start OpenVPN
+     *  @param id - id of the server
+     *  @param type - type of the server (Primary or Secondary)
+     * */
     async startOpenVPN(id: number, type: string) {
         let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({"type": type, "protocol": "openvpn"}))
             .then((r) => r.json()).catch((e) => {
@@ -71,49 +79,28 @@ const api = {
         const output = buff.toString('utf-16le')
         console.log()
         fs.writeFileSync(appDataPath + '/pid.pid', Number(output.split('\n')[1]).toString())
-        //process.kill(4268)
 
 
-        //setChild(spawn("C:\\Program Files\\OpenVPN\\bin\\openvpn.exe", ["--config", "config.ovpn"], {cwd: appDataPath + '/OpenVPN/'}))
-        //getChild()?.stdout.on('data', (data) => {
-        //   console.log(data.toString())
-        //})
+        api.isRunning()
+    },
+
+    /** Stop OpenVPN */
+    async stopVPN() {
+        await ipcRenderer.send("disconnect")
     },
 
 
-    stopVPN() {
-        if(!fs.existsSync(appDataPath + '/pid.pid')) return;
 
-        return new Promise<void>((resolve, reject) => {
-            const pid = Number(fs.readFileSync(appDataPath + '/pid.pid'))
 
-            try {
-                process.kill(pid, 'SIGTERM');
-            } catch (e) {
-                // the process does not exist anymore
-                resolve();
-            }
-
-            let count = 0;
-            setInterval(() => {
-                try {
-                    process.kill(pid, 0);
-                } catch (e) {
-                    // the process does not exist anymore
-                    resolve();
-                }
-                ipcRenderer.send('disconnection');
-                if ((count += 100) > 10000) {
-                    reject(new Error("Timeout process kill"))
-                }
-            }, 100)
-        })
+    /** Check if VPN is running */
+    isRunning() {
+        try {
+            process.kill(Number(fs.readFileSync(appDataPath + '/pid.pid')), 0);
+            return true;
+        }catch {
+            return false;
+        }
     },
-
-    isChildAlive() {
-        return getChild() != null;
-    },
-
 
     externalLink(url: string) {
         electron.shell.openExternal(url).then(r => console.debug(r))
@@ -123,9 +110,6 @@ const api = {
     }
 }
 
-// Use `contextBridge` APIs to expose Electron APIs to`
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
 if (process.contextIsolated) {
     try {
         contextBridge.exposeInMainWorld('electron', electronAPI)

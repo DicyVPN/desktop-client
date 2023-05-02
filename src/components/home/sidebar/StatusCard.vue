@@ -70,7 +70,6 @@ export default {
         window.api.stopVPN().then(() => {
           this.currentServer.$patch({
             connected: false,
-
           })
           setTimeout(() => this.refreshIp(), 2000)
         })
