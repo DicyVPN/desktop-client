@@ -24,7 +24,8 @@ import {
     faPlus,
     faMinus,
     faCircleXmark,
-    faCheckCircle
+    faCheckCircle,
+    faTrash
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -42,6 +43,7 @@ library.add(
     faMinus,
     faCircleXmark,
     faCheckCircle,
+    faTrash
 )
 
 

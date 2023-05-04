@@ -1,20 +1,12 @@
 <template>
   <div class="bg-gray-600 h-screen p-8 flex flex-col gap-8 select-none shadow-4-lg">
-    <div>
-      <SettingsCard :toggle="toggle"/>
-      <Transition name="expand">
-        <DropdownSettings v-if="isOpen" :toggle="toggle"/>
-      </Transition>
-    </div>
     <StatusCard/>
     <ServerListCard :list="serverList"/>
   </div>
 </template>
 
 <script setup>
-import SettingsCard from "@/components/home/sidebar/settings/SettingsCard.vue";
 import StatusCard from "@/components/home/sidebar/StatusCard.vue";
-import DropdownSettings from "@/components/home/sidebar/settings/DropdownSettings.vue";
 import ServerListCard from "@/components/home/sidebar/serverList/ServerListCard.vue";
 </script>
 

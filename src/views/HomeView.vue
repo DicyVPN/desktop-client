@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-1 min-h-screen max-h-screen min-w-screen max-w-screen select-none">
     <Sidebar class="w-256"/>
-    <div class="main flex flex-col flex-1">
+    <div class="include-sidebar flex flex-col flex-1">
       <div class="p-8">
         <div class="bg-gray-600 rounded p-8">
           <Logo/>
@@ -48,10 +48,6 @@ export default {
 </script>
 
 <style>
-.main {
-  width: calc(100% - theme('spacing.256'));
-}
-
 .zoom-container{
   right: 0;
   @apply absolute flex z-20;

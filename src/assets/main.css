@@ -51,3 +51,37 @@ html, body, #app {
 body, #app {
     min-height: 100vh;
 }
+
+.include-sidebar {
+    width: calc(100% - theme('spacing.256'));
+}
+
+/*input style*/
+input[type = "radio"] {
+    appearance: none;
+    @apply w-20 h-20 rounded-full border-2 border-blue-500;
+    position: relative;
+    transform: translateY(0.075em);
+}
+
+input[type = "radio"]:checked::before {
+    content: "";
+    position: absolute;
+    @apply rounded-full bg-blue-500 inset-2;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    @apply w-20 h-20 rounded border-2 border-blue-500;
+    position: relative;
+}
+
+input[type="checkbox"]:checked::before {
+    content: "";
+    position: absolute;
+    @apply bg-blue-500 inset-2;
+}
+
+input[type="text"] {
+    @apply rounded bg-gray-100 text-gray-600 px-8;
+}

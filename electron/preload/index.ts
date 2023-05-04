@@ -84,7 +84,13 @@ const api = {
         api.isRunning()
     },
 
-    /** Stop OpenVPN */
+    startWireGuard(id: number, type: string) {
+
+    },
+
+
+    /** Stop VPN by sending disconnect event to main process
+     * */
     async stopVPN() {
         await ipcRenderer.send("disconnect")
     },
@@ -105,9 +111,6 @@ const api = {
     externalLink(url: string) {
         electron.shell.openExternal(url).then(r => console.debug(r))
     },
-    startWireGuard(id: number, type: string) {
-
-    }
 }
 
 if (process.contextIsolated) {
