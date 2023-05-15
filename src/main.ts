@@ -56,7 +56,9 @@ watch(pinia.state, (state) => {
     }
 }, {deep : true});
 
-const app = createApp(App)
+const app = createApp(App, {
+
+})
 
 app.use(router)
 app.use(pinia)
@@ -65,4 +67,3 @@ app.use(pinia)
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.mount('#app')
-

@@ -11,6 +11,8 @@ import {gen} from "./configurationGenerator";
 import {exec} from "child_process";
 
 
+import {isIP} from "net";
+
 const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
 const appDataPath = appData + "/DicyVPN"
 let lastTag = "";
@@ -111,6 +113,10 @@ const api = {
     externalLink(url: string) {
         electron.shell.openExternal(url).then(r => console.debug(r))
     },
+
+    isIp(ip: string) {
+        return isIP(ip)
+    }
 }
 
 if (process.contextIsolated) {

@@ -1,3 +1,26 @@
+const dim = {
+    0: '0', // 0px
+    2: '0.125rem', // 2px
+    4: '0.25rem', // 4px
+    8: '0.5rem', // 8px
+    12: '0.75rem', // 12px
+    16: '1rem', // 16px
+    20: '1.25rem', // and so on
+    24: '1.5rem',
+    28: '1.75rem',
+    32: '2rem',
+    36: '2.25rem',
+    48: '3rem',
+    64: '4rem',
+    80: '5rem',
+    96: '6rem',
+    128: '8rem',
+    192: '12rem',
+    256: '16rem',
+    320: '20rem',
+    384: '24rem'
+}
+
 /** @type {import('tailwindcss').Config} */
 const tailwindcss = {
     content: [
@@ -61,27 +84,7 @@ const tailwindcss = {
             'bright-green': 'hsl(102, 100%, 54%)',
             'sky-blue': 'hsl(192, 95%, 65%)'
         },
-        spacing: {
-            2: '0.125rem', // 2px
-            4: '0.25rem', // 4px
-            8: '0.5rem', // 8px
-            12: '0.75rem', // 12px
-            16: '1rem', // 16px
-            20: '1.25rem', // and so on
-            24: '1.5rem',
-            28: '1.75rem',
-            32: '2rem',
-            36: '2.25rem',
-            48: '3rem',
-            64: '4rem',
-            80: '5rem',
-            96: '6rem',
-            128: '8rem',
-            192: '12rem',
-            256: '16rem',
-            320: '20rem',
-            384: '24rem'
-        },
+        spacing: dim,
         boxShadow: {
             sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
             DEFAULT: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
@@ -93,6 +96,13 @@ const tailwindcss = {
             none: 'none',
             '4': '0px 4px 4px rgba(0, 0, 0, 0.25)',
             '4-lg': '0px 4px 12px rgba(0, 0, 0, 0.52)'
+        },
+        extend: {
+            minHeight: dim,
+            maxHeight: dim,
+
+            minWidth: dim,
+            maxWidth: dim,
         }
     }
 };

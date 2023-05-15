@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full include-sidebar flex flex-col gap-8">
+    <div class="w-full include-sidebar flex flex-col gap-8 p-8">
         <div class="option-title">
             <p>SplitTunneling</p>
         </div>
@@ -19,16 +19,16 @@
         <div class="option-card">
             <div class="flex gap-8 items-center">
                 <span class="mr-auto">Lista Applicazioni</span>
-                <Button theme="dark" color="blue" class="p-4">Aggiungi</Button>
+                <Button theme="dark" color="blue" class="p-4" @click="saveChange()">Aggiungi</Button>
             </div>
             <div class="inner-div card-inner bg-gray-600 p-8 rounded mt-8">
                 <div class="flex gap-16" v-for="app in appList" v-if="appList.length > 0">
                     <p>{{ app.iconPath }}</p>
                     <p>{{ app.name }}</p>
-                    <div class="ml-auto flex items-center gap-8
-">
+                    <div class="ml-auto flex items-center gap-8">
                         <input type="checkbox" :checked="app.enabled">
-                        <font-awesome-icon icon="fa-solid fa-trash" class="hover:text-red-400" @click="delApp(app.name)"/>
+                        <font-awesome-icon icon="fa-solid fa-trash" class="hover:text-red-400"
+                                           @click="delApp(app.name)"/>
                     </div>
                 </div>
                 <div class="flex justify-center" v-else>
@@ -41,8 +41,8 @@
         <div class="option-card">
             <div class="flex gap-8">
                 <span class="mr-auto">Lista Indirizzi IP</span>
-                <input type="text" placeholder="Aggiungi un indirizzo IP">
-                <Button theme="dark" color="blue" class="p-4 button">Aggiungi</Button>
+                <input type="text" placeholder="Aggiungi un indirizzo IP" v-model="ipToAdd">
+                <Button theme="dark" color="blue" class="p-4 button" @click="addIp()">Aggiungi</Button>
             </div>
             <div class="inner-div card-inner bg-gray-600 p-8 rounded mt-8">
                 <div class="flex" v-for="ip in ipList" v-if="ipList.length > 0">
@@ -59,24 +59,86 @@
 
         </div>
     </div>
-
-
 </template>
-
 <script>
 
 import {defineComponent} from "vue";
 import Button from "@/components/icons/Button.vue";
+import Message from "@/components/options/Message.vue";
+import {throwError, throwSuccess} from "@/global";
 
 export default defineComponent({
-    components: {Button},
+    components: {Message, Button},
     data() {
         return {
-            appList: [{iconPath: "icon", name: "Google.com", enabled: true}],
-            ipList: []
+            appList: [],
+            ipList: [],
+            ipToAdd: "",
         }
     },
+    mounted() {
+
+        this.appList = JSON.parse(localStorage.getItem("appList")) || []
+        this.ipList = JSON.parse(localStorage.getItem("ipList")) || []
+    },
     methods: {
+        addIp() {
+            let ip = this.ipToAdd.split("/")
+
+            if (this.checkIpExist(ip)) {
+                throwError("L'indirizzo IP inserito è già presente")
+                return;
+            }
+
+
+            switch (window.api.isIp(ip[0])) {
+                case 0:
+                    throwError("L'indirizzo IP inserito non è valido")
+                    return;
+                case 4:
+                    if (ip[1] > 32) {
+                        throwError("La subnet mask inserita non è valida")
+                        return;
+                    }
+                    else {
+                        this.ipToAdd = ip[0] + "/" + (ip[1] ?? "32");
+                        throwSuccess("Indirizzo IP aggiunto con successo")
+                    }
+                    break;
+                case 6:
+                    if (ip[1] > 128) {
+                        throwError("La subnet mask inserita non è valida")
+                        return;
+                    }
+                    else {
+                        this.ipToAdd = ip[0] + "/" + (ip[1] ?? "128");
+                        throwSuccess("Indirizzo IP aggiunto con successo")
+                    }
+                    break;
+            }
+            this.ipList.push({
+                ip: this.ipToAdd,
+                enabled: true
+            })
+            this.saveChange()
+            this.ipToAdd = ""
+
+
+            // Test ip:
+            //  10.0.0.1     : 4
+            //  0.0.0.0      : 4
+            //  10.0.0.1/24  : 0
+            //  ff02::1      : 6
+        },
+
+        checkIpExist(ipToCheck) {
+            for (let ip of JSON.parse(localStorage.getItem("ipList"))) {
+                if (ipToCheck[0] === ip.ip.split("/")[0]) return true;
+            }
+            return false;
+        },
+
+
         delIp(ip) {
             this.ipList.splice(this.ipList.indexOf(ip), 1)
             this.saveChange()
@@ -88,7 +150,8 @@ export default defineComponent({
 
 
         saveChange() {
-            console.log("save");
+            localStorage.setItem("appList", JSON.stringify(this.appList))
+            localStorage.setItem("ipList", JSON.stringify(this.ipList))
         }
     }
 })

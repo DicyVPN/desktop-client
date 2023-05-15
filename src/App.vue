@@ -1,13 +1,22 @@
+
 <template>
     <RouterView/>
+    <Message :type="message.type" :text="message.text" v-if="message.show"/>
 </template>
 
 <script>
 import {useCurrentServerStore} from "@/stores/currentServer";
 import {RouterView} from 'vue-router'
+import Message from "@/components/options/Message.vue";
+import {message} from "@/global";
 
 export default {
-    components: {RouterView},
+    components: {Message, RouterView},
+    data() {
+        return {
+            message
+        }
+    },
     setup() {
         const currentServer = useCurrentServerStore();
         return {
