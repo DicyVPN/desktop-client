@@ -164,7 +164,7 @@ export default defineComponent({
 }
 
 .option-card {
-    @apply bg-gray-700 p-8 rounded;
+    @apply bg-gray-700 p-8 rounded shadow-lg;
 }
 
 .card-inner::-webkit-scrollbar {

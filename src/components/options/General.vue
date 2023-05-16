@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <p>General</p>
+  <div class="flex-1 flex justify-center text-gray-200">Le impostazioni arriveranno a breve</div>
 </template>
 
 <style scoped>
