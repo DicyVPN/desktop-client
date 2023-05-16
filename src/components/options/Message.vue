@@ -6,6 +6,7 @@
 </template>
 <script>
 import {message} from "@/global";
+
 export default {
     name: 'Message',
     data() {
