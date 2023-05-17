@@ -7,7 +7,7 @@
 
 <script setup>
 import StatusCard from "@/components/home/sidebar/StatusCard.vue";
-import ServerListCard from "@/components/home/sidebar/serverList/ServerListCard.vue";
+import ServerListCard from "@/components/home/sidebar/serverList/ServerCardList.vue";
 </script>
 
 <script>
