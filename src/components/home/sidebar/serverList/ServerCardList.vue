@@ -2,9 +2,7 @@
   <div class="sidebar-card h-full w-full relative overflow-hidden">
     <div class="sidebar-card-inner p-8 h-full flex flex-col gap-8 overflow-y-auto">
       <p class="ml-8 mt-8 text-small font-light">Server Consigliati</p>
-      <div class="flex flex-col gap-y-[2px]" v-for="(serverList, country) in list.primary">
-        <Server v-for="server in serverList.sort((a, b) => a.city.localeCompare(b.city))" :city="server.city" :country="country" :id="server.id" :name="server.name" @click="connect(server.id, server.type, 'wireguard')" class="hover:bg-gray-700" protocol="wireguard" type="primary"/>
-      </div>
+        <PrimaryServers :list="list"/>
       <div>
         <p class="ml-8 text-small font-light">Altri Server</p>
         <div class="mt-8 bg-gray-600 w-full h-[1px]"></div>
@@ -17,11 +15,12 @@
   </div>
 </template>
 <script>
-import Dropdown from "@/components/home/sidebar/serverList/DropdownContent.vue"
-import Server from "@/components/home/sidebar/serverList/ServerCard.vue"
+import Dropdown from "@/components/home/sidebar/serverList/Secondary/SecondaryServer.vue"
+import PrimaryServers from "@/components/home/sidebar/serverList/Primary/PrimaryServer.vue";
+
 export default {
   name: 'ServerListCard',
-  components: {Dropdown, Server},
+  components: {PrimaryServers, Dropdown},
   props: {
     list: {}
   },

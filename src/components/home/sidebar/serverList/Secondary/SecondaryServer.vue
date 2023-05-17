@@ -1,28 +1,21 @@
 <template>
     <div v-for="(serverList, country) in list.secondary">
-        <CountryDropdown :country="country" @click="open(country)" :is-open="country === selectedCountry"/>
+        <DropdownTitle :country="country" @click="open(country)" :is-open="country === selectedCountry"/>
         <Transition name="expand">
             <div v-if="selectedCountry === country" class="flex flex-col gap-y-[2px]">
-                <Server v-for="server in serverList.sort((a, b) => a.city.localeCompare(b.city))"
-                        protocol="openvpn"
-                        :type="server.type"
-                        :id="server.id"
-                        :country="server.country"
-                        :city="server.city"
-                        :name="server.name"
-                />
+                <Server v-for="server in serverList.sort((a, b) => a.city.localeCompare(b.city))" protocol="openvpn" :server="server"/>
             </div>
         </Transition>
     </div>
 </template>
 <script>
-import Server from "@/components/home/sidebar/serverList/ServerCard.vue";
-import CountryDropdown from "@/components/home/sidebar/serverList/DropdownTitle.vue";
+import Server from "@/components/home/sidebar/serverList/Server.vue";
+import DropdownTitle from "@/components/home/sidebar/serverList/Secondary/Dropdown/DropdownTitle.vue";
 import {useCurrentServerStore} from "@/stores/currentServer";
 
 export default {
     name: 'Dropdown',
-    components: {CountryDropdown, Server},
+    components: {DropdownTitle, Server},
     props: {
         list: {
             type: Object,

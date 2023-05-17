@@ -39,15 +39,14 @@ const api = {
      * Check if directory exists or program is installed and redirect to correct start function based on protocol
      *  @param id - id of the server
      *  @param type - type of the server (Primary or Secondary)
-     *  @param protocol - protocol of the server (openvpn or wireguard)
      */
-    async startVPN(id: number, type: string, protocol: string) {
+    async startVPN(id: number, type: string) {
         //TODO: Check if wiresock or openvpn is installed
 
         await api.stopVPN()
 
         api.makePath();
-        (protocol == 'openvpn') ? await api.startOpenVPN(id, type) : api.startWireGuard(id, type)
+        (type == 'secondary') ? await api.startOpenVPN(id, type) : api.startWireGuard(id, type)
     },
 
     /** Make path when config is saved */
@@ -66,6 +65,7 @@ const api = {
         let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({"type": type, "protocol": "openvpn"}))
             .then((r) => r.json()).catch((e) => {
                 console.error(e);
+                return null;
             })
 
         const config = gen(con.serverIp, con.ports.tcp[0], 'tcp')

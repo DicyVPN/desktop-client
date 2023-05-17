@@ -39,6 +39,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {useCurrentServerStore} from "@/stores/currentServer";
 import {useInformationStore} from "@/stores/information";
 import {refreshIp} from "@/assets/api";
+import {throwError} from "@/global";
 
 export default {
     name: 'Status',
@@ -78,16 +79,13 @@ export default {
                     })
                     setTimeout(() => this.refreshIp(), 2000)
                 })
-
-
             } else {
-                window.api.startVPN(this.currentServer.serverTag, this.currentServer).then(() => {
-                    this.currentServer.$patch({
-                        connected: true,
-                    })
-
-                    setTimeout(() => this.refreshIp(), 2000)
-                })
+                try {
+                    window.api.startVPN(this.currentServer.id, this.currentServer.type, this.currentServer.protocol)
+                }catch (e) {
+                    console.debug(e)
+                    throwError("Errore durante la connessione al server")
+                }
 
             }
         },
@@ -98,7 +96,7 @@ export default {
                 })
             })
         }
-    }
+    },
 }
 </script>
 
