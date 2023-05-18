@@ -93,9 +93,6 @@ export default {
                         let refreshTokenId = ""
                         let accountId = ""
 
-                        console.log(res.headers)
-
-
                         try {
                             const [, payload] = token.split(".");
                             const json = JSON.parse(atob(payload));

@@ -1,6 +1,6 @@
 const apiUrl = "https://api.dicyvpn.com"
 
-export function apiGet(path: string, shouldRefreshToken = true): Promise<Response>{
+export function apiGet(path: string, shouldRefreshToken = true): Promise<Response> {
     return fetch(apiUrl + path, {
         method: 'GET',
         headers: getHeaders()
@@ -13,7 +13,8 @@ export function apiGet(path: string, shouldRefreshToken = true): Promise<Respons
         return res
     })
 }
-export function apiPost(path: string, body: any, shouldRefreshToken = true): Promise<Response>{
+
+export function apiPost(path: string, body: any, shouldRefreshToken = true): Promise<Response> {
     return fetch(apiUrl + path, {
         method: 'POST',
         body: body,
@@ -62,23 +63,35 @@ function getHeaders() {
 }
 
 function getRefreshToken(): string {
-    return JSON.parse(localStorage.getItem("token")  || "{}").refreshToken
+    return JSON.parse(localStorage.getItem("token") || "{}").refreshToken
 }
 
 
- function getToken(): string {
-     return JSON.parse(localStorage.getItem("token") || "{}").token
- }
- function getAccountId(): string {
-     return JSON.parse(localStorage.getItem("token")  || "{}").accountId
- }
- function getRefreshTokenId(): string {
-     return JSON.parse(localStorage.getItem("token")  || "{}").refreshTokenId
- }
+function getToken(): string {
+    return JSON.parse(localStorage.getItem("token") || "{}").token
+}
 
- function setNewToken(token: string) {
-     localStorage.setItem("token", JSON.stringify({token: token, refreshToken: getRefreshToken(), refreshTokenId: getRefreshTokenId(), accountId: getAccountId()} ))
- }
+function getAccountId(): string {
+    return JSON.parse(localStorage.getItem("token") || "{}").accountId
+}
+
+function getRefreshTokenId(): string {
+    return JSON.parse(localStorage.getItem("token") || "{}").refreshTokenId
+}
+
+export function getPrivateKey(): string {
+    return JSON.parse(localStorage.getItem("token") || "{}").privateKey
+}
+
+function setNewToken(token: string) {
+    localStorage.setItem("token", JSON.stringify({
+        token: token,
+        refreshToken: getRefreshToken(),
+        refreshTokenId: getRefreshTokenId(),
+        accountId: getAccountId(),
+        privateKey: getPrivateKey()
+    }))
+}
 
 export async function refreshIp() {
     let ip = '';

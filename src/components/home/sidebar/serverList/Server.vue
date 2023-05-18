@@ -21,7 +21,7 @@ export default {
     },
     methods: {
         connect() {
-            window.api.startVPN(this.server.id, this.server.type).then(() => {
+            window.api.startVPN(this.server.id, this.server.type, this.server.name).then(() => {
                 this.currentServer.$patch({
                         connected: true,
                         id: this.server.id,

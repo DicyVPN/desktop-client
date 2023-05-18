@@ -1,4 +1,4 @@
-export function gen(ip: string, port: number, protocol: string) : string {
+export function genOpenVPN(ip: string, port: number, protocol: string) : string {
     return `client
 dev tun
 remote ${ip} ${port} ${protocol}
@@ -55,3 +55,20 @@ Nqxoy1tXLIfKApc8CQ==
 </ca>`
 
 }
+
+export function genWireGuard(ip:string, port:number, privateKey:string, publicKey: string, internalIp: string) : string {
+    return `
+    [Interface]
+    PrivateKey = ${privateKey}
+    Address = ${internalIp}/32
+    DNS = 1.1.1.1, 1.0.0.1
+
+    [Peer]
+    PublicKey = ${publicKey}
+    AllowedIPs = 0.0.0.0/1, 128.0.0.0/1
+    Endpoint = ${ip}:${port}
+    PersistentKeepalive = 15`
+}
+
+
+

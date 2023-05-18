@@ -15,8 +15,8 @@
   </div>
 </template>
 <script>
-import Dropdown from "@/components/home/sidebar/serverList/Secondary/SecondaryServer.vue"
-import PrimaryServers from "@/components/home/sidebar/serverList/Primary/PrimaryServer.vue";
+import Dropdown from "@/components/home/sidebar/serverList/secondary/SecondaryServer.vue"
+import PrimaryServers from "@/components/home/sidebar/serverList/primary/PrimaryServer.vue";
 
 export default {
   name: 'ServerListCard',
