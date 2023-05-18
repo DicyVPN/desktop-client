@@ -20,12 +20,17 @@ let lastTag = "";
 ipcRenderer.on("disconnect", async () => {
     console.log("Received disconnect event")
     await api.stopVPN()
-    console.log("Stopped VPN")
+
 })
 
 ipcRenderer.on("connect-preload", () => {
-    //api.startVPN(lastTag).then()
-    console.log(lastTag)
+    // @ts-ignore
+    let currentServer = JSON.parse(localStorage.getItem('currentServer'))
+
+    let id : number = Number(currentServer.id)
+    let type : string = currentServer.type
+
+    api.startVPN(id, type).then(r => console.log(r))
 })
 
 

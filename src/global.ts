@@ -1,5 +1,6 @@
 import { reactive } from "vue";
 
+
 export let message = reactive({
     text: '',
     type: 'info',
@@ -26,6 +27,11 @@ export function throwSuccess(text: string){
         message.show = false
     }, 3000)
 }
+
+
+export let connectionTime : any = reactive({
+    time: 0
+})
 
 
 
