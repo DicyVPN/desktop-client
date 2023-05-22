@@ -4,6 +4,8 @@ import {electronApp, optimizer, is} from '@electron-toolkit/utils'
 import * as electron from "electron";
 import windowStateKeeper from "electron-window-state";
 import fs from "fs";
+import {apiPost} from "../../src/assets/api";
+import {getCurrentServer} from "../../src/assets/storageUtils";
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
@@ -135,11 +137,19 @@ app.on('before-quit', () => {
 })
 
 /** Stop VPN */
-ipcMain.on('disconnect', () => {
+ipcMain.on('disconnect', async () => {
     const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
     const appDataPath = appData + "/DicyVPN"
 
-
+    const currentServer = getCurrentServer()
+    try {
+        await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
+            "type": currentServer.type,
+            "protocol": currentServer.protocol
+        }))
+    } catch (e) {
+        console.error(e)
+    }
 
     if (!fs.existsSync(appDataPath + '/pid.pid')) return;
 

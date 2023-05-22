@@ -23,22 +23,24 @@ export default {
     data() {
         return {
             latency: 0,
-            intervalId: null,
+            intervalIp: null,
+            intervalPing: null,
+            intervalTimer: null,
             connectionTime,
-            uptime: 0
+            uptime: ""
         }
     },
     mounted() {
         this.getPing();
-        this.intervalId = setInterval(this.getPing, 3000);
+        this.intervalPing = setInterval(this.getPing, 4000);
+        this.intervalTimer = setInterval(() => this.uptime = this.refreshTime(), 1000);
 
-        setInterval(() => {
-            this.refreshIp()
-            this.uptime = this.refreshTime()
-        }, 2000)
+        this.intervalIp = setInterval(this.refreshIp, 10000)
     },
     unmounted() {
-        clearInterval(this.intervalId);
+        clearInterval(this.intervalPing);
+        clearInterval(this.intervalTimer);
+        clearInterval(this.intervalIp);
     },
     methods: {
         getPing() {
@@ -84,9 +86,12 @@ export default {
         "currentServer.connected"(value) {
             refreshIp()
 
-            if (value === true) {
+            if (value) {
                 this.connectionTime.time = new Date().getTime();
             } else {
+                this.information.$patch({
+                    ip: "non disponibile"
+                });
                 this.connectionTime.time = 0;
             }
         }

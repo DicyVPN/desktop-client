@@ -68,9 +68,7 @@ const api = {
      * */
     async startOpenVPN(id: number, type: string) {
         let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({"type": type, "protocol": "openvpn"}))
-            .then((r) => r.json()).catch((e) => {
-                console.error(e);
-            })
+            .then((r) => r.json())
 
         const config = genOpenVPN(con.serverIp, con.ports.openvpn.tcp[0], 'tcp')
         fs.writeFileSync(appDataPath + '/OpenVPN/config.ovpn', config)
