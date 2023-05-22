@@ -1,7 +1,8 @@
 <template>
     <div class="card" @click="connect()">
         <p class="server-city-name">{{ server.city }}</p>
-        <div class="flex justify-end gap-8">
+        <div class="flex justify-end gap-8 items-center">
+            <LoadIndicator :load="server.load"/>
             <p class="location-text text-tiny">{{ server.name }}</p>
             <Flag :small="true" :country="server.country"/>
         </div>
@@ -11,9 +12,10 @@
 import Flag from "@/components/icons/Flag.vue";
 import {useCurrentServerStore} from "@/stores/currentServer";
 import {throwError} from "@/global";
+import LoadIndicator from "@/components/home/sidebar/serverList/LoadIndicator.vue";
 
 export default {
-    components: {Flag},
+    components: {LoadIndicator, Flag},
     props: {
         server: {
             type: Object,

@@ -1,5 +1,6 @@
 const dim = {
     0: '0', // 0px
+    1: '0.0625rem', // 1px
     2: '0.125rem', // 2px
     4: '0.25rem', // 4px
     8: '0.5rem', // 8px
@@ -82,7 +83,13 @@ const tailwindcss = {
                 900: 'hsl(102, 88%, 10%)'
             },
             'bright-green': 'hsl(102, 100%, 54%)',
-            'sky-blue': 'hsl(192, 95%, 65%)'
+            'sky-blue': 'hsl(192, 95%, 65%)',
+            'load' : {
+                red: 'hsl(352,60%,46%)',
+                orange: 'hsl(24,78%,54%)',
+                yellow: 'hsl(47,71%,43%)',
+                green: 'hsl(101,75%,30%)',
+            }
         },
         spacing: dim,
         boxShadow: {
@@ -103,6 +110,10 @@ const tailwindcss = {
 
             minWidth: dim,
             maxWidth: dim,
+
+            borderRadius: {
+                xsm: '0.0625rem'
+            }
         }
     }
 };
