@@ -3,12 +3,11 @@ import {electronAPI} from '@electron-toolkit/preload'
 
 // @ts-ignore
 import ping from 'ping'
-import {getChild, setChild} from "./childProcess";
 import * as fs from "fs";
 import * as electron from "electron";
-import {apiGet, apiPost, getPrivateKey, refreshIp} from "../../src/assets/api";
+import {apiPost, getPrivateKey, refreshIp} from "../../src/assets/api";
 import {genOpenVPN, genWireGuard} from "./configurationGenerator";
-import {exec, spawn} from "child_process";
+import {spawn} from "child_process";
 
 
 import {isIP} from "net";
