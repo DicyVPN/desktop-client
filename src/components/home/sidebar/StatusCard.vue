@@ -71,7 +71,7 @@ export default {
         }
     },
     methods: {
-        connection() {
+        async connection() {
             if (this.currentServer.connected === true) {
                 window.api.stopVPN().then(() => {
                     this.currentServer.$patch({
@@ -81,8 +81,8 @@ export default {
                 })
             } else {
                 try {
-                    window.api.startVPN(this.currentServer.id, this.currentServer.type)
-                }catch (e) {
+                    await window.api.startVPN(this.currentServer.id, this.currentServer.type)
+                } catch (e) {
                     console.debug(e)
                     throwError("Errore durante la connessione al server")
                 }

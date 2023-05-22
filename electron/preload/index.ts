@@ -51,7 +51,7 @@ const api = {
         await api.stopVPN()
 
         api.makePath();
-        (type == 'secondary') ? await api.startOpenVPN(id, type) : api.startWireGuard(id, type)
+        (type == 'secondary') ? await api.startOpenVPN(id, type) : await api.startWireGuard(id, type)
     },
 
     /** Make path when config is saved */
@@ -96,9 +96,7 @@ const api = {
      * */
     async startWireGuard(id: number, type: string) {
         const con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({"type": type, "protocol": "wireguard"}))
-            .then((r) => r.json()).catch((e) => {
-                console.error(e);
-            })
+            .then((r) => r.json())
 
         const conf = genWireGuard(con.serverIp, con.ports.wireguard.udp[0], getPrivateKey(), con.publicKey, con.internalIp)
 

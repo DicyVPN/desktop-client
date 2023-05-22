@@ -26,9 +26,9 @@ export default {
         list: {}
     },
     methods: {
-        connect(id, type) {
+        async connect(id, type) {
             try {
-                window.api.startVPN(id, type)
+                await window.api.startVPN(id, type)
             } catch (e) {
                 throwError("Errore di connessione al server, riprova")
             }
