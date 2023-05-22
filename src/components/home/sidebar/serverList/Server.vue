@@ -10,6 +10,7 @@
 <script>
 import Flag from "@/components/icons/Flag.vue";
 import {useCurrentServerStore} from "@/stores/currentServer";
+import {throwError} from "@/global";
 
 export default {
     components: {Flag},
@@ -21,16 +22,20 @@ export default {
     },
     methods: {
         connect() {
-            window.api.startVPN(this.server.id, this.server.type, this.server.name).then(() => {
-                this.currentServer.$patch({
-                        connected: true,
-                        id: this.server.id,
-                        type: this.server.type,
-                        country: this.server.country,
-                        city: this.server.city,
-                    },
-                )
-            })
+            try {
+                window.api.startVPN(this.server.id, this.server.type).then(() => {
+                    this.currentServer.$patch({
+                            connected: true,
+                            id: this.server.id,
+                            type: this.server.type,
+                            country: this.server.country,
+                            city: this.server.city,
+                        },
+                    )
+                })
+            } catch (e) {
+                throwError("Errore di connessione al server, riprova")
+            }
         }
     },
     setup() {

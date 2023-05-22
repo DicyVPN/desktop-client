@@ -81,7 +81,7 @@ export default {
                 })
             } else {
                 try {
-                    window.api.startVPN(this.currentServer.id, this.currentServer.type, this.currentServer.protocol)
+                    window.api.startVPN(this.currentServer.id, this.currentServer.type)
                 }catch (e) {
                     console.debug(e)
                     throwError("Errore durante la connessione al server")
