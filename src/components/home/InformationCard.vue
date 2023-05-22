@@ -1,14 +1,29 @@
 <template>
     <div class="bg-gray-600 p-8 rounded m-8 flex gap-4">
         <div class="flex flex-col gap-4">
-            <p class="bg-gray-800 p-4 px-8 rounded" @click="refreshIp()">IP: {{ information.ip }}</p>
-            <p class="bg-gray-800 p-4 px-8 rounded">Latenza: {{ latency }}ms</p>
+            <div class="information">
+                <p class="second-text">IP:</p>
+                <p>{{ information.ip }}</p>
+            </div>
+
+
+            <div class="information">
+                <p class="second-text">Latenza:</p>
+                <p>{{ latency }}ms</p>
+            </div>
 
         </div>
 
         <div class="flex flex-col gap-4 flex-1">
-            <p class="bg-gray-800 p-4 px-8 rounded">Up Time: {{ uptime }}</p>
-            <p class="bg-gray-800 p-4 px-8 rounded">Scaricati: 301,69 MB, Inviati: 51,15 MiB</p>
+            <div class="information">
+                <p class="second-text">Up Time:</p>
+                <p>{{ uptime }}</p>
+            </div>
+            <div class="information">
+                <p class="second-text">Scaricati:</p>
+                <p>301,69 MB, Inviati: 51,15 MiB</p>
+
+            </div>
         </div>
     </div>
 </template>
@@ -98,3 +113,12 @@ export default {
     },
 }
 </script>
+<style>
+.information {
+    @apply bg-gray-800 p-4 px-8 rounded flex gap-4;
+}
+
+.second-text {
+    @apply text-gray-300;
+}
+</style>
