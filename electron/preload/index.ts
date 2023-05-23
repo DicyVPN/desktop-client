@@ -8,18 +8,15 @@ import * as electron from "electron";
 import {apiPost, getPrivateKey, refreshIp} from "../../src/assets/api";
 import {genOpenVPN, genWireGuard} from "./configurationGenerator";
 import {spawn} from "child_process";
-
-
 import {isIP} from "net";
+import {extractIcon} from "@inithink/exe-icon-extractor";
 
 const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
 const appDataPath = appData + "/DicyVPN"
 let lastTag = "";
 
 ipcRenderer.on("disconnect", async () => {
-    console.log("Received disconnect event")
     await api.stopVPN()
-
 })
 
 ipcRenderer.on("connect-preload", () => {
@@ -137,6 +134,10 @@ const api = {
 
     isIp(ip: string) {
         return isIP(ip)
+    },
+
+    getIcon(path: string) {
+        return 'data:image/x-icon;base64,' + extractIcon(path, "large").toString('base64')
     }
 }
 

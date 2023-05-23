@@ -7,23 +7,23 @@
         <div class="option-card">
 
             <div class="flex gap-4">
-                <input type="radio" name="tunneling-options">
-                <p>Utilizza la DicyVPN solo su queste app/IP</p>
+                <input type="radio" name="tunneling-options" id="allow" :checked="getAuthorization() === 'allow'" @change="changeAuthorization('allow')">
+                <label for="allow">Utilizza la DicyVPN solo su queste app/IP</label>
             </div>
             <div class="flex gap-4">
-                <input type="radio" name="tunneling-options">
-                <p>Vieta a queste app/IP di usare la DicyVPN</p>
+                <input type="radio" name="tunneling-options" id="deny" :checked="getAuthorization() === 'deny'" @change="changeAuthorization('deny')">
+                <label for="deny">Vieta a queste app/IP di usare la DicyVPN</label>
             </div>
         </div>
 
         <div class="option-card">
             <div class="flex gap-8 items-center">
                 <span class="mr-auto">Lista Applicazioni</span>
-                <Button theme="dark" color="blue" class="p-4" @click="saveChange()">Aggiungi</Button>
+                <input class="file-input" type="file" @change="addApp"/>
             </div>
             <div class="inner-div card-inner bg-gray-600 p-8 rounded mt-8">
-                <div class="flex gap-16" v-for="app in appList" v-if="appList.length > 0">
-                    <p>{{ app.iconPath }}</p>
+                <div class="flex gap-16 items-center" v-for="app in appList" v-if="appList.length > 0">
+                    <img class="w-20 h-20" :src="getIcon(app.path)" alt="icon">
                     <p>{{ app.name }}</p>
                     <div class="ml-auto flex items-center gap-8">
                         <input type="checkbox" :checked="app.enabled">
@@ -66,22 +66,48 @@ import {defineComponent} from "vue";
 import Button from "@/components/icons/Button.vue";
 import Message from "@/components/options/Message.vue";
 import {throwError, throwSuccess} from "@/global";
+import {useSettingsStore} from "@/stores/settings";
+
 
 export default defineComponent({
     components: {Message, Button},
     data() {
         return {
+            authorization: this.getAuthorization(),
             appList: [],
             ipList: [],
             ipToAdd: "",
         }
     },
+    setup() {
+        const settings = useSettingsStore()
+        return {settings}
+    },
     mounted() {
-
         this.appList = JSON.parse(localStorage.getItem("appList")) || []
         this.ipList = JSON.parse(localStorage.getItem("ipList")) || []
     },
     methods: {
+        getAuthorization() {
+            return this.settings.splitTunneling.authorization
+        },
+        addApp(e) {
+            let files = e.target.files
+            for (let i of files) {
+                console.log(i)
+                this.appList.push({
+                    name: i.name,
+                    path: i.path,
+                    enabled: true
+                })
+
+                window.api.getIcon(i.path)
+                this.saveChange()
+            }
+        },
+        getIcon(path) {
+            return window.api.getIcon(path)
+        },
         addIp() {
             let ip = this.ipToAdd.split("/")
 
@@ -99,8 +125,7 @@ export default defineComponent({
                     if (ip[1] > 32) {
                         throwError("La subnet mask inserita non è valida")
                         return;
-                    }
-                    else {
+                    } else {
                         this.ipToAdd = ip[0] + "/" + (ip[1] ?? "32");
                         throwSuccess("Indirizzo IP aggiunto con successo")
                     }
@@ -109,8 +134,7 @@ export default defineComponent({
                     if (ip[1] > 128) {
                         throwError("La subnet mask inserita non è valida")
                         return;
-                    }
-                    else {
+                    } else {
                         this.ipToAdd = ip[0] + "/" + (ip[1] ?? "128");
                         throwSuccess("Indirizzo IP aggiunto con successo")
                     }
@@ -138,6 +162,10 @@ export default defineComponent({
             return false;
         },
 
+        changeAuthorization(authorization) {
+            this.authorization = authorization
+            this.saveChange()
+        },
 
         delIp(ip) {
             this.ipList.splice(this.ipList.indexOf(ip), 1)
@@ -150,8 +178,13 @@ export default defineComponent({
 
 
         saveChange() {
-            localStorage.setItem("appList", JSON.stringify(this.appList))
-            localStorage.setItem("ipList", JSON.stringify(this.ipList))
+            this.settings.$patch({
+                splitTunneling: {
+                    authorization: this.authorization,
+                    appList: this.appList,
+                    ipList: this.ipList
+                }
+            })
         }
     }
 })
@@ -193,4 +226,14 @@ export default defineComponent({
 .button {
     @apply min-w-[theme('spacing.80')];
 }
+
+.file-input {
+    @apply rounded cursor-pointer dark:text-gray-200  focus:bg-gray-300 dark:bg-gray-500 dark:border-gray-600 dark:placeholder-gray-200;
+}
+
+.file-input::-webkit-file-upload-button {
+    @apply bg-blue-500 rounded border-none text-white shadow-md px-4 py-2;
+}
+
+
 </style>

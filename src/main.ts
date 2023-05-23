@@ -56,6 +56,9 @@ watch(pinia.state, (state) => {
     if(state.currentServer){
         localStorage.setItem('currentServer', JSON.stringify(state.currentServer))
     }
+    if (state.settings) {
+        localStorage.setItem('settings', JSON.stringify(state.settings))
+    }
 }, {deep : true});
 
 const app = createApp(App, {
