@@ -77,6 +77,8 @@ export function genWireGuard(ip: string, port: number, privateKey: string, publi
             for (let app of splitTunneling.appList) {
                 appFilter += `${app.name},`
             }
+
+            appFilter += "dicyvpn.exe,"
         }
 
     }else if (splitTunneling.authorization === "deny") {
