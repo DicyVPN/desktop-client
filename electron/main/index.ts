@@ -137,19 +137,9 @@ app.on('before-quit', () => {
 })
 
 /** Stop VPN */
-ipcMain.on('disconnect', async () => {
+ipcMain.on('disconnect', async (currentServer) => {
     const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
     const appDataPath = appData + "/DicyVPN"
-
-    const currentServer = getCurrentServer()
-    try {
-        await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
-            "type": currentServer.type,
-            "protocol": currentServer.protocol
-        }))
-    } catch (e) {
-        console.error(e)
-    }
 
     if (!fs.existsSync(appDataPath + '/pid.pid')) return;
 

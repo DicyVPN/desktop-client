@@ -1,4 +1,4 @@
-export function genOpenVPN(ip: string, port: number, protocol: string) : string {
+export function genOpenVPN(ip: string, port: number, protocol: string): string {
     return `client
 dev tun
 remote ${ip} ${port} ${protocol}
@@ -56,7 +56,53 @@ Nqxoy1tXLIfKApc8CQ==
 
 }
 
-export function genWireGuard(ip:string, port:number, privateKey:string, publicKey: string, internalIp: string) : string {
+export function genWireGuard(ip: string, port: number, privateKey: string, publicKey: string, internalIp: string): string {
+    let ipFilter : string = "AllowedIPs = 0.0.0.0/1, 128.0.0.0/1"
+    let appFilter: string = ""
+
+    let splitTunneling = JSON.parse(localStorage.getItem("settings") || "{}").splitTunneling
+    console.log(splitTunneling.authorization === "allow")
+
+    if (splitTunneling.authorization === "allow") {
+        if (splitTunneling.ips.length > 0) {
+            ipFilter = "AllowedIPs = "
+            for (let ip of splitTunneling.ips) {
+                ipFilter += `${ip},`
+            }
+
+        }
+
+        if (splitTunneling.appList.length > 0) {
+            appFilter = "AllowedApps = "
+            for (let app of splitTunneling.appList) {
+                appFilter += `${app.name},`
+            }
+        }
+
+    }else if (splitTunneling.authorization === "deny") {
+        if (splitTunneling.ips.length > 0) {
+            ipFilter = "DisallowedIPs = "
+            for (let ip of splitTunneling.ips) {
+                ipFilter += `${ip},`
+            }
+
+        }
+
+        if (splitTunneling.appList.length > 0) {
+            appFilter = "DisallowedApps = "
+            for (let app of splitTunneling.appList) {
+
+                //non devo mettere la virgola all'ultimo elemento
+                appFilter += `${app.name},`
+
+            }
+        }
+    }
+
+    console.log(appFilter)
+    appFilter = appFilter.substring(0,appFilter.length-1);
+    console.log(appFilter)
+
     return `
     [Interface]
     PrivateKey = ${privateKey}
@@ -65,9 +111,10 @@ export function genWireGuard(ip:string, port:number, privateKey:string, publicKe
 
     [Peer]
     PublicKey = ${publicKey}
-    AllowedIPs = 0.0.0.0/1, 128.0.0.0/1
     Endpoint = ${ip}:${port}
-    PersistentKeepalive = 15`
+    ${ipFilter}
+    PersistentKeepalive = 15
+    ${appFilter}`
 }
 
 

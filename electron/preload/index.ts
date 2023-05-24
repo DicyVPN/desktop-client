@@ -10,6 +10,7 @@ import {genOpenVPN, genWireGuard} from "./configurationGenerator";
 import {spawn} from "child_process";
 import {isIP} from "net";
 import {extractIcon} from "@inithink/exe-icon-extractor";
+import {getCurrentServer} from "../../src/assets/storageUtils";
 
 const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
 const appDataPath = appData + "/DicyVPN"
@@ -114,7 +115,18 @@ const api = {
     /** Stop VPN by sending disconnect event to main process
      * */
     async stopVPN() {
-        await ipcRenderer.send("disconnect")
+        let currentServer = getCurrentServer()
+
+        try {
+            await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
+                "type": currentServer.type,
+                "protocol": currentServer.protocol
+            }))
+        } catch (e) {
+            console.error(e)
+        }
+
+        await ipcRenderer.send("disconnect", currentServer)
     },
 
 
