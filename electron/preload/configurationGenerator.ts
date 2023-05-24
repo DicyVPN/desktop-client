@@ -80,7 +80,7 @@ export function genWireGuard(ip: string, port: number, privateKey: string, publi
         }
 
     }else if (splitTunneling.authorization === "deny") {
-        if (splitTunneling.ips.length > 0) {
+        if (splitTunneling.ipList.length > 0) {
             ipFilter = "DisallowedIPs = "
             for (let ip of splitTunneling.ips) {
                 ipFilter += `${ip},`
@@ -99,9 +99,8 @@ export function genWireGuard(ip: string, port: number, privateKey: string, publi
         }
     }
 
-    console.log(appFilter)
     appFilter = appFilter.substring(0,appFilter.length-1);
-    console.log(appFilter)
+    ipFilter = ipFilter.substring(0,ipFilter.length-1);
 
     return `
     [Interface]
@@ -112,8 +111,8 @@ export function genWireGuard(ip: string, port: number, privateKey: string, publi
     [Peer]
     PublicKey = ${publicKey}
     Endpoint = ${ip}:${port}
-    ${ipFilter}
     PersistentKeepalive = 15
+    ${ipFilter}
     ${appFilter}`
 }
 

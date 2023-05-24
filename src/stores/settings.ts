@@ -9,8 +9,8 @@ export const useSettingsStore = defineStore('settings', {
             options: {},
             splitTunneling: {
                 authorization : "allow",
-                apps : [],
-                ips: []
+                appList : [],
+                ipList: []
             }
         })
     },
