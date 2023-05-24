@@ -85,3 +85,17 @@ input[type="checkbox"]:checked::before {
 input[type="text"] {
     @apply rounded bg-gray-100 text-gray-600 px-8;
 }
+
+.icon-animation {
+    animation: ruota 2s infinite linear;
+}
+
+@keyframes ruota {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+

@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col gap-y-[2px]" v-for="serverList in list.primary">
-        <Server v-for="server in serverList.sort((a, b) => a.city.localeCompare(b.city))" :server="server"/>
+        <Server v-for="server in getServerList(serverList)" :server="server"/>
     </div>
 </template>
 <script>
@@ -14,6 +14,15 @@ export default {
             type: Object,
             required: true
         },
+    },
+    methods: {
+        getServerList(serverList) {
+            console.log(this.list, typeof this.list)
+            if (serverList) {
+                return serverList.sort((a, b) => a.city.localeCompare(b.city))
+            }
+            return []
+        }
     }
 }
 </script>

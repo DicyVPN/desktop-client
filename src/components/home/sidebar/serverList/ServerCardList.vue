@@ -23,7 +23,10 @@ export default {
     name: 'ServerListCard',
     components: {PrimaryServers, Dropdown},
     props: {
-        list: {}
+        list: {
+            type: Object,
+            required: true
+        }
     },
     methods: {
         async connect(id, type) {
