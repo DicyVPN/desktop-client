@@ -5,10 +5,13 @@
 </template>
 
 <script>
+import {getRefreshToken} from "@/assets/api";
+
 export default {
     name: "PlaceholderView",
     mounted() {
-        if (localStorage.getItem("token") !== null) {
+        console.log("PlaceholderView", getRefreshToken())
+        if (getRefreshToken()) {
             this.$router.push({name: "home"});
         } else {
             this.$router.push({name: "login"});

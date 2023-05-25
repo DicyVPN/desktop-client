@@ -62,7 +62,7 @@ function getHeaders() {
     };
 }
 
-function getRefreshToken(): string {
+export function getRefreshToken(): string {
     return JSON.parse(localStorage.getItem("token") || "{}").refreshToken
 }
 
