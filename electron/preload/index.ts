@@ -1,5 +1,6 @@
 import {contextBridge, ipcRenderer} from 'electron'
 import {electronAPI} from '@electron-toolkit/preload'
+import type {ElectronAPI} from '@electron-toolkit/preload'
 
 // @ts-ignore
 import ping from 'ping'
@@ -168,4 +169,13 @@ if (process.contextIsolated) {
     window.api = api
     // @ts-ignore (define in dts)
     window.ping = ping
+}
+
+declare global {
+    // noinspection JSUnusedGlobalSymbols
+    interface Window {
+        electron: ElectronAPI
+        api: typeof api
+        ping: typeof ping
+    }
 }
