@@ -8,9 +8,7 @@
 import {getRefreshToken} from "@/assets/api";
 
 export default {
-    name: "PlaceholderView",
     mounted() {
-        console.log("PlaceholderView", getRefreshToken())
         if (getRefreshToken()) {
             this.$router.push({name: "home"});
         } else {
