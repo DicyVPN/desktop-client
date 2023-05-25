@@ -7,7 +7,8 @@
             <div class="flex justify-center py-36">
                 <font-awesome-icon icon="fa-solid fa-user" class="icon bg-gray-500 rounded-full p-28 w-48 h-48"/>
             </div>
-            <div class="flex flex-col gap-y-16">
+            <form class="flex flex-col gap-y-16" @submit.prevent="login">
+                <input type="submit" hidden />
                 <div class="flex flex-col gap-y-8">
                     <p class="text-label">Email</p>
                     <input type="text" class="text-input rounded" :class="errorClass" v-model="email">
@@ -27,7 +28,7 @@
                         Accedi
                     </div>
                 </Button>
-            </div>
+            </form>
             <div class="flex flex-col gap-2">
                 <p class="bottom-link" @click="openLink('https://dicyvpn.com/register')">Crea un account</p>
                 <p class="bottom-link" @click="openLink('https://dicyvpn.com/login/request-password-reset')">Recupera la
@@ -51,7 +52,6 @@ import WorldMap from "@/components/home/map/WorldMap.vue";
 import {apiPost} from "@/assets/api";
 
 export default {
-    name: "LoginView",
     components: {WorldMap, Button, ShowIcon},
     data() {
         return {
