@@ -41,6 +41,10 @@ export default {
   &.disabled {
     @apply opacity-50 cursor-default;
   }
+
+  &:not(.disabled) {
+    cursor: pointer;
+  }
 }
 
 :slotted(:not(.override-py)) {
@@ -49,6 +53,10 @@ export default {
 
 :slotted(:not(.override-px)) {
   @apply px-16;
+}
+
+:slotted(:not(.override-width)) {
+  @apply w-full text-center;
 }
 
 .button.dark {
