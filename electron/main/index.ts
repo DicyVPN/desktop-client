@@ -1,11 +1,8 @@
-import {app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain, ipcRenderer} from 'electron'
+import {app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain} from 'electron'
 import * as path from 'path'
 import {electronApp, optimizer, is} from '@electron-toolkit/utils'
-import * as electron from "electron";
 import windowStateKeeper from "electron-window-state";
 import fs from "fs";
-import {apiPost} from "../../src/assets/api";
-import {getCurrentServer} from "../../src/assets/storageUtils";
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
@@ -17,7 +14,7 @@ function createWindow(): void {
 
     //set window dimension, title, icon and other
     mainWindow = new BrowserWindow({
-        title: "Dicy VPN",
+        title: "DicyVPN",
         show: false,
         autoHideMenuBar: true,
         x: mainWindowState.x,
@@ -37,7 +34,10 @@ function createWindow(): void {
         }
     })
     mainWindowState.manage(mainWindow);
-    mainWindow.webContents.openDevTools()
+    mainWindow.setBounds(mainWindowState); // fix scaling issue on windows
+    if (process.env.NODE_ENV === 'development') {
+        mainWindow.webContents.openDevTools()
+    }
 
     //show main window when is ready
     mainWindow.on('ready-to-show', () => {
