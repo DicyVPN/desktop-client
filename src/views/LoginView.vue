@@ -1,11 +1,11 @@
 <template>
     <div class="flex justify-center items-center min-h-screen">
-        <div class="h-full w-full overflow-hidden">
+        <div class="inset-0 overflow-hidden absolute mix-blend-overlay opacity-70">
             <img src="@/components/icons/world.svg" class="background-map h-full w-full object-cover">
         </div>
-        <div class="bg-gray-600 rounded px-24 py-16 w-320 flex flex-col gap-16 absolute">
+        <div class="bg-gray-600 rounded px-24 py-16 w-320 flex flex-col gap-16 z-10">
             <div class="flex justify-center py-36">
-                <font-awesome-icon icon="fa-solid fa-user" class="icon bg-gray-500 rounded-full p-28 w-48 h-48"/>
+                <font-awesome-icon icon="fa-solid fa-user" class="bg-gray-500 text-blue-100 rounded-full p-28 w-48 h-48 shadow-4"/>
             </div>
             <form class="flex flex-col gap-y-16" @submit.prevent="login">
                 <input type="submit" hidden />
@@ -17,7 +17,7 @@
                 <div class="flex flex-col gap-y-8">
                     <p class="text-label">Password</p>
                     <div class="flex items-stretch justify-end" :class="errorClass">
-                        <input :type="type" class="rounded-l text-input" v-model="password">
+                        <input :type="type" class="rounded-l text-input password" v-model="password">
                         <div class="show">
                             <ShowIcon :show="show" @click="toggle" class="text-gray-400 top-20%"/>
                         </div>
@@ -34,7 +34,7 @@
                 <p class="bottom-link" @click="openLink('https://dicyvpn.com/login/request-password-reset')">Recupera la
                     password</p>
             </div>
-            <div class="flex mt-64 gap-8">
+            <div class="flex mt-64 gap-8 justify-center">
                 <img src="@/assets/outh2/btn_google.svg" alt="logo">
                 <img src="@/assets/outh2/btn_github.svg" alt="logo">
                 <img src="@/assets/outh2/btn_twitter.svg" alt="logo">
@@ -138,13 +138,15 @@ export default {
     @apply w-full h-36 bg-gray-100 text-gray-600 px-16;
 }
 
+.text-input.password {
+    @apply rounded-r-none
+}
+
 .show {
-    border-radius: 0 3px 3px 0;
-    @apply bg-gray-900 w-[2.5rem] flex items-center justify-center
+    @apply bg-gray-900 w-[2.5rem] flex items-center justify-center rounded-r
 }
 
 .bottom-link {
     @apply font-light text-gray-200 underline underline-offset-2 text-small
 }
-
 </style>

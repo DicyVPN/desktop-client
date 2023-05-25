@@ -67,11 +67,10 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 .bottom-link {
     @apply font-light text-gray-200 underline underline-offset-2 text-small flex justify-center cursor-pointer
 }
-
 
 .bottom-link:hover {
     @apply text-gray-100
