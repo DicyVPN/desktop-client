@@ -34,7 +34,10 @@ function createWindow(): void {
         }
     })
     mainWindowState.manage(mainWindow);
-    mainWindow.setBounds(mainWindowState); // fix scaling issue on windows
+    if (typeof mainWindowState.x === 'number' && typeof mainWindowState.y == 'number') {
+        mainWindow.setBounds(mainWindowState); // fix scaling issue on windows
+    }
+
     if (process.env.NODE_ENV === 'development') {
         mainWindow.webContents.openDevTools()
     }
