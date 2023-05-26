@@ -42,6 +42,13 @@
                 <img src="@/assets/oauth2/btn_reddit.svg" alt="logo">
             </div>
         </div>
+        <dialog ref="dialog" class="rounded shadow-4 p-24">
+            <p>{{ dialogMessage }}</p>
+            <div class="flex gap-12 mt-12 justify-end">
+                <button class="font-semibold text-gray-500 hover:text-gray-700" @click="$refs.dialog.close()">Chiudi</button>
+                <Button size="normal" color="blue" theme="dark" @click="openLink(dialogLink)"><span>{{ dialogLinkText }}</span></Button>
+            </div>
+        </dialog>
     </div>
 </template>
 
@@ -61,6 +68,9 @@ export default {
             email: "",
             errorClass: "",
             loading: false,
+            dialogMessage: "",
+            dialogLink: "",
+            dialogLinkText: "",
         };
     },
     methods: {
@@ -79,11 +89,29 @@ export default {
                 isDevice: true
             }), false)
                 .then(
-                    (res) => {
+                    async (res) => {
                         this.loading = false
                         if (res.status === 400 || res.status === 401) {
                             this.errorClass = "border-red-400 border-2 rounded"
                             return
+                        }
+
+                        if (!res.ok) {
+                            const data = await res.json();
+                            switch (data.reply.code) {
+                                case "NO_SUBSCRIPTION":
+                                    this.dialogMessage = "Non hai un abbonamento attivo"
+                                    this.dialogLink = "https://dicyvpn.com/prices"
+                                    this.dialogLinkText = "Vedi gli abbonamenti"
+                                    this.$refs.dialog.showModal()
+                                    return
+                                case "DEVICES_LIMIT_REACHED":
+                                    this.dialogMessage = "Hai raggiunto il limite di dispositivi"
+                                    this.dialogLink = "https://dicyvpn.com/account"
+                                    this.dialogLinkText = "Controlla la lista dei dispositivi"
+                                    this.$refs.dialog.showModal()
+                                    return
+                            }
                         }
 
 
@@ -148,5 +176,9 @@ export default {
 
 .bottom-link {
     @apply font-light text-gray-200 underline underline-offset-2 text-small
+}
+
+dialog::backdrop {
+    @apply bg-gray-900 bg-opacity-70
 }
 </style>
