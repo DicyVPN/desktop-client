@@ -36,6 +36,7 @@ export default {
                     )
                 })
             } catch (e) {
+                console.error(e);
                 throwError("Errore di connessione al server, riprova")
             }
         }

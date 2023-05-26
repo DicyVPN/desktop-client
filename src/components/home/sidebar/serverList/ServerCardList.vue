@@ -39,6 +39,7 @@ export default {
             try {
                 await window.api.startVPN(id, type)
             } catch (e) {
+                console.error(e);
                 throwError("Errore di connessione al server, riprova")
             }
         },
