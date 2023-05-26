@@ -30,10 +30,6 @@
     @apply text-gray-200;
 }
 
-.shadow-personal {
-    @apply bg-gradient-to-b from-transparent via-transparent to-gray-900 rounded pointer-events-none;
-}
-
 .location-text {
     @apply text-gray-300 font-mono;
 }
