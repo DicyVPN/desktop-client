@@ -35,11 +35,11 @@
                     password</p>
             </div>
             <div class="flex mt-64 gap-8 justify-center">
-                <img src="@/assets/outh2/btn_google.svg" alt="logo">
-                <img src="@/assets/outh2/btn_github.svg" alt="logo">
-                <img src="@/assets/outh2/btn_twitter.svg" alt="logo">
-                <img src="@/assets/outh2/btn_facebook.svg" alt="logo">
-                <img src="@/assets/outh2/btn_reddit.svg" alt="logo">
+                <img src="@/assets/oauth2/btn_google.svg" alt="logo">
+                <img src="@/assets/oauth2/btn_github.svg" alt="logo">
+                <img src="@/assets/oauth2/btn_twitter.svg" alt="logo">
+                <img src="@/assets/oauth2/btn_facebook.svg" alt="logo">
+                <img src="@/assets/oauth2/btn_reddit.svg" alt="logo">
             </div>
         </div>
     </div>
