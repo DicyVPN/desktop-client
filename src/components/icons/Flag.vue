@@ -19,7 +19,7 @@ export default {
     }
   }
 }
-</script>d
+</script>
 <style scoped>
 .flag {
   height: 1.125rem; /* 18px */
