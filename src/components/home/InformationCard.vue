@@ -16,7 +16,7 @@
 
         <div class="flex flex-col gap-4 flex-1">
             <div class="information">
-                <p class="second-text">Up Time:</p>
+                <p class="second-text">Uptime:</p>
                 <p>{{ uptime }}</p>
             </div>
             <div class="information">
