@@ -11,38 +11,13 @@ import ServerListCard from "@/components/home/sidebar/serverList/ServerCardList.
 </script>
 
 <script>
-import {apiGet} from "@/assets/api";
 
 export default {
-    data() {
-        return {
-            isOpen: false,
-        }
-    },
     props: {
         list: {
             type: Object,
             required: true
         },
-    },
-    methods: {
-        toggle() {
-            this.isOpen = !this.isOpen;
-        }
     }
 }
 </script>
-<style>
-.expand-enter-active,
-.expand-leave-active {
-    transition: all 0.2s;
-    height: 100%;
-}
-
-.expand-enter-from,
-.expand-leave-to {
-    opacity: 0;
-    height: 0;
-}
-</style>
-
