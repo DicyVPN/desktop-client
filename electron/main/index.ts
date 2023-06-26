@@ -109,6 +109,7 @@ function trayMaker() {
     tray = new Tray(img);
     tray.setToolTip("DicyVPN")
     tray.setContextMenu(contextMenu())
+    tray.on('double-click', focusWindow)
 
     return tray
 }
@@ -117,15 +118,7 @@ function trayMaker() {
 function contextMenu() {
     return Menu.buildFromTemplate([
         {
-            label: 'Apri', click: () => {
-                if (mainWindow != null) {
-                    mainWindow.focus();
-                    ipcMain.emit('disconnect')
-
-                } else {
-                    createWindow();
-                }
-            }
+            label: 'Apri', click: focusWindow
         },
         {
             label: connectionBottom, click: () => {
@@ -134,6 +127,21 @@ function contextMenu() {
         },
         {label: 'Close', role: "quit"},
     ])
+}
+
+function focusWindow() {
+    if (mainWindow != null) {
+        mainWindow.minimize(); // workaround for windows not bringing window to front on focus
+        mainWindow.restore();
+        mainWindow.focus();
+        app.focus({
+            steal: true
+        });
+        ipcMain.emit('disconnect') // What? Why?
+
+    } else {
+        createWindow();
+    }
 }
 
 app.on('window-all-closed', () => {
