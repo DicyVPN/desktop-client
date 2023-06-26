@@ -8,6 +8,10 @@ let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
 
 
+const DEFAULT_WIDTH = 900;
+
+const DEFAULT_HEIGHT = 670;
+
 /** window creation */
 function createWindow(): void {
     console.log(mainWindowState.x, mainWindowState.y, mainWindowState.width, mainWindowState.height);
@@ -21,6 +25,8 @@ function createWindow(): void {
         y: mainWindowState.y,
         width: mainWindowState.width,
         height: mainWindowState.height,
+        minWidth: DEFAULT_WIDTH,
+        minHeight: DEFAULT_HEIGHT,
         ...(process.platform === 'linux'
             ? {
                 icon: path.join(__dirname, '../../build/icon.png')
@@ -76,8 +82,8 @@ app.whenReady().then(() => {
     })
 
     mainWindowState = windowStateKeeper({
-        defaultWidth: 900,
-        defaultHeight: 670
+        defaultWidth: DEFAULT_WIDTH,
+        defaultHeight: DEFAULT_HEIGHT
     });
 
     createWindow()
