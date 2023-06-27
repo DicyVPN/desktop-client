@@ -2,27 +2,28 @@
     <div class="bg-gray-600 p-8 rounded m-8 flex gap-4">
         <div class="flex flex-col gap-4">
             <div class="information">
-                <p class="second-text">IP:</p>
-                <p>{{ information.ip }}</p>
+                <p class="info-label">IP:</p>
+                <p class="info-value">{{ ip }}</p>
             </div>
 
 
             <div class="information">
-                <p class="second-text">Latenza:</p>
-                <p>{{ latency }}ms</p>
+                <p class="info-label">Latenza:</p>
+                <p class="info-value">{{ latency }}ms</p>
             </div>
 
         </div>
 
         <div class="flex flex-col gap-4 flex-1">
             <div class="information">
-                <p class="second-text">Uptime:</p>
-                <p>{{ uptime }}</p>
+                <p class="info-label">Uptime:</p>
+                <p class="info-value">{{ uptime }}</p>
             </div>
             <div class="information">
-                <p class="second-text">Scaricati:</p>
-                <p>301,69 MB, Inviati: 51,15 MiB</p>
-
+                <p class="info-label">Scaricati:</p>
+                <p class="info-value">301,69 MB</p>
+                <p class="info-label">Inviati:</p>
+                <p class="info-value">51,15 MiB</p>
             </div>
         </div>
     </div>
@@ -111,6 +112,11 @@ export default {
             }
         }
     },
+  computed: {
+    ip() {
+      return this.information.ip.length > 27 ? this.information.ip.substring(0, 24) + '...' : this.information.ip;
+    }
+  }
 }
 </script>
 <style>
@@ -118,7 +124,16 @@ export default {
     @apply bg-gray-800 p-4 px-8 rounded flex gap-4;
 }
 
-.second-text {
+.info-label {
     @apply text-gray-300;
+}
+
+.info-value {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: all;
 }
 </style>
