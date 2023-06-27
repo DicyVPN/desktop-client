@@ -11,6 +11,25 @@
     "build:mac": "npm run prebuild && electron-builder --mac --config",
     "build:linux": "npm run prebuild && electron-builder --linux --config"
   },
+  "build": {
+    "appId": "com.dicyvpn",
+    "productName": "DicyVPN",
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "DicyVPN",
+      "artifactName": "${productName}-${version}.${ext}",
+      "allowElevation": true
+    }
+  },
   "dependencies": {
     "@electron-toolkit/preload": "^1.0.3",
     "@electron-toolkit/utils": "^1.0.2",
