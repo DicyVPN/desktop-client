@@ -1,16 +1,14 @@
+import * as fs from "fs";
+import {spawn} from "child_process";
+import {isIP} from "net";
+import ping from 'ping'
+import * as electron from "electron";
 import {contextBridge, ipcRenderer} from 'electron'
 import {electronAPI} from '@electron-toolkit/preload'
 import type {ElectronAPI} from '@electron-toolkit/preload'
-
-// @ts-ignore
-import ping from 'ping'
-import * as fs from "fs";
-import * as electron from "electron";
+import {extractIcon} from "@inithink/exe-icon-extractor";
 import {apiPost, getPrivateKey, refreshIp} from "../../src/assets/api";
 import {genOpenVPN, genWireGuard} from "./configurationGenerator";
-import {spawn} from "child_process";
-import {isIP} from "net";
-import {extractIcon} from "@inithink/exe-icon-extractor";
 import {getCurrentServer} from "../../src/assets/storageUtils";
 
 const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")

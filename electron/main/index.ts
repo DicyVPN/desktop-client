@@ -1,8 +1,9 @@
-import {app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain} from 'electron'
+import fs from "fs";
 import * as path from 'path'
+import {app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain} from 'electron'
 import {electronApp, optimizer, is} from '@electron-toolkit/utils'
 import windowStateKeeper from "electron-window-state";
-import fs from "fs";
+import { autoUpdater } from "electron-updater";
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
@@ -14,8 +15,6 @@ const DEFAULT_HEIGHT = 670;
 
 /** window creation */
 function createWindow(): void {
-    console.log(mainWindowState.x, mainWindowState.y, mainWindowState.width, mainWindowState.height);
-
     //set window dimension, title, icon and other
     mainWindow = new BrowserWindow({
         title: "DicyVPN",
@@ -72,6 +71,11 @@ function createWindow(): void {
         mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
     }
 
+    autoUpdater.checkForUpdatesAndNotify().then((result) => {
+        console.log("update check result:", result);
+    }).catch((err) => {
+        console.log("update check error:", err);
+    });
 }
 
 let tray: Tray;
