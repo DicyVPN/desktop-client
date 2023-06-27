@@ -8,7 +8,7 @@
         <Sidebar class="w-256" :list="serverList"/>
         <div class="include-sidebar flex flex-col flex-1">
             <div class="p-8">
-                <div class="bg-gray-600 rounded p-8">
+                <div class="bg-gray-600 rounded p-8 shadow-4">
                     <Logo/>
                 </div>
             </div>
@@ -56,9 +56,9 @@ export default {
     methods: {
         zoomController(type) {
             if (type) {
-                (this.zoom + scaleModifier > 2) ? this.zoom = 2 : this.zoom += scaleModifier;
+                (this.zoom + scaleModifier > 3) ? this.zoom = 3 : this.zoom += scaleModifier;
             } else {
-                (this.zoom - scaleModifier < 0.5) ? this.zoom = 0.5 : this.zoom -= scaleModifier
+                (this.zoom - scaleModifier < 1) ? this.zoom = 1 : this.zoom -= scaleModifier
             }
         },
     }
@@ -68,19 +68,23 @@ export default {
 <style>
 .zoom-container {
     right: 0;
-    @apply absolute flex z-20;
+    @apply absolute z-20 flex px-8 bg-gray-900/95 rounded-bl shadow-4;
 }
 
 .zoom {
-    @apply opacity-95 bg-gray-900 p-16;
+    height: 1.125rem; /* 18px */
+    cursor: pointer;
 }
 
 .zoom:hover {
     @apply bg-gray-700;
 }
 
-#ez-cookie-dialog-wrapper {
-    @apply bg-gray-900;
+.zoom:first-child {
+    @apply p-8;
 }
 
+.zoom:last-child {
+    @apply p-8;
+}
 </style>
