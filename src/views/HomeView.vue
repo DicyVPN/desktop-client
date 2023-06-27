@@ -18,7 +18,7 @@
                                        @click="zoomController(false)"/>
                     <font-awesome-icon icon="fa-solid fa-plus" class="icon zoom" @click="zoomController(true)"/>
                 </div>
-                <WorldMap class="bg-gray-800 overflow-hidden" :map-scale="zoom"/>
+                <WorldMap class="bg-gray-800 shadow-4 overflow-hidden" :map-scale="zoom"/>
             </div>
             <InformationCard/>
         </div>
