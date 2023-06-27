@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-center items-center min-h-screen">
+    <div class="flex justify-center items-center min-h-screen select-none">
         <div class="inset-0 overflow-hidden absolute mix-blend-overlay opacity-70">
             <img src="@/components/icons/world.svg" class="background-map h-full w-full object-cover">
         </div>
@@ -18,8 +18,8 @@
                     <p class="text-label">Password</p>
                     <div class="flex items-stretch justify-end" :class="errorClass">
                         <input :type="type" class="rounded-l text-input password" v-model="password">
-                        <div class="show">
-                            <ShowIcon :show="show" @click="toggle" class="text-gray-400 top-20%"/>
+                        <div class="show" @click="toggle">
+                            <ShowIcon :show="show" class="text-gray-400 top-20%"/>
                         </div>
                     </div>
                 </div>
@@ -171,7 +171,7 @@ export default {
 }
 
 .show {
-    @apply bg-gray-900 w-[2.5rem] flex items-center justify-center rounded-r
+    @apply bg-gray-900 w-[2.5rem] flex items-center justify-center rounded-r cursor-pointer
 }
 
 .bottom-link {
