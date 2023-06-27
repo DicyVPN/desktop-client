@@ -108,9 +108,7 @@ ipcMain.on('connection', () => {
 let connectionBottom: string = 'Riconetti';
 
 function trayMaker() {
-    const img = nativeImage.createFromPath(path.join(__dirname, '../../build/icon.ico'))
-
-    tray = new Tray(img);
+    tray = new Tray(path.join(__dirname, '../../public/tray-icon.ico'));
     tray.setToolTip("DicyVPN")
     tray.setContextMenu(contextMenu())
     tray.on('double-click', focusWindow)
