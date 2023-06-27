@@ -1,6 +1,6 @@
 <template>
     <div v-for="(serverList, country) in list.secondary">
-        <DropdownTitle :country="country" @click="open(country)" :is-open="country === selectedCountry"/>
+        <DropdownTitle class="cursor-pointer" :country="country" @click="open(country)" :is-open="country === selectedCountry"/>
         <Transition name="expand">
             <div v-if="selectedCountry === country" class="flex flex-col gap-y-[2px]">
                 <Server v-for="server in serverList.sort((a, b) => a.city.localeCompare(b.city))" protocol="openvpn" :server="server"/>

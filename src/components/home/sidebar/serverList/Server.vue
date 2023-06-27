@@ -1,5 +1,5 @@
 <template>
-    <div class="card" @click="connect()">
+    <div class="card cursor-pointer" @click="connect()">
         <p class="server-city-name">{{ server.city }}</p>
         <div class="flex justify-end gap-8 items-center">
             <LoadIndicator :load="server.load"/>

@@ -23,10 +23,10 @@
             </div>
             <div class="inner-div card-inner bg-gray-600 p-8 rounded mt-8">
                 <div class="flex gap-16 items-center" v-for="app in appList" v-if="appList.length > 0">
-                    <img class="w-20 h-20" :src="getIcon(app.path)" alt="icon">
+                    <img class="w-20 h-20" :src="app.icon" alt="icon">
                     <p>{{ app.name }}</p>
                     <div class="ml-auto flex items-center gap-8">
-                        <input type="checkbox" :checked="app.enabled">
+                        <input type="checkbox" v-model="app.enabled" @change="saveChange()">
                         <font-awesome-icon icon="fa-solid fa-trash" class="hover:text-red-400"
                                            @click="delApp(app.name)"/>
                     </div>
@@ -48,7 +48,7 @@
                 <div class="flex" v-for="ip in ipList" v-if="ipList.length > 0">
                     <p>{{ ip.ip }}</p>
                     <div class="ml-auto flex gap-8 items-center">
-                        <input type="checkbox" :checked="ip.enabled">
+                        <input type="checkbox" v-model="ip.enabled" @change="saveChange()">
                         <font-awesome-icon icon="fa-solid fa-trash" class="hover:text-red-400" @click="delIp(ip.ip)"/>
                     </div>
                 </div>
@@ -84,29 +84,25 @@ export default defineComponent({
         return {settings}
     },
     mounted() {
-        this.appList = JSON.parse(localStorage.getItem("appList")) || []
-        this.ipList = JSON.parse(localStorage.getItem("ipList")) || []
+        this.appList = this.settings.splitTunneling.appList;
+        this.ipList = this.settings.splitTunneling.ipList;
     },
     methods: {
         getAuthorization() {
             return this.settings.splitTunneling.authorization
         },
-        addApp(e) {
-            let files = e.target.files
+        async addApp(e) {
+            let files = e.target.files;
             for (let i of files) {
-                console.log(i)
+                console.log(i);
                 this.appList.push({
                     name: i.name,
                     path: i.path,
-                    enabled: true
-                })
-
-                window.api.getIcon(i.path)
-                this.saveChange()
+                    enabled: true,
+                    icon: await window.api.getIcon(i.path)
+                });
+                this.saveChange();
             }
-        },
-        getIcon(path) {
-            return window.api.getIcon(path)
         },
         addIp() {
             let ip = this.ipToAdd.split("/")
@@ -156,7 +152,7 @@ export default defineComponent({
         },
 
         checkIpExist(ipToCheck) {
-            for (let ip of JSON.parse(localStorage.getItem("ipList"))) {
+            for (let ip of this.ipList) {
                 if (ipToCheck[0] === ip.ip.split("/")[0]) return true;
             }
             return false;

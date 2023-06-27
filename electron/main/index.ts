@@ -1,17 +1,22 @@
-import fs from "fs";
-import * as path from 'path'
-import {app, shell, BrowserWindow, Tray, Menu, nativeImage, ipcMain} from 'electron'
-import {electronApp, optimizer, is} from '@electron-toolkit/utils'
-import windowStateKeeper from "electron-window-state";
-import { autoUpdater } from "electron-updater";
+import fs from 'fs';
+import * as path from 'path';
+import {app, shell, BrowserWindow, Tray, Menu} from 'electron';
+import * as electronRemote from '@electron/remote/main';
+import {electronApp, optimizer, is} from '@electron-toolkit/utils';
+import windowStateKeeper from 'electron-window-state';
+import {autoUpdater} from 'electron-updater';
+import * as ipc from './ipc';
+import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
 
 
 const DEFAULT_WIDTH = 900;
-
 const DEFAULT_HEIGHT = 670;
+
+electronRemote.initialize();
+ipc.registerAll();
 
 /** window creation */
 function createWindow(): void {
@@ -99,21 +104,19 @@ app.whenReady().then(() => {
     trayMaker()
 })
 
-ipcMain.on('connection', () => {
-    connectionBottom = "Disconnetti";
-    tray.setContextMenu(contextMenu())
-})
-
-
 let connectionBottom: string = 'Riconetti';
+
+export function updateTray(isConnected: boolean) {
+    connectionBottom = isConnected ? 'Disconnetti' : 'Riconetti';
+    tray.setContextMenu(contextMenu());
+}
 
 function trayMaker() {
     tray = new Tray(path.join(__dirname, '../../public/tray-icon.ico'));
-    tray.setToolTip("DicyVPN")
-    tray.setContextMenu(contextMenu())
-    tray.on('double-click', focusWindow)
-
-    return tray
+    tray.setToolTip('DicyVPN');
+    tray.setContextMenu(contextMenu());
+    tray.on('double-click', focusWindow);
+    return tray;
 }
 
 /** Create context menu for trey */
@@ -124,11 +127,11 @@ function contextMenu() {
         },
         {
             label: connectionBottom, click: () => {
-                (connectionBottom === 'Riconetti') ? mainWindow?.webContents.send("connect-preload") : mainWindow?.webContents.send("disconnect-preload")
+                (connectionBottom === 'Riconetti') ? mainWindow?.webContents.send('connect-preload') : mainWindow?.webContents.send('disconnect-preload');
             }
         },
-        {label: 'Close', role: "quit"},
-    ])
+        {label: 'Close', role: 'quit'}
+    ]);
 }
 
 function focusWindow() {
@@ -139,31 +142,40 @@ function focusWindow() {
         app.focus({
             steal: true
         });
-        ipcMain.emit('disconnect') // What? Why?
-
     } else {
         createWindow();
     }
 }
 
+app.on('browser-window-created', (_, window) => {
+    electronRemote.enable(window.webContents);
+});
+
 app.on('window-all-closed', () => {
     app.dock?.hide()
 })
 
-app.on('before-quit', () => {
-    ipcMain.emit('disconnect')
-    console.log("Emitted quit")
-})
+app.on('before-quit', async () => {
+    await stopVPN();
+});
 
-/** Stop VPN */
-ipcMain.on('disconnect', async (currentServer) => {
-    const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
-    const appDataPath = appData + "/DicyVPN"
 
-    if (!fs.existsSync(appDataPath + '/pid.pid')) return;
+
+export async function stopVPN() {
+    console.log('Closing the VPN connection');
+    await Promise.all([
+        stopVPNFromPidFile(PID_FILE_WIREGUARD),
+        stopVPNFromPidFile(PID_FILE_OPENVPN)
+    ]);
+    updateTray(false);
+    console.log('VPN connection closed');
+}
+
+function stopVPNFromPidFile(pidFile: string): Promise<void> {
+    if (!fs.existsSync(pidFile)) return Promise.resolve();
 
     return new Promise<void>((resolve, reject) => {
-        const pid = Number(fs.readFileSync(appDataPath + '/pid.pid'))
+        const pid = Number(fs.readFileSync(pidFile));
 
         try {
             process.kill(pid, 'SIGTERM');
@@ -181,13 +193,12 @@ ipcMain.on('disconnect', async (currentServer) => {
                 resolve();
             }
 
-            connectionBottom = "Riconnetti";
-            tray.setContextMenu(contextMenu())
+            connectionBottom = 'Riconnetti';
+            tray.setContextMenu(contextMenu());
 
             if ((count += 100) > 10000) {
-                reject(new Error("Timeout process kill"))
+                reject(new Error('Timeout process kill'));
             }
-        }, 100)
-    })
-})
-
+        }, 100);
+    });
+}

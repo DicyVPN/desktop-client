@@ -1,17 +1,18 @@
-import * as fs from "fs";
-import {spawn} from "child_process";
-import {isIP} from "net";
-import ping from 'ping'
-import * as electron from "electron";
-import {contextBridge, ipcRenderer} from 'electron'
-import {electronAPI} from '@electron-toolkit/preload'
-import type {ElectronAPI} from '@electron-toolkit/preload'
-import {extractIcon} from "@inithink/exe-icon-extractor";
-import {apiPost, getPrivateKey, refreshIp} from "../../src/assets/api";
-import {genOpenVPN, genWireGuard} from "./configurationGenerator";
-import {getCurrentServer} from "../../src/assets/storageUtils";
+import * as fs from 'fs';
+import {isIP} from 'net';
+import ping from 'ping';
+import * as electron from 'electron';
+import {contextBridge, ipcRenderer} from 'electron';
+import {app} from '@electron/remote';
+import {electronAPI} from '@electron-toolkit/preload';
+import type {ElectronAPI} from '@electron-toolkit/preload';
+import {apiPost, getPrivateKey, refreshIp} from '../../src/assets/api';
+import {OpenVPN} from '../main/vpn/vpn';
+import {getCurrentServer} from '../../src/assets/storageUtils';
+import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from '../main/globals';
 
-const appData = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
+
+const appData = process.env.APPDATA ?? (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
 const appDataPath = appData + "/DicyVPN"
 let lastTag = "";
 
@@ -23,8 +24,8 @@ ipcRenderer.on("connect-preload", () => {
     // @ts-ignore
     let currentServer = JSON.parse(localStorage.getItem('currentServer'))
 
-    let id : number = Number(currentServer.id)
-    let type : string = currentServer.type
+    let id: number = Number(currentServer.id)
+    let type: string = currentServer.type
 
     api.startVPN(id, type).then(r => console.log(r))
 })
@@ -40,99 +41,97 @@ const api = {
      * Check if directory exists or program is installed and redirect to correct start function based on protocol
      *  @param id - id of the server
      *  @param type - type of the server (Primary or Secondary)
-     * @param name
      */
     async startVPN(id: number, type: string) {
         //TODO: Check if wiresock or openvpn is installed
 
-        await api.stopVPN()
+        await api.stopVPN();
 
-        api.makePath();
-        (type == 'secondary') ? await api.startOpenVPN(id, type) : await api.startWireGuard(id, type)
+        (type == 'secondary') ? await api.startOpenVPN(id, type) : await api.startWireGuard(id, type);
     },
-
-    /** Make path when config is saved */
-    makePath() {
-        fs.mkdirSync(appDataPath + '/OpenVPN/', {recursive: true})
-        fs.mkdirSync(appDataPath + '/WireGuard/', {recursive: true})
-    },
-
 
     /** Start OpenVPN
      *  @param id - id of the server
      *  @param type - type of the server (Primary or Secondary)
-     * */
+     */
     async startOpenVPN(id: number, type: string) {
-        let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({"type": type, "protocol": "openvpn"}))
-            .then((r) => r.json())
+        let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'openvpn'}))
+            .then((r) => r.json());
 
-        const config = genOpenVPN(con.serverIp, con.ports.openvpn.tcp[0], 'tcp')
-        fs.writeFileSync(appDataPath + '/OpenVPN/config.ovpn', config)
-        fs.writeFileSync(appDataPath + '/OpenVPN/vpn-user', `${con.username}\n${con.password}`)
+        const openvpn = new OpenVPN(
+            con.serverIp, con.ports.openvpn.tcp[0], 'tcp',
+            con.username, con.password
+        );
 
-        let file = fs.openSync('\\\\.\\pipe\\openvpn\\service', 'r+')
+        await openvpn.start();
 
-        // @ts-ignore
-        fs.writeSync(file, Buffer.from(appDataPath + '\\OpenVPN\\\u0000--config config.ovpn --log logs.log\u0000\u0000', 'utf-16le'))
-        const buff = Buffer.alloc(1024)
-
-        fs.readSync(file, buff, 0, 1024, null)
-        // @ts-ignore
-        const output = buff.toString('utf-16le')
-        console.log()
-
-        fs.writeFileSync(appDataPath + '/pid.pid', Number(output.split('\n')[1]).toString())
-
-
-        api.isRunning()
+        api.isRunning();
     },
 
     /** Start WireGuard
      *  @param id - id of the server
      *  @param type - type of the server (Primary or Secondary)
-     * */
+     */
     async startWireGuard(id: number, type: string) {
         const con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({"type": type, "protocol": "wireguard"}))
             .then((r) => r.json())
 
-        const conf = genWireGuard(con.serverIp, con.ports.wireguard.udp[0], getPrivateKey(), con.publicKey, con.internalIp)
+        const splitTunneling = JSON.parse(localStorage.getItem("settings") || "{}").splitTunneling ?? {};
+        const ips = splitTunneling.ipList ?? [];
+        const isIpsAllowlist = splitTunneling.authorization === "allow";
+        const apps = (splitTunneling.appList ?? []).filter((app: any) => app.enabled).map((app: any) => app.name);
+        const isAppsAllowlist = splitTunneling.authorization === "allow";
 
-        fs.writeFileSync(appDataPath + `\\wireguard.conf`, conf)
-
-        const path = "C:\\Program Files\\WireSock VPN Client\\bin\\wiresock-client.exe";
-        const args = ["run", "-config", appDataPath + `\\wireguard.conf`];
-
-        const child = spawn(path, args);
-
-        // @ts-ignore
-        fs.writeFileSync(appDataPath + '/pid.pid', (child.pid).toString())
+        await ipcRenderer.invoke('connect-to-wireguard', {
+            serverIp: con.serverIp,
+            port: con.ports.wireguard.udp[0],
+            privateKey: getPrivateKey(),
+            publicKey: con.publicKey,
+            internalIp: con.internalIp,
+            ips: ips,
+            isIpsAllowlist: isIpsAllowlist,
+            apps: apps,
+            isAppsAllowlist: isAppsAllowlist
+        });
 
         await refreshIp()
     },
 
 
-    /** Stop VPN by sending disconnect event to main process
-     * */
+    /**
+     * Stop VPN by sending disconnect event to main process
+     */
     async stopVPN() {
-        let currentServer = getCurrentServer()
+        let currentServer = getCurrentServer();
 
         try {
             await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
-                "type": currentServer.type,
-                "protocol": currentServer.protocol
-            }))
+                'type': currentServer.type,
+                'protocol': currentServer.protocol
+            }));
         } catch (e) {
-            console.error(e)
+            console.error(e);
         }
 
-        await ipcRenderer.send("disconnect", currentServer)
+        await ipcRenderer.invoke('disconnect');
     },
 
 
     /** Check if VPN is running */
     isRunning() {
+        return api.isWireGuardRunning() || api.isOpenVPNRunning();
+    },
+    isWireGuardRunning() {
         try {
-            process.kill(Number(fs.readFileSync(appDataPath + '/pid.pid')), 0);
+            process.kill(Number(fs.readFileSync(PID_FILE_WIREGUARD)), 0);
+            return true;
+        } catch {
+            return false;
+        }
+    },
+    isOpenVPNRunning() {
+        try {
+            process.kill(Number(fs.readFileSync(PID_FILE_OPENVPN)), 0);
             return true;
         } catch {
             return false;
@@ -147,8 +146,10 @@ const api = {
         return isIP(ip)
     },
 
-    getIcon(path: string) {
-        return 'data:image/x-icon;base64,' + extractIcon(path, "large").toString('base64')
+    async getIcon(path: string) {
+        return await app.getFileIcon(path, {size: "large"}).then(image => {
+            return image.toDataURL()
+        });
     }
 }
 
