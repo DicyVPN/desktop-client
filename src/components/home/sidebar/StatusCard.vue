@@ -25,7 +25,7 @@
                 </div>
             </div>
 
-            <Button :color=" currentServer.connected ? 'red' : 'green'" @click="connection" :class="unknownButton">
+            <Button :color=" currentServer.connected ? 'red' : 'green'" @click="connectToLastServer" :class="unknownButton" :disabled="isConnecting">
                 <div> {{ currentServer.connected ? "Disconnetti" : "Connetti" }}</div>
             </Button>
         </div>
@@ -50,7 +50,9 @@ export default {
         Button
     },
     data() {
-        return {}
+        return {
+            isConnecting: false
+        }
     },
     computed: {
         unknownButton() {
@@ -71,8 +73,13 @@ export default {
         }
     },
     methods: {
-        async connection() {
-            if (this.currentServer.connected === true) {
+        async connectToLastServer() {
+            if (this.isConnecting) {
+                return;
+            }
+
+            this.isConnecting = true;
+            if (this.currentServer.connected) {
                 window.api.stopVPN().then(() => {
                     this.currentServer.$patch({
                         connected: false,
@@ -97,6 +104,11 @@ export default {
             })
         }
     },
+    watch: {
+        'currentServer.connected'() {
+            this.isConnecting = false;
+        }
+    }
 }
 </script>
 
