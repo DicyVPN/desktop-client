@@ -30,14 +30,16 @@ export default {
                             connected: true,
                             id: this.server.id,
                             type: this.server.type,
+                            protocol: this.server.type === 'primary' ? 'wireguard' : 'openvpn',
                             country: this.server.country,
                             city: this.server.city,
-                        },
-                    )
-                })
+                            name: this.server.name
+                        }
+                    );
+                });
             } catch (e) {
                 console.error(e);
-                throwError("Errore di connessione al server, riprova")
+                throwError('Errore di connessione al server, riprova');
             }
         }
     },

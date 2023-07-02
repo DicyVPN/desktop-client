@@ -5,7 +5,7 @@
                 <font-awesome-icon v-if="currentServer.connected" icon="fa-solid fa-check-circle"
                                    class="text-bright-green"/>
                 <font-awesome-icon v-else icon="fa-solid fa-circle-xmark" class="text-red-300"/>
-                <p class="text-small font-light">{{ currentServer.connected ? "Connesso" : "Disconnesso" }}</p>
+                <p class="text-small font-light">{{ currentServer.connected ? 'Connesso' : 'Disconnesso' }}</p>
                 <router-link to="/settings/general" class="flex items-center w-full hover:text-gray-200 outline-none">
                     <font-awesome-icon icon="fa-solid fa-gear" class="ml-auto"/>
                 </router-link>
@@ -14,20 +14,22 @@
 
             <div class="w-full h-[1px]"
                  :class="{'bg-bright-green' : currentServer.connected, 'bg-red-300' : !currentServer.connected}"></div>
-            <div class="flex w-full">
+            <div class="flex w-full" v-if="currentServer.id">
                 <p>{{ currentServer.city }}</p>
                 <div class="flex w-full justify-end">
                     <div class="flex gap-8">
-                        <p class="location-text">{{ currentServer.serverTag }}</p>
+                        <p class="location-text">{{ currentServer.name }}</p>
                         <Flag :small="false" :country="currentServer.country"/>
                     </div>
-
                 </div>
             </div>
 
-            <Button :color=" currentServer.connected ? 'red' : 'green'" @click="connectToLastServer" :class="unknownButton" :disabled="isConnecting">
-                <div> {{ currentServer.connected ? "Disconnetti" : "Connetti" }}</div>
+            <Button v-if="currentServer.id" :color=" currentServer.connected ? 'red' : 'green'" @click="connectToLastServer" :disabled="isConnecting">
+                <div> {{ currentServer.connected ? 'Disconnetti' : 'Connetti' }}</div>
             </Button>
+            <div v-else class="text-small text-gray-200 text-center">
+                Scegli un server tra quelli disponibili nella lista
+            </div>
         </div>
     </div>
 </template>
@@ -53,16 +55,6 @@ export default {
         return {
             isConnecting: false
         }
-    },
-    computed: {
-        unknownButton() {
-            if (this.currentServer.serverTag === "unknown") {
-                return "opacity-50"
-            } else {
-                return ""
-            }
-        }
-
     },
     setup() {
         const currentServer = useCurrentServerStore();

@@ -106,7 +106,7 @@ export default {
                 this.connectionTime.time = new Date().getTime();
             } else {
                 this.information.$patch({
-                    ip: "non disponibile"
+                    ip: "..."
                 });
                 this.connectionTime.time = 0;
             }

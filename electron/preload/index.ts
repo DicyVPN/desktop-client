@@ -102,15 +102,16 @@ const api = {
      * Stop VPN by sending disconnect event to main process
      */
     async stopVPN() {
-        let currentServer = getCurrentServer();
-
-        try {
-            await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
-                'type': currentServer.type,
-                'protocol': currentServer.protocol
-            }));
-        } catch (e) {
-            console.error(e);
+        const currentServer = getCurrentServer();
+        if (currentServer.connected) {
+            try {
+                await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
+                    'type': currentServer.type,
+                    'protocol': currentServer.protocol
+                }));
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         await ipcRenderer.invoke('disconnect');

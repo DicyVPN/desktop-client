@@ -7,11 +7,12 @@ export const useCurrentServerStore = defineStore('currentServer', {
             return JSON.parse(localStorage.getItem('currentServer') as string);
         return ({
             connected: false,
-            id: 'unknown',
-            type: 'unknown',
-            protocol: 'Unknown',
-            country: 'Unknown',
-            city: 'Unknown',
+            id: null,
+            type: null,
+            protocol: null,
+            country: null,
+            city: null,
+            name: null
         })
     },
 })
