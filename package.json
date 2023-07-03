@@ -43,7 +43,6 @@
     "@fortawesome/free-regular-svg-icons": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "@inithink/exe-icon-extractor": "^1.0.5",
     "electron-updater": "^6.1.1",
     "electron-window-state": "^5.0.3",
     "i18n-iso-countries": "^7.6.0",
