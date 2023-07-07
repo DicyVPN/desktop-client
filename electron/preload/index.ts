@@ -103,6 +103,7 @@ const api = {
      */
     async stopVPN() {
         const currentServer = getCurrentServer();
+        await ipcRenderer.invoke('disconnect');
         if (currentServer.connected) {
             try {
                 await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
@@ -113,8 +114,6 @@ const api = {
                 console.error(e);
             }
         }
-
-        await ipcRenderer.invoke('disconnect');
     },
 
 
