@@ -2,9 +2,11 @@
     <div>
         <div class="sidebar-card p-16 rounded grid gap-16">
             <div class="flex items-center gap-8">
-                <font-awesome-icon v-if="currentServer.connected" icon="fa-solid fa-check-circle"
-                                   class="text-bright-green"/>
-                <font-awesome-icon v-else icon="fa-solid fa-circle-xmark" class="text-red-300"/>
+                <div class="flex relative">
+                    <span v-if="isConnecting" class="animate-ping absolute h-full w-full rounded-full opacity-75" :class="{'bg-red-200': !currentServer.connected, 'bg-green-100': currentServer.connected}"></span>
+                    <font-awesome-icon v-if="currentServer.connected" icon="fa-solid fa-check-circle" class="text-bright-green"/>
+                    <font-awesome-icon v-else icon="fa-solid fa-circle-xmark" class="text-red-300"/>
+                </div>
                 <p class="text-small font-light">{{ currentServer.connected ? 'Connesso' : 'Disconnesso' }}</p>
                 <router-link to="/settings/general" class="flex items-center w-full hover:text-gray-200 outline-none">
                     <font-awesome-icon icon="fa-solid fa-gear" class="ml-auto"/>
@@ -24,7 +26,7 @@
                 </div>
             </div>
 
-            <Button v-if="currentServer.id" :color=" currentServer.connected ? 'red' : 'green'" @click="connectToLastServer" :disabled="isConnecting">
+            <Button v-if="currentServer.id || currentServer.connected" :color=" currentServer.connected ? 'red' : 'green'" @click="connectToLastServer" :disabled="isConnecting">
                 <div> {{ currentServer.connected ? 'Disconnetti' : 'Connetti' }}</div>
             </Button>
             <div v-else class="text-small text-gray-200 text-center">
