@@ -62,6 +62,8 @@ export class WireGuard implements VPN {
         } else {
             allowedIPs += '0.0.0.0/1, 128.0.0.0/1';
         }
+        // route all IPv6 traffic, prevents leaks through IPv6
+        allowedIPs += ', ::/0';
 
         let disallowedApps = 'DisallowedApps = ' + EXECUTABLE_NAME; // don't route the VPN app through the VPN
         let allowedApps = '';
