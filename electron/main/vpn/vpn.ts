@@ -4,8 +4,8 @@ import {
     DATA_PATH,
     EXECUTABLE_NAME,
     getOpenVPNServicePath,
-    getWireGuardClientPath, PID_FILE_OPENVPN,
-    PID_FILE_WIREGUARD
+    getWireGuardClientPath, DOT_LOG_OPENVPN, PID_FILE_OPENVPN,
+    PID_FILE_WIREGUARD, LOG_FILE_OPENVPN
 } from '../globals';
 
 interface VPN {
@@ -106,14 +106,25 @@ export class OpenVPN implements VPN {
 
     async start() {
         this.writeConfig();
+        this.deleteLogFile();
         const path = getOpenVPNServicePath();
         const pipe = fs.openSync(path, 'r+');
-        fs.writeSync(pipe, Buffer.from(DATA_PATH + '\\\u0000--config openvpn.ovpn --log openvpn.log\u0000\u0000', 'utf16le'));
+        fs.writeSync(pipe, Buffer.from(DATA_PATH + `\\\u0000--config openvpn.ovpn --log ${DOT_LOG_OPENVPN}\u0000\u0000`, 'utf16le'));
         const buffer = Buffer.alloc(1024);
         fs.readSync(pipe, buffer, 0, 1024, null);
         const output = buffer.toString('utf16le');
         const pid = Number(output.split('\n')[1]);
         fs.writeFileSync(PID_FILE_OPENVPN, pid.toString());
+    }
+
+    private deleteLogFile() {
+        try {
+            if (fs.existsSync(LOG_FILE_OPENVPN)) {
+                fs.unlinkSync(LOG_FILE_OPENVPN);
+            }
+        } catch (e) {
+            console.error('Failed to delete OpenVPN log file', e);
+        }
     }
 
     private writeConfig() {

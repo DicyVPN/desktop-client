@@ -27,7 +27,6 @@ export default {
             try {
                 await window.api.startVPN(this.server.id, this.server.type).then(() => {
                     this.currentServer.$patch({
-                            connected: true,
                             id: this.server.id,
                             type: this.server.type,
                             protocol: this.server.type === 'primary' ? 'wireguard' : 'openvpn',

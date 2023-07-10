@@ -14,8 +14,6 @@ export default {
         } else {
             this.$router.push({name: "login"});
         }
-
-        window.api.saveTag(JSON.parse(localStorage.getItem("currentServer") || "{}").serverTag)
     }
 }
 </script>

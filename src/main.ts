@@ -1,5 +1,7 @@
 import {createApp, watch} from 'vue'
 import {createPinia} from 'pinia'
+import type {ElectronAPI} from '@electron-toolkit/preload';
+import type {API, Ping} from '../electron/preload';
 import App from './App.vue'
 import router from './router'
 
@@ -70,3 +72,13 @@ app.use(pinia)
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.mount('#app')
+
+
+declare global {
+    // noinspection JSUnusedGlobalSymbols
+    interface Window {
+        electron: ElectronAPI;
+        api: API;
+        ping: Ping;
+    }
+}

@@ -3,11 +3,11 @@
         <div class="sidebar-card p-16 rounded grid gap-16">
             <div class="flex items-center gap-8">
                 <div class="flex relative">
-                    <span v-if="isConnecting" class="animate-ping absolute h-full w-full rounded-full opacity-75" :class="{'bg-red-200': !currentServer.connected, 'bg-green-100': currentServer.connected}"></span>
-                    <font-awesome-icon v-if="currentServer.connected" icon="fa-solid fa-check-circle" class="text-bright-green"/>
+                    <span v-if="isLoading" class="animate-ping absolute h-full w-full rounded-full opacity-75" :class="{'bg-red-200': currentServer.status !== Status.CONNECTED, 'bg-green-100': currentServer.status === Status.CONNECTED}"></span>
+                    <font-awesome-icon v-if="currentServer.status === Status.CONNECTED" icon="fa-solid fa-check-circle" class="text-bright-green"/>
                     <font-awesome-icon v-else icon="fa-solid fa-circle-xmark" class="text-red-300"/>
                 </div>
-                <p class="text-small font-light">{{ currentServer.connected ? 'Connesso' : 'Disconnesso' }}</p>
+                <p class="text-small font-light">{{ currentServer.status === Status.CONNECTED ? 'Connesso' : 'Disconnesso' }}</p>
                 <router-link to="/settings/general" class="flex items-center w-full hover:text-gray-200 outline-none">
                     <font-awesome-icon icon="fa-solid fa-gear" class="ml-auto"/>
                 </router-link>
@@ -15,7 +15,7 @@
             </div>
 
             <div class="w-full h-[1px]"
-                 :class="{'bg-bright-green' : currentServer.connected, 'bg-red-300' : !currentServer.connected}"></div>
+                 :class="{'bg-bright-green' : currentServer.status === Status.CONNECTED, 'bg-red-300' : currentServer.status !== Status.CONNECTED}"></div>
             <div class="flex w-full" v-if="currentServer.id">
                 <p>{{ currentServer.city }}</p>
                 <div class="flex w-full justify-end">
@@ -26,8 +26,10 @@
                 </div>
             </div>
 
-            <Button v-if="currentServer.id || currentServer.connected" :color=" currentServer.connected ? 'red' : 'green'" @click="connectToLastServer" :disabled="isConnecting">
-                <div> {{ currentServer.connected ? 'Disconnetti' : 'Connetti' }}</div>
+            <Button v-if="currentServer.id || currentServer.status === Status.CONNECTED"
+                    :color="currentServer.status === Status.CONNECTED || currentServer.status === Status.DISCONNECTING ? 'red' : 'green'"
+                    @click="connectToLastServer" :disabled="isLoading">
+                <div> {{ connectButtonLabel }}</div>
             </Button>
             <div v-else class="text-small text-gray-200 text-center">
                 Scegli un server tra quelli disponibili nella lista
@@ -44,6 +46,7 @@ import {useCurrentServerStore} from "@/stores/currentServer";
 import {useInformationStore} from "@/stores/information";
 import {refreshIp} from "@/assets/api";
 import {throwError} from "@/global";
+import {Status} from '../../../../electron/main/vpn/status';
 
 export default {
     name: 'Status',
@@ -53,31 +56,23 @@ export default {
         Flag,
         Button
     },
-    data() {
-        return {
-            isConnecting: false
-        }
-    },
     setup() {
         const currentServer = useCurrentServerStore();
         const information = useInformationStore();
         return {
             currentServer,
-            information
+            information,
+            Status
         }
     },
     methods: {
         async connectToLastServer() {
-            if (this.isConnecting) {
+            if (this.currentServer.status === Status.CONNECTING) {
                 return;
             }
 
-            this.isConnecting = true;
-            if (this.currentServer.connected) {
+            if (this.currentServer.status === Status.CONNECTED) {
                 window.api.stopVPN().then(() => {
-                    this.currentServer.$patch({
-                        connected: false,
-                    })
                     setTimeout(() => this.refreshIp(), 2000)
                 })
             } else {
@@ -98,9 +93,21 @@ export default {
             })
         }
     },
-    watch: {
-        'currentServer.connected'() {
-            this.isConnecting = false;
+    computed: {
+        isLoading() {
+            return this.currentServer.status === Status.CONNECTING || this.currentServer.status === Status.DISCONNECTING;
+        },
+        connectButtonLabel() {
+            switch (this.currentServer.status) {
+                case Status.CONNECTED:
+                    return 'Disconnetti';
+                case Status.CONNECTING:
+                    return 'Connessione in corso...';
+                case Status.DISCONNECTING:
+                    return 'Disconnessione...';
+                default:
+                    return 'Connetti';
+            }
         }
     }
 }

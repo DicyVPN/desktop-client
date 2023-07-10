@@ -1,12 +1,14 @@
 import fs from 'fs';
 import * as path from 'path';
-import {app, shell, BrowserWindow, Tray, Menu} from 'electron';
+import {app, BrowserWindow, Menu, shell, Tray} from 'electron';
 import * as electronRemote from '@electron/remote/main';
-import {electronApp, optimizer, is} from '@electron-toolkit/utils';
+import {electronApp, is, optimizer} from '@electron-toolkit/utils';
 import windowStateKeeper from 'electron-window-state';
 import {autoUpdater} from 'electron-updater';
 import * as ipc from './ipc';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
+import {getCurrentMonitor} from './vpn/monitor';
+import {Status} from './vpn/status';
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
@@ -44,6 +46,7 @@ function createWindow(): void {
         }
     })
     mainWindowState.manage(mainWindow);
+    // noinspection SuspiciousTypeOfGuard these values can be undefined or null
     if (typeof mainWindowState.x === 'number' && typeof mainWindowState.y == 'number') {
         mainWindow.setBounds(mainWindowState); // fix scaling issue on windows
     }
@@ -83,6 +86,12 @@ function createWindow(): void {
     });
 }
 
+export function sendToRenderer(channel: string, ...args: any[]) {
+    BrowserWindow.getAllWindows().forEach((window) => {
+        window.webContents.send(channel, ...args);
+    });
+}
+
 let tray: Tray;
 app.whenReady().then(() => {
     electronApp.setAppUserModelId('com.electron')
@@ -104,10 +113,10 @@ app.whenReady().then(() => {
     trayMaker()
 })
 
-let connectionBottom: string = 'Riconetti';
+let connectionBottom: string = 'Riconnetti';
 
 export function updateTray(isConnected: boolean) {
-    connectionBottom = isConnected ? 'Disconnetti' : 'Riconetti';
+    connectionBottom = isConnected ? 'Disconnetti' : 'Riconnetti';
     tray.setContextMenu(contextMenu());
 }
 
@@ -126,8 +135,14 @@ function contextMenu() {
             label: 'Apri', click: focusWindow
         },
         {
-            label: connectionBottom, click: () => {
-                (connectionBottom === 'Riconetti') ? mainWindow?.webContents.send('connect-preload') : mainWindow?.webContents.send('disconnect-preload');
+            label: connectionBottom, click: async () => {
+                if (connectionBottom === 'Riconnetti') {
+                    // make sure the main window is visible
+                    focusWindow();
+                    sendToRenderer('reconnect-preload');
+                } else {
+                    await stopVPN();
+                }
             }
         },
         {label: 'Close', role: 'quit'}
@@ -160,15 +175,15 @@ app.on('before-quit', async () => {
 });
 
 
-
-export async function stopVPN() {
-    console.log('Closing the VPN connection');
+export async function stopVPN(isSwitchingServer = false): Promise<void> {
+    if (!isSwitchingServer) {
+        getCurrentMonitor()?.setStatus(Status.DISCONNECTING);
+    }
     await Promise.all([
         stopVPNFromPidFile(PID_FILE_WIREGUARD),
         stopVPNFromPidFile(PID_FILE_OPENVPN)
     ]);
     updateTray(false);
-    console.log('VPN connection closed');
 }
 
 function stopVPNFromPidFile(pidFile: string): Promise<void> {
@@ -192,9 +207,6 @@ function stopVPNFromPidFile(pidFile: string): Promise<void> {
                 // the process does not exist anymore
                 resolve();
             }
-
-            connectionBottom = 'Riconnetti';
-            tray.setContextMenu(contextMenu());
 
             if ((count += 100) > 10000) {
                 reject(new Error('Timeout process kill'));

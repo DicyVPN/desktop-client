@@ -5,6 +5,9 @@ export const EXECUTABLE_NAME = 'DicyVPN.exe';
 export const PID_FILE_WIREGUARD = DATA_PATH + '/wireguard.pid';
 export const PID_FILE_OPENVPN = DATA_PATH + '/openvpn.pid';
 
+export const DOT_LOG_OPENVPN = 'openvpn.log';
+export const LOG_FILE_OPENVPN = DATA_PATH + '/' + DOT_LOG_OPENVPN;
+
 export function getWireGuardClientPath() {
     if (process.platform !== 'win32') {
         throw new Error('WireGuard is only supported on Windows');

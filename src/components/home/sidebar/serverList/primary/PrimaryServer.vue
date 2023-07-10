@@ -17,7 +17,6 @@ export default {
     },
     methods: {
         getServerList(serverList) {
-            console.log(this.list, typeof this.list)
             if (serverList) {
                 return serverList.sort((a, b) => a.city.localeCompare(b.city))
             }

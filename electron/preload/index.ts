@@ -5,48 +5,40 @@ import * as electron from 'electron';
 import {contextBridge, ipcRenderer} from 'electron';
 import {app} from '@electron/remote';
 import {electronAPI} from '@electron-toolkit/preload';
-import type {ElectronAPI} from '@electron-toolkit/preload';
 import {apiPost, getPrivateKey, refreshIp} from '../../src/assets/api';
-import {OpenVPN} from '../main/vpn/vpn';
 import {getCurrentServer} from '../../src/assets/storageUtils';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from '../main/globals';
+import {Status} from '../main/vpn/status';
 
-
-const appData = process.env.APPDATA ?? (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + "/.local/share")
-const appDataPath = appData + "/DicyVPN"
-let lastTag = "";
 
 ipcRenderer.on("disconnect", async () => {
     await api.stopVPN()
 })
 
-ipcRenderer.on("connect-preload", () => {
+ipcRenderer.on("reconnect-preload", () => {
     // @ts-ignore
     let currentServer = JSON.parse(localStorage.getItem('currentServer'))
 
-    let id: number = Number(currentServer.id)
-    let type: string = currentServer.type
+    let id = currentServer.id;
+    let type = currentServer.type
 
     api.startVPN(id, type).then(r => console.log(r))
 })
 
-
 const api = {
-    saveTag(tag: string) {
-        lastTag = tag;
+    on(channel: string, listener: (event: electron.IpcRendererEvent, ...args: any[]) => void) {
+        ipcRenderer.on(channel, listener);
     },
-
-
+    removeListener(channel: string, listener: (...args: any[]) => void) {
+        ipcRenderer.removeListener(channel, listener);
+    },
     /**
      * Check if directory exists or program is installed and redirect to correct start function based on protocol
      *  @param id - id of the server
      *  @param type - type of the server (Primary or Secondary)
      */
-    async startVPN(id: number, type: string) {
+    async startVPN(id: string, type: string) {
         //TODO: Check if wiresock or openvpn is installed
-
-        await api.stopVPN();
-
         (type == 'secondary') ? await api.startOpenVPN(id, type) : await api.startWireGuard(id, type);
     },
 
@@ -54,33 +46,36 @@ const api = {
      *  @param id - id of the server
      *  @param type - type of the server (Primary or Secondary)
      */
-    async startOpenVPN(id: number, type: string) {
+    async startOpenVPN(id: string, type: string) {
+        await ipcRenderer.invoke('before-connect');
+
         let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'openvpn'}))
             .then((r) => r.json());
 
-        const openvpn = new OpenVPN(
-            con.serverIp, con.ports.openvpn.tcp[0], 'tcp',
-            con.username, con.password
-        );
-
-        await openvpn.start();
-
-        api.isRunning();
+        await ipcRenderer.invoke('connect-to-openvpn', {
+            serverIp: con.serverIp,
+            port: con.ports.openvpn.tcp[0],
+            protocol: 'tcp',
+            username: con.username,
+            password: con.password
+        });
     },
 
     /** Start WireGuard
      *  @param id - id of the server
      *  @param type - type of the server (Primary or Secondary)
      */
-    async startWireGuard(id: number, type: string) {
-        const con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({"type": type, "protocol": "wireguard"}))
-            .then((r) => r.json())
+    async startWireGuard(id: string, type: string) {
+        await ipcRenderer.invoke('before-connect');
 
-        const splitTunneling = JSON.parse(localStorage.getItem("settings") || "{}").splitTunneling ?? {};
+        const con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'wireguard'}))
+            .then((r) => r.json());
+
+        const splitTunneling = JSON.parse(localStorage.getItem('settings') || '{}').splitTunneling ?? {};
         const ips = splitTunneling.ipList ?? [];
-        const isIpsAllowlist = splitTunneling.authorization === "allow";
+        const isIpsAllowlist = splitTunneling.authorization === 'allow';
         const apps = (splitTunneling.appList ?? []).filter((app: any) => app.enabled).map((app: any) => app.name);
-        const isAppsAllowlist = splitTunneling.authorization === "allow";
+        const isAppsAllowlist = splitTunneling.authorization === 'allow';
 
         await ipcRenderer.invoke('connect-to-wireguard', {
             serverIp: con.serverIp,
@@ -94,7 +89,7 @@ const api = {
             isAppsAllowlist: isAppsAllowlist
         });
 
-        await refreshIp()
+        await refreshIp();
     },
 
 
@@ -104,7 +99,7 @@ const api = {
     async stopVPN() {
         const currentServer = getCurrentServer();
         await ipcRenderer.invoke('disconnect');
-        if (currentServer.connected) {
+        if (currentServer.status === Status.CONNECTED) {
             try {
                 await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
                     'type': currentServer.type,
@@ -167,11 +162,5 @@ if (process.contextIsolated) {
     window.ping = ping
 }
 
-declare global {
-    // noinspection JSUnusedGlobalSymbols
-    interface Window {
-        electron: ElectronAPI
-        api: typeof api
-        ping: typeof ping
-    }
-}
+export type API = typeof api;
+export type Ping = typeof ping;

@@ -49,6 +49,7 @@
     "ping": "^0.4.2",
     "pinia": "^2.0.33",
     "svg-pan-zoom-container": "^0.6.1",
+    "tail": "^2.2.6",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
@@ -56,6 +57,7 @@
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@types/node": "^20.4.1",
     "@types/ping": "^0.4.1",
+    "@types/tail": "^2.2.1",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/tsconfig": "^0.4.0",
     "autoprefixer": "^10.4.13",

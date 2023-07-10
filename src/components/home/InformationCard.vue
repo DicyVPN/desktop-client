@@ -33,6 +33,7 @@ import {useInformationStore} from "@/stores/information";
 import {refreshIp} from "@/assets/api";
 import {useCurrentServerStore} from "@/stores/currentServer";
 import {connectionTime} from "@/global";
+import {Status} from '../../../electron/main/vpn/status';
 
 export default {
     name: 'InformationCard',
@@ -99,10 +100,10 @@ export default {
 
     },
     watch: {
-        "currentServer.connected"(value) {
+        "currentServer.status"(status) {
             refreshIp()
 
-            if (value) {
+            if (status === Status.CONNECTED) {
                 this.connectionTime.time = new Date().getTime();
             } else {
                 this.information.$patch({
