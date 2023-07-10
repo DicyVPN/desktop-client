@@ -46,8 +46,7 @@ function createWindow(): void {
         }
     })
     mainWindowState.manage(mainWindow);
-    // noinspection SuspiciousTypeOfGuard these values can be undefined or null
-    if (typeof mainWindowState.x === 'number' && typeof mainWindowState.y == 'number') {
+    if (mainWindowState.x && mainWindowState.y) {
         mainWindow.setBounds(mainWindowState); // fix scaling issue on windows
     }
 
