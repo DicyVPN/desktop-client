@@ -18,7 +18,7 @@
                  :class="{'bg-bright-green' : currentServer.status === Status.CONNECTED, 'bg-red-300' : currentServer.status !== Status.CONNECTED}"></div>
             <div class="flex w-full" v-if="currentServer.id">
                 <p>{{ currentServer.city }}</p>
-                <div class="flex w-full justify-end">
+                <div class="flex ml-auto">
                     <div class="flex gap-8">
                         <p class="location-text">{{ currentServer.name }}</p>
                         <Flag :small="false" :country="currentServer.country"/>
@@ -73,14 +73,17 @@ export default {
 
             if (this.currentServer.status === Status.CONNECTED) {
                 window.api.stopVPN().then(() => {
-                    setTimeout(() => this.refreshIp(), 2000)
-                })
+                    setTimeout(() => this.refreshIp(), 2000);
+                });
             } else {
                 try {
-                    await window.api.startVPN(this.currentServer.id, this.currentServer.type)
+                    await window.api.startVPN(this.currentServer.id, this.currentServer.type);
                 } catch (e) {
-                    console.debug(e)
-                    throwError("Errore durante la connessione al server")
+                    console.debug(e);
+                    throwError('Errore durante la connessione al server');
+                    this.currentServer.$patch({
+                        status: Status.NOT_RUNNING
+                    });
                 }
 
             }

@@ -13,6 +13,7 @@ import Flag from "@/components/icons/Flag.vue";
 import {useCurrentServerStore} from "@/stores/currentServer";
 import {throwError} from "@/global";
 import LoadIndicator from "@/components/home/sidebar/serverList/LoadIndicator.vue";
+import {Status} from '../../../../../electron/main/vpn/status';
 
 export default {
     components: {LoadIndicator, Flag},
@@ -39,6 +40,9 @@ export default {
             } catch (e) {
                 console.error(e);
                 throwError('Errore di connessione al server, riprova');
+                this.currentServer.$patch({
+                    status: Status.NOT_RUNNING
+                });
             }
         }
     },

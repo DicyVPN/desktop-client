@@ -18,7 +18,6 @@
 <script>
 import Dropdown from "@/components/home/sidebar/serverList/secondary/SecondaryServer.vue"
 import PrimaryServers from "@/components/home/sidebar/serverList/primary/PrimaryServer.vue";
-import {throwError} from "@/global";
 
 export default {
     components: {PrimaryServers, Dropdown},
@@ -35,14 +34,6 @@ export default {
         }
     },
     methods: {
-        async connect(id, type) {
-            try {
-                await window.api.startVPN(id, type)
-            } catch (e) {
-                console.error(e);
-                throwError("Errore di connessione al server, riprova")
-            }
-        },
         updateShadows({ target: { scrollTop, clientHeight, scrollHeight }}) {
             this.showTopShadow = scrollTop > 12;
             this.showBottomShadow = scrollTop + clientHeight < scrollHeight - 12;
