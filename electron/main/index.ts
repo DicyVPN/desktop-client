@@ -13,9 +13,14 @@ import {Status} from './vpn/status';
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
 
-
 const DEFAULT_WIDTH = 900;
 const DEFAULT_HEIGHT = 670;
+
+if (app.requestSingleInstanceLock()) {
+    app.on('second-instance', focusWindow);
+} else {
+    app.quit();
+}
 
 electronRemote.initialize();
 ipc.registerAll();
