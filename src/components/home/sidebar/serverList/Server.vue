@@ -9,10 +9,10 @@
     </div>
 </template>
 <script>
-import Flag from "@/components/icons/Flag.vue";
-import {useCurrentServerStore} from "@/stores/currentServer";
-import {throwError} from "@/global";
-import LoadIndicator from "@/components/home/sidebar/serverList/LoadIndicator.vue";
+import Flag from '@/components/icons/Flag.vue';
+import {useCurrentServerStore} from '@/stores/currentServer';
+import {showMissingSubscription, throwError} from '@/global';
+import LoadIndicator from '@/components/home/sidebar/serverList/LoadIndicator.vue';
 import {Status} from '../../../../../electron/main/vpn/status';
 
 export default {
@@ -21,7 +21,7 @@ export default {
         server: {
             type: Object,
             required: true
-        },
+        }
     },
     methods: {
         async connect() {
@@ -38,8 +38,12 @@ export default {
                     );
                 });
             } catch (e) {
-                console.error(e);
-                throwError('Errore di connessione al server, riprova');
+                if (e.message === 'NO_SUBSCRIPTION') {
+                    showMissingSubscription.value = true;
+                } else {
+                    console.error(e);
+                    throwError('Errore di connessione al server, riprova');
+                }
                 this.currentServer.$patch({
                     status: Status.NOT_RUNNING
                 });
@@ -50,9 +54,9 @@ export default {
         const currentServer = useCurrentServerStore();
         return {
             currentServer
-        }
+        };
     }
-}
+};
 </script>
 
 <style scoped>

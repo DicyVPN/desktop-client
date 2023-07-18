@@ -1,18 +1,17 @@
 <template>
-    <div class="message-bg bg-opacity-50" :class="setColor()">
-        <p class="ml-auto"> {{ text }} </p>
-        <p class="ml-auto message-x" @click=" message.show = false ">&times;</p>
+    <div class="message-bg bg-opacity-50" :class="colorClass">
+        <p class="ml-auto">{{ text }}</p>
+        <p class="ml-auto message-x" @click="message.show = false ">&times;</p>
     </div>
 </template>
 <script>
-import {message} from "@/global";
+import {message} from '@/global';
 
 export default {
-    name: 'Message',
     data() {
         return {
             message
-        }
+        };
     },
     props: {
         text: {
@@ -24,19 +23,19 @@ export default {
             required: true
         }
     },
-    methods: {
-        setColor() {
+    computed: {
+        colorClass() {
             switch (this.type) {
-                case "success":
-                    return "bg-green-500";
-                case "error":
-                    return "bg-red-500";
-                case "info":
-                    return "bg-blue-500";
+                case 'success':
+                    return 'bg-green-500';
+                case 'error':
+                    return 'bg-red-500';
+                case 'info':
+                    return 'bg-blue-500';
             }
         }
     }
-}
+};
 </script>
 <style>
 .message-bg {

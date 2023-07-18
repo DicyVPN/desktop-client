@@ -45,7 +45,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {useCurrentServerStore} from "@/stores/currentServer";
 import {useInformationStore} from "@/stores/information";
 import {refreshIp} from "@/assets/api";
-import {throwError} from "@/global";
+import {showMissingSubscription, throwError} from '@/global';
 import {Status} from '../../../../electron/main/vpn/status';
 
 export default {
@@ -79,8 +79,12 @@ export default {
                 try {
                     await window.api.startVPN(this.currentServer.id, this.currentServer.type);
                 } catch (e) {
-                    console.debug(e);
-                    throwError('Errore durante la connessione al server');
+                    if (e.message === 'NO_SUBSCRIPTION') {
+                        showMissingSubscription.value = true;
+                    } else {
+                        console.error(e);
+                        throwError('Errore di connessione al server, riprova');
+                    }
                     this.currentServer.$patch({
                         status: Status.NOT_RUNNING
                     });

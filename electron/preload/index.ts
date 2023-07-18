@@ -5,25 +5,25 @@ import * as electron from 'electron';
 import {contextBridge, ipcRenderer} from 'electron';
 import {app} from '@electron/remote';
 import {electronAPI} from '@electron-toolkit/preload';
-import {apiPost, getPrivateKey, refreshIp} from '../../src/assets/api';
+import {apiPost, getPrivateKey, refreshIp, ResponseError} from '../../src/assets/api';
 import {getCurrentServer} from '../../src/assets/storageUtils';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from '../main/globals';
 import {Status} from '../main/vpn/status';
 
 
-ipcRenderer.on("disconnect", async () => {
-    await api.stopVPN()
-})
+ipcRenderer.on('disconnect', async () => {
+    await api.stopVPN();
+});
 
-ipcRenderer.on("reconnect-preload", () => {
+ipcRenderer.on('reconnect-preload', () => {
     // @ts-ignore
-    let currentServer = JSON.parse(localStorage.getItem('currentServer'))
+    let currentServer = JSON.parse(localStorage.getItem('currentServer'));
 
     let id = currentServer.id;
-    let type = currentServer.type
+    let type = currentServer.type;
 
-    api.startVPN(id, type).then(r => console.log(r))
-})
+    api.startVPN(id, type).then(r => console.log(r));
+});
 
 const api = {
     on(channel: string, listener: (event: electron.IpcRendererEvent, ...args: any[]) => void) {
@@ -37,9 +37,20 @@ const api = {
      *  @param id - id of the server
      *  @param type - type of the server (Primary or Secondary)
      */
-    async startVPN(id: string, type: string) {
-        //TODO: Check if wiresock or openvpn is installed
-        (type == 'secondary') ? await api.startOpenVPN(id, type) : await api.startWireGuard(id, type);
+    async startVPN(id: string, type: string): Promise<void | string> {
+        // TODO: Check if wiresock or openvpn is installed
+        try {
+            if (type == 'secondary') {
+                await api.startOpenVPN(id, type);
+            } else {
+                await api.startWireGuard(id, type);
+            }
+        } catch (e) {
+            if (e instanceof ResponseError) {
+                throw new Error(e.reply.code);
+            }
+            throw e;
+        }
     },
 
     /** Start OpenVPN
@@ -134,32 +145,32 @@ const api = {
     },
 
     externalLink(url: string) {
-        electron.shell.openExternal(url).then(r => console.debug(r))
+        electron.shell.openExternal(url).then(r => console.debug(r));
     },
 
     isIp(ip: string) {
-        return isIP(ip)
+        return isIP(ip);
     },
 
     async getIcon(path: string) {
-        return await app.getFileIcon(path, {size: "large"}).then(image => {
-            return image.toDataURL()
+        return await app.getFileIcon(path, {size: 'large'}).then(image => {
+            return image.toDataURL();
         });
     }
-}
+};
 
 if (process.contextIsolated) {
     try {
-        contextBridge.exposeInMainWorld('electron', electronAPI)
-        contextBridge.exposeInMainWorld('api', api)
-        contextBridge.exposeInMainWorld('ping', ping)
+        contextBridge.exposeInMainWorld('electron', electronAPI);
+        contextBridge.exposeInMainWorld('api', api);
+        contextBridge.exposeInMainWorld('ping', ping);
     } catch (error) {
-        console.error(error)
+        console.error(error);
     }
 } else {
-    window.electron = electronAPI
-    window.api = api
-    window.ping = ping
+    window.electron = electronAPI;
+    window.api = api;
+    window.ping = ping;
 }
 
 export type API = typeof api;

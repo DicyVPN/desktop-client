@@ -4,6 +4,7 @@
     <Transition name="message-animation">
         <Message :type="message.type" :text="message.text" v-if="message.show"/>
     </Transition>
+    <MissingSubscriptionAlert/>
 </template>
 
 <script lang="ts">
@@ -12,10 +13,11 @@ import {RouterView} from 'vue-router';
 import Message from '@/components/options/Message.vue';
 import {message} from '@/global';
 import {Status} from '../electron/main/vpn/status';
+import MissingSubscriptionAlert from '@/components/home/MissingSubscriptionAlert.vue';
 
 
 export default {
-    components: {Message, RouterView},
+    components: {MissingSubscriptionAlert, Message, RouterView},
     data() {
         return {
             message

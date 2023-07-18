@@ -4,11 +4,14 @@ export function apiGet(path: string, shouldRefreshToken = true): Promise<Respons
     return fetch(apiUrl + path, {
         method: 'GET',
         headers: getHeaders()
-    }).then((res) => {
+    }).then(async (res) => {
         if (res.status === 401 && shouldRefreshToken) {
             return apiRefresh(getRefreshToken()).then(() => {
                 return apiGet(path, false)
             })
+        }
+        if (!res.ok) {
+            throw new ResponseError(await res.text(), res);
         }
         return res
     })
@@ -19,11 +22,14 @@ export function apiPost(path: string, body: any, shouldRefreshToken = true): Pro
         method: 'POST',
         body: body,
         headers: getHeaders()
-    }).then((res) => {
+    }).then(async (res) => {
         if (res.status === 401 && shouldRefreshToken) {
             return apiRefresh(getRefreshToken()).then(() => {
                 return apiPost(path, body, false)
             })
+        }
+        if (!res.ok) {
+            throw new ResponseError(await res.text(), res);
         }
         return res
     })
@@ -109,5 +115,32 @@ export async function refreshIp() {
         })
 
     return ip
+}
 
+export class ResponseError extends Error {
+    public reply: {
+        code: string;
+        message: string;
+    } = {
+        code: "UNKNOWN",
+        message: "Unknown error"
+    };
+
+    constructor(message: string, public response: Response) {
+        super(message);
+        this.name = "ResponseError";
+
+        try {
+            const json = JSON.parse(message);
+            this.message = json;
+            if (json.reply && json.reply.code && json.reply.message) {
+                this.reply = json.reply;
+            }
+        } catch (e) {
+        }
+    }
+
+    get status() {
+        return this.response.status;
+    }
 }
