@@ -51,8 +51,7 @@
     "svg-pan-zoom-container": "^0.6.1",
     "tail": "^2.2.6",
     "vue": "^3.2.45",
-    "vue-router": "^4.1.6",
-    "windows": "^0.1.2"
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@electron-toolkit/tsconfig": "^1.0.1",

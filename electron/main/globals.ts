@@ -1,4 +1,4 @@
-import {registry} from 'windows';
+import {execSync} from 'child_process';
 
 const userDataPath = process.env.APPDATA ?? (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + '/.local/share');
 export const DATA_PATH = userDataPath + '/DicyVPN';
@@ -14,8 +14,12 @@ export function getWireGuardClientPath() {
     if (process.platform !== 'win32') {
         throw new Error('WireGuard is only supported on Windows');
     }
-    const keySet = registry('HKLM\\SOFTWARE\\NTKernelResources\\WinpkFilterForVPNClient');
-    return keySet.InstallLocation.valueOf() + 'bin\\wiresock-client.exe';
+    const output = execSync('reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\NTKernelResources\\WinpkFilterForVPNClient" /v InstallLocation', {
+        encoding: 'utf8'
+    });
+    const split = output.split('\r\n')[2].split('    ');
+    const path = split[split.length - 1];
+    return path + 'bin\\wiresock-client.exe';
 }
 
 export function getOpenVPNServicePath() {

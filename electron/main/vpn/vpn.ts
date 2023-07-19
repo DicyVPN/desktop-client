@@ -30,7 +30,7 @@ export class WireGuard implements VPN {
     async start(): Promise<void> {
         this.writeConfig();
         const exe = getWireGuardClientPath();
-        const args = ['run', '-config', `${DATA_PATH}/wireguard.conf`];
+        const args = ['run', '-config', `${DATA_PATH}/wireguard.conf`, '-log-level', 'info'];
         const child = spawn(exe, args);
         if (child.pid) {
             fs.writeFileSync(PID_FILE_WIREGUARD, child.pid.toString());
