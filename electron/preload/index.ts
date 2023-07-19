@@ -58,6 +58,7 @@ const api = {
      *  @param type - type of the server (Primary or Secondary)
      */
     async startOpenVPN(id: string, type: string) {
+        const previousServer = getCurrentServer();
         await ipcRenderer.invoke('before-connect');
 
         let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'openvpn'}))
@@ -70,6 +71,8 @@ const api = {
             username: con.username,
             password: con.password
         });
+        await api.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
+        await refreshIp();
     },
 
     /** Start WireGuard
@@ -77,6 +80,7 @@ const api = {
      *  @param type - type of the server (Primary or Secondary)
      */
     async startWireGuard(id: string, type: string) {
+        const previousServer = getCurrentServer();
         await ipcRenderer.invoke('before-connect');
 
         const con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'wireguard'}))
@@ -100,6 +104,7 @@ const api = {
             isAppsAllowlist: isAppsAllowlist
         });
 
+        await api.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
         await refreshIp();
     },
 
@@ -108,20 +113,24 @@ const api = {
      * Stop VPN by sending disconnect event to main process
      */
     async stopVPN() {
-        const currentServer = getCurrentServer();
+        const previousServer = getCurrentServer();
         await ipcRenderer.invoke('disconnect');
-        if (currentServer.status === Status.CONNECTED) {
+        await api.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
+    },
+
+    // to be called when user disconnects from a server, or after switching servers
+    async sendDisconnect(id: string, type: string, protocol: string, status: Status) {
+        if (status === Status.CONNECTED || status === Status.CONNECTING) {
             try {
-                await apiPost('/v1/servers/disconnect/' + currentServer.id, JSON.stringify({
-                    'type': currentServer.type,
-                    'protocol': currentServer.protocol
+                await apiPost('/v1/servers/disconnect/' + id, JSON.stringify({
+                    'type': type,
+                    'protocol': protocol
                 }));
             } catch (e) {
                 console.error(e);
             }
         }
     },
-
 
     /** Check if VPN is running */
     isRunning() {
