@@ -8,7 +8,7 @@
                 <font-awesome-icon icon="fa-solid fa-user" class="bg-gray-500 text-blue-100 rounded-full p-28 w-48 h-48 shadow-4"/>
             </div>
             <form class="flex flex-col gap-y-16" @submit.prevent="login">
-                <input type="submit" hidden />
+                <input type="submit" hidden/>
                 <div class="flex flex-col gap-y-8">
                     <p class="text-label">Email</p>
                     <input type="text" class="text-input rounded" :class="errorClass" v-model="email">
@@ -53,24 +53,24 @@
 </template>
 
 <script>
-import ShowIcon from "@/views/ShowIcon.vue";
-import Button from "@/components/icons/Button.vue";
-import WorldMap from "@/components/home/map/WorldMap.vue";
-import {apiPost} from "@/assets/api";
+import ShowIcon from '@/views/ShowIcon.vue';
+import Button from '@/components/icons/Button.vue';
+import WorldMap from '@/components/home/map/WorldMap.vue';
+import {apiPost, ResponseError} from '@/assets/api';
 
 export default {
     components: {WorldMap, Button, ShowIcon},
     data() {
         return {
             show: false,
-            type: "password",
-            password: "",
-            email: "",
-            errorClass: "",
+            type: 'password',
+            password: '',
+            email: '',
+            errorClass: '',
             loading: false,
-            dialogMessage: "",
-            dialogLink: "",
-            dialogLinkText: "",
+            dialogMessage: '',
+            dialogLink: '',
+            dialogLinkText: ''
         };
     },
     methods: {
@@ -79,73 +79,73 @@ export default {
         },
         toggle() {
             this.show = !this.show;
-            this.type = this.show ? "text" : "password";
+            this.type = this.show ? 'text' : 'password';
         },
         async login() {
-            this.loading = true
-            apiPost("/v1/public/login", JSON.stringify({
+            this.errorClass = '';
+            this.loading = true;
+            apiPost('/v1/public/login', JSON.stringify({
                 email: this.email,
                 password: this.password,
                 isDevice: true
             }), false)
-                .then(
-                    async (res) => {
-                        this.loading = false
-                        if (res.status === 400 || res.status === 401) {
-                            this.errorClass = "border-red-400 border-2 rounded"
-                            return
-                        }
+                .then(async (res) => {
+                        this.loading = false;
 
-                        if (!res.ok) {
-                            const data = await res.json();
-                            switch (data.reply.code) {
-                                case "NO_SUBSCRIPTION":
-                                    this.dialogMessage = "Non hai un abbonamento attivo"
-                                    this.dialogLink = "https://dicyvpn.com/prices"
-                                    this.dialogLinkText = "Vedi gli abbonamenti"
-                                    this.$refs.dialog.showModal()
-                                    return
-                                case "DEVICES_LIMIT_REACHED":
-                                    this.dialogMessage = "Hai raggiunto il limite di dispositivi"
-                                    this.dialogLink = "https://dicyvpn.com/account"
-                                    this.dialogLinkText = "Controlla la lista dei dispositivi"
-                                    this.$refs.dialog.showModal()
-                                    return
-                            }
-                        }
-
-
-                        let token = res.headers.get("X-Auth-Token")
-                        let refreshToken = res.headers.get("X-Auth-Refresh-Token")
-                        let privateKey = res.headers.get("X-Auth-Private-Key")
-                        let refreshTokenId = ""
-                        let accountId = ""
+                        let token = res.headers.get('X-Auth-Token');
+                        let refreshToken = res.headers.get('X-Auth-Refresh-Token');
+                        let privateKey = res.headers.get('X-Auth-Private-Key');
+                        let refreshTokenId = '';
+                        let accountId = '';
 
                         try {
-                            const [, payload] = token.split(".");
+                            const [, payload] = token.split('.');
                             const json = JSON.parse(atob(payload));
                             refreshTokenId = json.refreshTokenId;
                             accountId = json._id;
                         } catch (e) {
-                            console.debug("Error parsing token", e);
+                            console.debug('Error parsing token', e);
                         }
 
-                        localStorage.setItem("token", JSON.stringify({
+                        localStorage.setItem('token', JSON.stringify({
                             token: token,
                             refreshToken: refreshToken,
                             refreshTokenId: refreshTokenId,
                             accountId: accountId,
-                            privateKey: privateKey,
-                        }))
-                        this.$router.push({name: "placeholder"})
-                    },
-                ).catch(() => {
-                this.loading = false
-                alert("Errore di connessione")
-            })
-        },
-    },
-}
+                            privateKey: privateKey
+                        }));
+                        this.$router.push({name: 'placeholder'});
+                    }
+                ).catch((e) => {
+                this.loading = false;
+                if (e instanceof ResponseError) {
+                    if (e.status === 400 || e.status === 401) {
+                        this.errorClass = 'border-red-400 border-2 rounded';
+                        return;
+                    }
+
+                    switch (e.reply.code) {
+                        case 'NO_SUBSCRIPTION':
+                            this.dialogMessage = 'Non hai un abbonamento attivo';
+                            this.dialogLink = 'https://dicyvpn.com/prices';
+                            this.dialogLinkText = 'Vedi gli abbonamenti';
+                            this.$refs.dialog.showModal();
+                            return;
+                        case 'DEVICES_LIMIT_REACHED':
+                            this.dialogMessage = 'Hai raggiunto il limite di dispositivi';
+                            this.dialogLink = 'https://dicyvpn.com/account';
+                            this.dialogLinkText = 'Controlla la lista dei dispositivi';
+                            this.$refs.dialog.showModal();
+                            return;
+                    }
+                    alert(e.reply.message);
+                } else {
+                    alert('Errore di connessione');
+                }
+            });
+        }
+    }
+};
 </script>
 
 <style scoped>
