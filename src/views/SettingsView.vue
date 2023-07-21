@@ -12,7 +12,7 @@
                 <p class="bottom-link text-gray-200 hover:text-gray-100" @click="openLink('https://dicyvpn.com/account')">Impostazioni Account</p>
                 <p class="bottom-link text-red-300 hover:text-red-200" @click="$refs.logoutConfirm.showModal()">Logout</p>
             </div>
-            <dialog ref="logoutConfirm" class="rounded shadow-4">
+            <dialog ref="logoutConfirm" class="rounded shadow-4 p-24">
                 <p>Sei sicuro di voler uscire?</p>
                 <div class="flex gap-12 mt-12 justify-end">
                     <button class="font-semibold text-gray-500 hover:text-gray-700" @click="$refs.logoutConfirm.close()">Annulla</button>
