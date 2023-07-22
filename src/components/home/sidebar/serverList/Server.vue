@@ -9,9 +9,10 @@
     </div>
 </template>
 <script>
-import Flag from '@/components/icons/Flag.vue';
 import {useCurrentServerStore} from '@/stores/currentServer';
-import {showMissingSubscription, throwError} from '@/global';
+import {useSettingsStore} from '@/stores/settings';
+import Flag from '@/components/icons/Flag.vue';
+import {showMissingSubscription, showSecondaryServersAgreement, throwError} from '@/global';
 import LoadIndicator from '@/components/home/sidebar/serverList/LoadIndicator.vue';
 import {Status} from '../../../../../electron/main/vpn/status';
 
@@ -23,8 +24,22 @@ export default {
             required: true
         }
     },
+    setup() {
+        const currentServer = useCurrentServerStore();
+        const settings = useSettingsStore();
+
+        return {
+            currentServer,
+            settings
+        };
+    },
     methods: {
         async connect() {
+            if (this.server.type === 'secondary' && !this.settings.options.agreedToUseSecondaryServers) {
+                showSecondaryServersAgreement.value = true;
+                return;
+            }
+
             try {
                 await window.api.startVPN(this.server.id, this.server.type).then(() => {
                     this.currentServer.$patch({
@@ -49,12 +64,6 @@ export default {
                 });
             }
         }
-    },
-    setup() {
-        const currentServer = useCurrentServerStore();
-        return {
-            currentServer
-        };
     }
 };
 </script>

@@ -7,6 +7,7 @@ export const message = reactive({
 });
 
 export const showMissingSubscription = ref(false);
+export const showSecondaryServersAgreement = ref(false);
 
 export function throwError(text: string) {
     message.text = text;
