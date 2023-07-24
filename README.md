@@ -1,6 +1,6 @@
 # DicyVPN Desktop
 
-This template should help get you started developing with Vue 3 in Vite.
+![screenshot](https://dicyvpn.com/images/download/dicyvpn-client-screenshot.png)
 
 ## Recommended IDE Setup
 
