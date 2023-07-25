@@ -22,7 +22,12 @@
     "productName": "DicyVPN",
     "win": {
       "target": "nsis",
-      "publish": "github"
+      "publish": "github",
+      "forceCodeSigning": true,
+      "sign": "sign.js",
+      "signingHashAlgorithms": [
+        "sha256"
+      ]
     },
     "nsis": {
       "oneClick": false,
