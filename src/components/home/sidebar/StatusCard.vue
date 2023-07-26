@@ -8,7 +8,7 @@
                     <font-awesome-icon v-else icon="fa-solid fa-circle-xmark" class="text-red-300"/>
                 </div>
                 <p class="text-small font-light">{{ currentServer.status === Status.CONNECTED ? 'Connesso' : 'Disconnesso' }}</p>
-                <router-link to="/settings/general" class="flex items-center w-full hover:text-gray-200 outline-none">
+                <router-link to="/settings" class="flex items-center w-full hover:text-gray-200 outline-none">
                     <font-awesome-icon icon="fa-solid fa-gear" class="ml-auto"/>
                 </router-link>
 

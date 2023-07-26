@@ -1,16 +1,16 @@
 <template>
     <div class="flex flex-1 min-h-screen max-h-screen min-w-screen max-w-screen select-none">
-        <div class="bg-gray-600 h-screen p-8 flex flex-col gap-8 select-none shadow-4-lg w-256">
+        <div class="bg-gray-600 h-screen p-12 flex flex-col gap-8 select-none shadow-4-lg w-256">
             <router-link to="/" class="back">
                 <font-awesome-icon icon="fa-solid fa-arrow-left"/>
-                <p>Indietro</p>
+                <span>Indietro</span>
             </router-link>
-            <OptionTitle title="Impostazioni" to="/settings/general"/>
+            <OptionTitle title="Impostazioni" to="/settings"/>
             <OptionTitle title="Split Tunneling" to="/settings/split-tunneling"/>
 
             <div class="mt-auto">
                 <p class="bottom-link text-gray-200 hover:text-gray-100" @click="openLink('https://dicyvpn.com/account')">Impostazioni Account</p>
-                <p class="bottom-link text-red-300 hover:text-red-200" @click="$refs.logoutConfirm.showModal()">Logout</p>
+                <p class="bottom-link text-red-300 hover:text-red-200 mt-4" @click="$refs.logoutConfirm.showModal()">Logout</p>
             </div>
             <dialog ref="logoutConfirm" class="rounded shadow-4 p-24">
                 <p>Sei sicuro di voler uscire?</p>
@@ -21,15 +21,15 @@
             </dialog>
         </div>
 
-        <router-view class="p-8"></router-view>
+        <router-view class="p-12"></router-view>
     </div>
 </template>
 
 <script>
-import OptionTitle from "@/views/OptionTitle.vue";
-import Button from "@/components/icons/Button.vue";
-import {apiGet} from "@/assets/api";
-import {throwError} from "@/global";
+import OptionTitle from '@/components/settings/SettingCategory.vue';
+import Button from '@/components/icons/Button.vue';
+import {apiGet} from '@/assets/api';
+import {throwError} from '@/global';
 
 export default {
     components: {
@@ -39,7 +39,7 @@ export default {
     data() {
         return {
             loadingLogout: false
-        }
+        };
     },
     methods: {
         logout() {
@@ -48,23 +48,21 @@ export default {
             }
 
             this.loadingLogout = true;
-            apiGet("/v1/logout").then(() => {
-                localStorage.removeItem("token");
-                this.$router.push("/login");
+            apiGet('/v1/logout').then(() => {
+                localStorage.removeItem('token');
+                this.$router.push('/login');
             }).catch(e => {
                 console.error(e);
-                throwError("Logout fallito, controlla la connessione e riprova");
+                throwError('Logout fallito, controlla la connessione e riprova');
             }).finally(() => {
                 this.loadingLogout = false;
             });
         },
         openLink(link) {
             window.api.externalLink(link);
-        },
+        }
     }
-}
-
-
+};
 </script>
 
 <style scoped>

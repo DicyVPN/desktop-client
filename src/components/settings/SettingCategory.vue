@@ -1,8 +1,9 @@
 <template>
-    <router-link :to="to" class="p-8 sidebar-card option">
-        <h1 class="flex justify-center">{{ title }}</h1>
+    <router-link :to="to" class="px-16 py-12 hover:bg-gray-700 cursor-pointer rounded">
+        {{ title }}
     </router-link>
 </template>
+
 <script>
 export default {
     name: 'OptionTitle',
@@ -16,15 +17,12 @@ export default {
             required: false
         }
     }
-}
+};
 </script>
 
 <style scoped>
-
-.option:hover {
+/*noinspection CssUnusedSymbol*/
+.router-link-exact-active {
     @apply bg-gray-700;
-    cursor: pointer;
 }
-
-
 </style>

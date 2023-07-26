@@ -22,7 +22,7 @@
 import {useCurrentServerStore} from '@/stores/currentServer';
 import {useSettingsStore} from '@/stores/settings';
 import {RouterView} from 'vue-router';
-import Message from '@/components/options/Message.vue';
+import Message from '@/components/Message.vue';
 import {message, showMissingSubscription, showSecondaryServersAgreement} from '@/global';
 import {Status} from '../electron/main/vpn/status';
 import Modal from '@/components/Modal.vue';

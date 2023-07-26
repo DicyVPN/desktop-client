@@ -27,8 +27,8 @@ const router = createRouter({
             name: 'settings',
             component: SettingsView,
             children: [
-                {path: 'general', name: 'general', component: () => import('@/components/options/General.vue')},
-                {path: 'split-tunneling', name: 'split-tunneling', component: () => import('@/components/options/SplitTunneling.vue')}
+                {path: '', name: 'general', component: () => import('@/components/settings/General.vue')},
+                {path: 'split-tunneling', name: 'split-tunneling', component: () => import('@/components/settings/SplitTunneling.vue')}
             ]
         }
     ]
