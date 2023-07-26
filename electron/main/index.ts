@@ -155,7 +155,6 @@ function contextMenu() {
 
 function focusWindow() {
     if (mainWindow != null) {
-        mainWindow.minimize(); // workaround for windows not bringing window to front on focus
         mainWindow.restore();
         mainWindow.focus();
         app.focus({
