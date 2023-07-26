@@ -1,5 +1,9 @@
 <template>
-    <RouterView/>
+    <RouterView v-slot="{ Component }">
+        <KeepAlive include="HomeView">
+            <Component :is="Component" :key="$route.fullPath"/>
+        </KeepAlive>
+    </RouterView>
 
     <Transition name="message-animation">
         <Message :type="message.type" :text="message.text" v-if="message.show"/>

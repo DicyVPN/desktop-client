@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-1 min-h-screen max-h-screen min-w-screen max-w-screen select-none">
         <div class="bg-gray-600 h-screen p-8 flex flex-col gap-8 select-none shadow-4-lg w-256">
-            <router-link to="/home" class="back">
+            <router-link to="/" class="back">
                 <font-awesome-icon icon="fa-solid fa-arrow-left"/>
                 <p>Indietro</p>
             </router-link>
