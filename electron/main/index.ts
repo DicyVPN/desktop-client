@@ -2,9 +2,10 @@ import fs from 'fs';
 import * as path from 'path';
 import {app, BrowserWindow, Menu, shell, Tray} from 'electron';
 import * as electronRemote from '@electron/remote/main';
-import {electronApp, is, optimizer} from '@electron-toolkit/utils';
+import {is, optimizer} from '@electron-toolkit/utils';
 import windowStateKeeper from 'electron-window-state';
 import {autoUpdater} from 'electron-updater';
+import './appinfo';
 import * as ipc from './ipc';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
 import {getCurrentMonitor} from './vpn/monitor';
@@ -16,16 +17,12 @@ let mainWindowState: windowStateKeeper.State;
 const DEFAULT_WIDTH = 900;
 const DEFAULT_HEIGHT = 670;
 
-app.setAppUserModelId('com.dicyvpn.desktop');
 if (app.requestSingleInstanceLock()) {
     app.on('second-instance', focusWindow);
 } else {
     app.quit();
 }
 
-if (is.dev) {
-    app.setPath('userData', app.getPath('userData') + ' [dev]');
-}
 const isSilentStart = process.argv.includes('--silent');
 
 electronRemote.initialize();

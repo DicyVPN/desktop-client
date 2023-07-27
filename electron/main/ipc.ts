@@ -5,6 +5,7 @@ import {OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './vpn/monitor
 import {Status} from './vpn/status';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
 import fs from 'fs';
+import settings from './settings';
 
 export function registerAll() {
     // called before any API call, signals to the UI the intent to connect
@@ -63,5 +64,13 @@ export function registerAll() {
             }
         }
         return false;
+    });
+
+    ipcMain.handle('get-setting', (event, key, defaultValue) => {
+        return settings.get(key, defaultValue);
+    });
+
+    ipcMain.handle('set-setting', (event, key, value) => {
+        settings.set(key, value);
     });
 }

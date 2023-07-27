@@ -7,6 +7,7 @@ import {electronAPI} from '@electron-toolkit/preload';
 import {apiPost, getPrivateKey, refreshIp, ResponseError} from '../../src/assets/api';
 import {getCurrentServer} from '../../src/assets/storageUtils';
 import {Status} from '../main/vpn/status';
+import type {Value} from '../main/settings';
 
 
 ipcRenderer.on('disconnect', async () => {
@@ -142,6 +143,15 @@ const api = {
         return await app.getFileIcon(path, {size: 'large'}).then(image => {
             return image.toDataURL();
         });
+    },
+
+    settings: {
+        async get(key: string, defaultValue: Value): Promise<Value> {
+            return await ipcRenderer.invoke('get-setting', key, defaultValue);
+        },
+        async set(key: string, value: Value): Promise<void> {
+            return await ipcRenderer.invoke('set-setting', key, value);
+        }
     }
 };
 
