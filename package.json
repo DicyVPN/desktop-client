@@ -17,9 +17,9 @@
     "build:mac": "npm run prebuild && electron-builder --mac --config",
     "build:linux": "npm run prebuild && electron-builder --linux --config"
   },
+  "productName": "DicyVPN",
   "build": {
-    "appId": "com.dicyvpn",
-    "productName": "DicyVPN",
+    "appId": "com.dicyvpn.desktop",
     "win": {
       "target": "nsis",
       "publish": "github",
