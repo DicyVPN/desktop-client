@@ -35,11 +35,11 @@
                     password</p>
             </div>
             <div class="flex mt-64 gap-8 justify-center">
-<!--                <img src="@/assets/oauth2/btn_google.svg" alt="logo">-->
-<!--                <img src="@/assets/oauth2/btn_github.svg" alt="logo">-->
-<!--                <img src="@/assets/oauth2/btn_twitter.svg" alt="logo">-->
-<!--                <img src="@/assets/oauth2/btn_facebook.svg" alt="logo">-->
-<!--                <img src="@/assets/oauth2/btn_reddit.svg" alt="logo">-->
+                <!--                <img src="@/assets/oauth2/btn_google.svg" alt="logo">-->
+                <!--                <img src="@/assets/oauth2/btn_github.svg" alt="logo">-->
+                <!--                <img src="@/assets/oauth2/btn_twitter.svg" alt="logo">-->
+                <!--                <img src="@/assets/oauth2/btn_facebook.svg" alt="logo">-->
+                <!--                <img src="@/assets/oauth2/btn_reddit.svg" alt="logo">-->
             </div>
         </div>
         <dialog ref="dialog" class="rounded shadow-4 p-24">
@@ -88,36 +88,36 @@ export default {
                 email: this.email,
                 password: this.password,
                 isDevice: true
-            }), false)
-                .then(async (res) => {
-                        this.loading = false;
+            }), false).then(async (res) => {
+                    this.loading = false;
 
-                        let token = res.headers.get('X-Auth-Token');
-                        let refreshToken = res.headers.get('X-Auth-Refresh-Token');
-                        let privateKey = res.headers.get('X-Auth-Private-Key');
-                        let refreshTokenId = '';
-                        let accountId = '';
+                    let token = res.headers.get('X-Auth-Token');
+                    let refreshToken = res.headers.get('X-Auth-Refresh-Token');
+                    let privateKey = res.headers.get('X-Auth-Private-Key');
+                    let refreshTokenId = '';
+                    let accountId = '';
 
-                        try {
-                            const [, payload] = token.split('.');
-                            const json = JSON.parse(atob(payload));
-                            refreshTokenId = json.refreshTokenId;
-                            accountId = json._id;
-                        } catch (e) {
-                            console.debug('Error parsing token', e);
-                        }
-
-                        localStorage.setItem('token', JSON.stringify({
-                            token: token,
-                            refreshToken: refreshToken,
-                            refreshTokenId: refreshTokenId,
-                            accountId: accountId,
-                            privateKey: privateKey
-                        }));
-                        this.$router.push({name: 'placeholder'});
+                    try {
+                        const [, payload] = token.split('.');
+                        const json = JSON.parse(atob(payload));
+                        refreshTokenId = json.refreshTokenId;
+                        accountId = json._id;
+                    } catch (e) {
+                        console.debug('Error parsing token', e);
                     }
-                ).catch((e) => {
+
+                    localStorage.setItem('token', JSON.stringify({
+                        token: token,
+                        refreshToken: refreshToken,
+                        refreshTokenId: refreshTokenId,
+                        accountId: accountId,
+                        privateKey: privateKey
+                    }));
+                    this.$router.push({name: 'startup'});
+                }
+            ).catch((e) => {
                 this.loading = false;
+                console.error(e);
                 if (e instanceof ResponseError) {
                     if (e.status === 400 || e.status === 401) {
                         this.errorClass = 'border-red-400 border-2 rounded';
