@@ -69,11 +69,11 @@ function createWindow(): void {
         mainWindow = null
     })
 
-
+    // allows to open external links by adding target="_blank"
     mainWindow.webContents.setWindowOpenHandler((details) => {
-        shell.openExternal(details.url)
-        return {action: 'deny'}
-    })
+        shell.openExternal(details.url);
+        return {action: 'deny'};
+    });
 
     // HMR for renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.

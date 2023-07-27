@@ -9,7 +9,7 @@
             <OptionTitle title="Split Tunneling" to="/settings/split-tunneling"/>
 
             <div class="mt-auto">
-                <p class="bottom-link text-gray-200 hover:text-gray-100" @click="openLink('https://dicyvpn.com/account')">Impostazioni Account</p>
+                <a class="bottom-link text-gray-200 hover:text-gray-100" href="https://dicyvpn.com/account" target="_blank">Impostazioni Account</a>
                 <p class="bottom-link text-red-300 hover:text-red-200 mt-4" @click="$refs.logoutConfirm.showModal()">Logout</p>
             </div>
             <dialog ref="logoutConfirm" class="rounded shadow-4 p-24">
@@ -57,9 +57,6 @@ export default {
             }).finally(() => {
                 this.loadingLogout = false;
             });
-        },
-        openLink(link) {
-            window.api.externalLink(link);
         }
     }
 };

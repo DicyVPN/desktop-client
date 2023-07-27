@@ -30,9 +30,8 @@
                 </Button>
             </form>
             <div class="flex flex-col gap-2">
-                <p class="bottom-link" @click="openLink('https://dicyvpn.com/register')">Crea un account</p>
-                <p class="bottom-link" @click="openLink('https://dicyvpn.com/login/request-password-reset')">Recupera la
-                    password</p>
+                <a class="bottom-link" href="https://dicyvpn.com/register" target="_blank">Crea un account</a>
+                <a class="bottom-link" href="https://dicyvpn.com/login/request-password-reset" target="_blank">Recupera la password</a>
             </div>
             <div class="flex mt-64 gap-8 justify-center">
                 <!--                <img src="@/assets/oauth2/btn_google.svg" alt="logo">-->
@@ -74,9 +73,6 @@ export default {
         };
     },
     methods: {
-        openLink(link) {
-            window.api.externalLink(link);
-        },
         toggle() {
             this.show = !this.show;
             this.type = this.show ? 'text' : 'password';

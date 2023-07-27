@@ -8,8 +8,8 @@
     <Transition name="message-animation">
         <Message :type="message.type" :text="message.text" v-if="message.show"/>
     </Transition>
-    <Modal :show="showMissingSubscription" title="Non hai un abbonamento attivo" secondary-label="Chiudi" @secondary="showMissingSubscription = false">
-        Visita <span class="underline text-blue-600 hover:text-blue-700 cursor-pointer" @click="openPricesLink">dicyvpn.com/prices</span> per poter utilizzare DicyVPN
+    <Modal :show="showMissingSubscription " title="Non hai un abbonamento attivo" secondary-label="Chiudi" @secondary="showMissingSubscription = false">
+        Visita <a class="underline text-blue-600 hover:text-blue-700 cursor-pointer outline-none" href="https://dicyvpn.com/prices" target="_blank">dicyvpn.com/prices</a> per poter utilizzare DicyVPN
     </Modal>
     <Modal :show="showSecondaryServersAgreement" class="max-w-md" title="Utilizzo dei server secondari"
            action-label="Non mostrare più" @action="saveSecondaryServersPreference(); showSecondaryServersAgreement = false"
@@ -60,9 +60,6 @@ export default {
             this.currentServer.$patch({
                 status
             });
-        },
-        openPricesLink() {
-            window.api.externalLink('https://dicyvpn.com/prices');
         },
         saveSecondaryServersPreference() {
             this.settings.$patch({
