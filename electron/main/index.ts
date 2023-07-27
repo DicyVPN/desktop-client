@@ -16,20 +16,25 @@ let mainWindowState: windowStateKeeper.State;
 const DEFAULT_WIDTH = 900;
 const DEFAULT_HEIGHT = 670;
 
+app.setAppUserModelId('com.dicyvpn.desktop');
 if (app.requestSingleInstanceLock()) {
     app.on('second-instance', focusWindow);
 } else {
     app.quit();
 }
 
+if (is.dev) {
+    app.setPath('userData', app.getPath('userData') + ' [dev]');
+}
+const isSilentStart = process.argv.includes('--silent');
+
 electronRemote.initialize();
 ipc.registerAll();
 
 /** window creation */
 function createWindow(): void {
-    //set window dimension, title, icon and other
     mainWindow = new BrowserWindow({
-        title: "DicyVPN",
+        title: 'DicyVPN',
         show: false,
         autoHideMenuBar: true,
         x: mainWindowState.x,
@@ -47,27 +52,27 @@ function createWindow(): void {
             }),
         webPreferences: {
             preload: path.join(__dirname, '../preload/index.js'),
-            sandbox: false,
+            sandbox: false
         }
-    })
+    });
     mainWindowState.manage(mainWindow);
     if (mainWindowState.x && mainWindowState.y) {
         mainWindow.setBounds(mainWindowState); // fix scaling issue on windows
     }
 
-    if (process.env.NODE_ENV === 'development') {
-        mainWindow.webContents.openDevTools()
+    if (is.dev) {
+        mainWindow.webContents.openDevTools();
     }
 
-    //show main window when is ready
+    // show main window when it is ready to be shown
     mainWindow.on('ready-to-show', () => {
-        mainWindow?.show()
-    })
+        mainWindow?.show();
+    });
 
-    //before window close
-    mainWindow.on('close', function () {
-        mainWindow = null
-    })
+    // before window close
+    mainWindow.on('close', function() {
+        mainWindow = null;
+    });
 
     // allows to open external links by adding target="_blank"
     mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -78,15 +83,15 @@ function createWindow(): void {
     // HMR for renderer base on electron-vite cli.
     // Load the remote URL for development or the local html file for production.
     if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-        mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+        mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
     } else {
-        mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
+        mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
     }
 
     autoUpdater.checkForUpdatesAndNotify().then((result) => {
-        console.log("update check result:", result);
+        console.log('update check result:', result);
     }).catch((err) => {
-        console.log("update check error:", err);
+        console.log('update check error:', err);
     });
 }
 
@@ -98,24 +103,25 @@ export function sendToRenderer(channel: string, ...args: any[]) {
 
 let tray: Tray;
 app.whenReady().then(() => {
-    electronApp.setAppUserModelId('com.electron')
     app.on('browser-window-created', (_, window) => {
-        optimizer.watchWindowShortcuts(window)
-    })
+        optimizer.watchWindowShortcuts(window);
+    });
 
     mainWindowState = windowStateKeeper({
         defaultWidth: DEFAULT_WIDTH,
         defaultHeight: DEFAULT_HEIGHT
     });
 
-    createWindow()
+    if (!isSilentStart) {
+        createWindow();
+    }
 
-    app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
-    })
+    app.on('activate', function() {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow(); // need to create window when dock icon is clicked on macOS
+    });
 
-    trayMaker()
-})
+    trayMaker();
+});
 
 let connectionBottom: string = 'Riconnetti';
 
@@ -170,8 +176,8 @@ app.on('browser-window-created', (_, window) => {
 });
 
 app.on('window-all-closed', () => {
-    app.dock?.hide()
-})
+    app.dock?.hide();
+});
 
 app.on('before-quit', async () => {
     await stopVPN();
