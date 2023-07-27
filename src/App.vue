@@ -45,11 +45,11 @@ export default {
             settings
         };
     },
-    beforeMount() {
+    async beforeMount() {
         window.api.on('status-change', this.onStatusChange);
 
         this.currentServer.$patch({
-            status: window.api.isRunning() ? Status.CONNECTED : Status.NOT_RUNNING
+            status: await window.api.isRunning() ? Status.CONNECTED : Status.NOT_RUNNING
         });
     },
     beforeUnmount() {

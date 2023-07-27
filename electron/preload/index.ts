@@ -7,7 +7,6 @@ import {app} from '@electron/remote';
 import {electronAPI} from '@electron-toolkit/preload';
 import {apiPost, getPrivateKey, refreshIp, ResponseError} from '../../src/assets/api';
 import {getCurrentServer} from '../../src/assets/storageUtils';
-import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from '../main/globals';
 import {Status} from '../main/vpn/status';
 
 
@@ -132,25 +131,8 @@ const api = {
         }
     },
 
-    /** Check if VPN is running */
-    isRunning() {
-        return api.isWireGuardRunning() || api.isOpenVPNRunning();
-    },
-    isWireGuardRunning() {
-        try {
-            process.kill(Number(fs.readFileSync(PID_FILE_WIREGUARD)), 0);
-            return true;
-        } catch {
-            return false;
-        }
-    },
-    isOpenVPNRunning() {
-        try {
-            process.kill(Number(fs.readFileSync(PID_FILE_OPENVPN)), 0);
-            return true;
-        } catch {
-            return false;
-        }
+    async isRunning() {
+        return await ipcRenderer.invoke('is-vpn-alive');
     },
 
     externalLink(url: string) {

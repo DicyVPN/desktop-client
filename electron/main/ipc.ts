@@ -3,10 +3,12 @@ import {sendToRenderer, stopVPN, updateTray} from './index';
 import {OpenVPN, WireGuard} from './vpn/vpn';
 import {OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './vpn/monitor';
 import {Status} from './vpn/status';
+import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
+import fs from 'fs';
 
 export function registerAll() {
     // called before any API call, signals to the UI the intent to connect
-    ipcMain.handle('before-connect', () =>{
+    ipcMain.handle('before-connect', () => {
         sendToRenderer('status-change', Status.CONNECTING);
     });
 
@@ -41,4 +43,18 @@ export function registerAll() {
     });
 
     ipcMain.handle('disconnect', () => stopVPN());
+
+    ipcMain.handle('is-vpn-alive', (event) => {
+        try {
+            process.kill(Number(fs.readFileSync(PID_FILE_WIREGUARD)), 0);
+            return true;
+        } catch {
+        }
+        try {
+            process.kill(Number(fs.readFileSync(PID_FILE_OPENVPN)), 0);
+            return true;
+        } catch {
+        }
+        return false;
+    });
 }
