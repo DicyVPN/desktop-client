@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import {isIP} from 'net';
 import ping from 'ping';
 import * as electron from 'electron';
@@ -133,10 +132,6 @@ const api = {
 
     async isRunning() {
         return await ipcRenderer.invoke('is-vpn-alive');
-    },
-
-    externalLink(url: string) {
-        electron.shell.openExternal(url).then(r => console.debug(r));
     },
 
     isIp(ip: string) {
