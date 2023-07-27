@@ -2,10 +2,7 @@
   "name": "dicyvpn-desktop",
   "version": "0.0.7",
   "private": true,
-  "authors": [
-    "Mr7fenix",
-    "AlexDicy"
-  ],
+  "author": "DicyVPN",
   "description": "DicyVPN desktop client",
   "repository": "https://github.com/DicyVPN/desktop-client",
   "main": "./out/main/index.js",
