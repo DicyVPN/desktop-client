@@ -45,15 +45,22 @@ export function registerAll() {
     ipcMain.handle('disconnect', () => stopVPN());
 
     ipcMain.handle('is-vpn-alive', (event) => {
-        try {
-            process.kill(Number(fs.readFileSync(PID_FILE_WIREGUARD)), 0);
-            return true;
-        } catch {
+        if (fs.existsSync(PID_FILE_WIREGUARD)) {
+            try {
+                process.kill(Number(fs.readFileSync(PID_FILE_WIREGUARD)), 0);
+                return true;
+            } catch {
+                fs.unlinkSync(PID_FILE_WIREGUARD);
+            }
         }
-        try {
-            process.kill(Number(fs.readFileSync(PID_FILE_OPENVPN)), 0);
-            return true;
-        } catch {
+
+        if (fs.existsSync(PID_FILE_OPENVPN)) {
+            try {
+                process.kill(Number(fs.readFileSync(PID_FILE_OPENVPN)), 0);
+                return true;
+            } catch {
+                fs.unlinkSync(PID_FILE_OPENVPN);
+            }
         }
         return false;
     });

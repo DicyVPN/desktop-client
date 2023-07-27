@@ -193,6 +193,11 @@ function stopVPNFromPidFile(pidFile: string): Promise<void> {
     if (!fs.existsSync(pidFile)) return Promise.resolve();
 
     return new Promise<void>((resolve, reject) => {
+        if (!fs.existsSync(pidFile)) {
+            resolve();
+            return;
+        }
+
         const pid = Number(fs.readFileSync(pidFile));
 
         try {
@@ -209,6 +214,9 @@ function stopVPNFromPidFile(pidFile: string): Promise<void> {
             } catch (e) {
                 // the process does not exist anymore
                 resolve();
+                if (fs.existsSync(pidFile)) {
+                    fs.unlinkSync(pidFile);
+                }
             }
 
             if ((count += 100) > 10000) {
