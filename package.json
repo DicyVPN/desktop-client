@@ -8,7 +8,7 @@
   "main": "./out/main/index.js",
   "scripts": {
     "start": "electron-vite preview",
-    "dev": "electron-vite dev",
+    "dev": "electron-vite dev --watch",
     "prebuild": "electron-vite build",
     "build:win": "npm run prebuild && electron-builder --win --config",
     "build:mac": "npm run prebuild && electron-builder --mac --config",
