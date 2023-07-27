@@ -1,7 +1,7 @@
 import {spawnSync} from 'child_process';
+import {app} from 'electron';
 
-const userDataPath = process.env.APPDATA ?? (process.platform == 'darwin' ? process.env.HOME + '/Library/Preferences' : process.env.HOME + '/.local/share');
-export const DATA_PATH = userDataPath + '/DicyVPN';
+export const DATA_PATH = app.getPath('userData');
 export const EXECUTABLE_NAME = 'DicyVPN.exe';
 
 export const PID_FILE_WIREGUARD = DATA_PATH + '/wireguard.pid';
