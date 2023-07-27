@@ -74,4 +74,8 @@ export default {
 .back:hover {
     @apply text-gray-200
 }
+
+:deep(.option-card) {
+    @apply bg-gray-700 p-16 rounded shadow-lg;
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full include-sidebar flex flex-col gap-8 p-8">
+    <div class="flex-1 flex flex-col gap-8 p-8">
         <div class="option-card font-light text-gray-200">
             Puoi decidere quali applicazioni o indirizzi IP escludere o includere dalla VPN tramite la funzione Split&nbsp;Tunneling.
             Funziona <b>solo sui server primari</b>.
@@ -178,10 +178,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.option-card {
-    @apply bg-gray-700 p-16 rounded shadow-lg;
-}
-
 .card-inner::-webkit-scrollbar {
     width: 8px;
 }

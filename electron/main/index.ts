@@ -8,6 +8,7 @@ import {autoUpdater} from 'electron-updater';
 import './appinfo';
 import * as ipc from './ipc';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
+import settings from './settings';
 import {getCurrentMonitor} from './vpn/monitor';
 import {Status} from './vpn/status';
 
@@ -52,6 +53,7 @@ function createWindow(): void {
             sandbox: false
         }
     });
+
     mainWindowState.manage(mainWindow);
     if (mainWindowState.x && mainWindowState.y) {
         mainWindow.setBounds(mainWindowState); // fix scaling issue on windows
@@ -67,8 +69,13 @@ function createWindow(): void {
     });
 
     // before window close
-    mainWindow.on('close', function() {
-        mainWindow = null;
+    mainWindow.on('close', (e) => {
+        if (settings.get('app.minimizeOnClose', false)) {
+            e.preventDefault();
+            mainWindow!.minimize();
+        } else {
+            mainWindow = null;
+        }
     });
 
     // allows to open external links by adding target="_blank"
