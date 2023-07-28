@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import {ref, watch} from 'vue';
 
-const minimizeOnClose = ref(window.api.settings.get('app.minimizeOnClose', false));
+const minimizeOnClose = ref(await window.api.settings.get('app.minimizeOnClose', false));
 
 watch(minimizeOnClose, (value) => {
     window.api.settings.set('app.minimizeOnClose', value);

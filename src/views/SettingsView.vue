@@ -21,7 +21,22 @@
             </dialog>
         </div>
 
-        <router-view class="p-12"></router-view>
+        <Suspense>
+            <RouterView class="p-12" v-slot="{ Component }">
+                <template v-if="Component">
+                    <Transition mode="out-in">
+                        <KeepAlive>
+                            <Suspense>
+                                <component :is="Component"></component>
+                                <template #fallback>
+                                    <div class="flex-1 text-center my-32">Caricamento&hellip;</div>
+                                </template>
+                            </Suspense>
+                        </KeepAlive>
+                    </Transition>
+                </template>
+            </RouterView>
+        </Suspense>
     </div>
 </template>
 
