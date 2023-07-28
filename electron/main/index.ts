@@ -25,6 +25,7 @@ if (app.requestSingleInstanceLock()) {
 }
 
 const isSilentStart = process.argv.includes('--silent');
+let isQuitting = false;
 
 electronRemote.initialize();
 ipc.registerAll();
@@ -70,7 +71,7 @@ function createWindow(): void {
 
     // before window close
     mainWindow.on('close', (e) => {
-        if (settings.get('app.minimizeOnClose', false)) {
+        if (!isQuitting && settings.get('app.minimizeOnClose', false)) {
             e.preventDefault();
             mainWindow!.minimize();
         } else {
@@ -184,6 +185,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', async () => {
+    isQuitting = true;
     await stopVPN();
 });
 
