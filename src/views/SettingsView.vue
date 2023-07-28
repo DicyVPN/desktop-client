@@ -63,8 +63,8 @@ export default {
             }
 
             this.loadingLogout = true;
-            apiGet('/v1/logout').then(() => {
-                localStorage.removeItem('token');
+            apiGet('/v1/logout').then(async () => {
+                await window.settings.set('auth', null);
                 this.$router.push('/login');
             }).catch(e => {
                 console.error(e);

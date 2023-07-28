@@ -8,8 +8,8 @@
 import {getRefreshToken} from "@/assets/api";
 
 export default {
-    mounted() {
-        if (getRefreshToken()) {
+    async mounted() {
+        if (await getRefreshToken()) {
             this.$router.push({name: "home"});
         } else {
             this.$router.push({name: "login"});

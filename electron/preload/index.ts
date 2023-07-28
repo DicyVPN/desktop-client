@@ -94,7 +94,7 @@ const api = {
         await ipcRenderer.invoke('connect-to-wireguard', {
             serverIp: con.serverIp,
             port: con.ports.wireguard.udp[0],
-            privateKey: getPrivateKey(),
+            privateKey: await getPrivateKey(),
             publicKey: con.publicKey,
             internalIp: con.internalIp,
             ips: ips,

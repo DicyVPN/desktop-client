@@ -1,102 +1,95 @@
-const apiUrl = "https://api.dicyvpn.com"
+const apiUrl = 'https://api.dicyvpn.com';
 
-export function apiGet(path: string, shouldRefreshToken = true): Promise<Response> {
-    return fetch(apiUrl + path, {
+export async function apiGet(path: string, shouldRefreshToken = true): Promise<Response> {
+    return await fetch(apiUrl + path, {
         method: 'GET',
-        headers: getHeaders()
+        headers: await getHeaders()
     }).then(async (res) => {
         if (res.status === 401 && shouldRefreshToken) {
-            return apiRefresh(getRefreshToken()).then(() => {
-                return apiGet(path, false)
-            })
+            return apiRefresh(await getRefreshToken()).then(() => {
+                return apiGet(path, false);
+            });
         }
         if (!res.ok) {
             throw new ResponseError(await res.text(), res);
         }
-        return res
-    })
+        return res;
+    });
 }
 
-export function apiPost(path: string, body: any, shouldRefreshToken = true): Promise<Response> {
-    return fetch(apiUrl + path, {
+export async function apiPost(path: string, body: any, shouldRefreshToken = true): Promise<Response> {
+    return await fetch(apiUrl + path, {
         method: 'POST',
         body: body,
-        headers: getHeaders()
+        headers: await getHeaders()
     }).then(async (res) => {
         if (res.status === 401 && shouldRefreshToken) {
-            return apiRefresh(getRefreshToken()).then(() => {
-                return apiPost(path, body, false)
-            })
+            return apiRefresh(await getRefreshToken()).then(() => {
+                return apiPost(path, body, false);
+            });
         }
         if (!res.ok) {
             throw new ResponseError(await res.text(), res);
         }
-        return res
-    })
+        return res;
+    });
 }
 
 async function apiRefresh(rToken: string) {
-    let res = await fetch(apiUrl + "/v1/public/refresh-token", {
+    let res = await fetch(apiUrl + '/v1/public/refresh-token', {
         method: 'POST',
-        headers: getHeaders(),
+        headers: await getHeaders(),
         body: JSON.stringify({
             refreshToken: rToken,
-            refreshTokenId: getRefreshTokenId(),
-            accountId: getAccountId()
+            refreshTokenId: await getRefreshTokenId(),
+            accountId: await getAccountId()
         })
-    })
+    });
 
     if (res.status === 401) {
-        console.debug("Refresh Token expired")
-
-        localStorage.removeItem('token')
-        return
+        console.debug('Refresh Token expired');
+        await window.settings.set('auth', null);
+        return;
     }
 
     if (!res.ok) {
-        console.debug("Error refreshing token")
+        console.debug('Error refreshing token');
     }
 
     const newToken = await res.headers.get('X-Auth-Token') || '';
-    setNewToken(newToken)
+    await setNewToken(newToken);
 }
 
-function getHeaders() {
+async function getHeaders() {
     return {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + (getToken() || ""),
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (await getToken() || '')
     };
 }
 
-export function getRefreshToken(): string {
-    return JSON.parse(localStorage.getItem("token") || "{}").refreshToken
+export async function getRefreshToken(): Promise<string> {
+    return await window.settings.get('auth.refreshToken', '');
 }
 
 
-function getToken(): string {
-    return JSON.parse(localStorage.getItem("token") || "{}").token
+async function getToken(): Promise<string | null> {
+    return await window.settings.get('auth.token', null);
 }
 
-function getAccountId(): string {
-    return JSON.parse(localStorage.getItem("token") || "{}").accountId
+async function getAccountId(): Promise<string | null> {
+    return await window.settings.get('auth.accountId', null);
 }
 
-function getRefreshTokenId(): string {
-    return JSON.parse(localStorage.getItem("token") || "{}").refreshTokenId
+async function getRefreshTokenId(): Promise<string | null> {
+    return await window.settings.get('auth.refreshTokenId', null);
 }
 
-export function getPrivateKey(): string {
-    return JSON.parse(localStorage.getItem("token") || "{}").privateKey
+export async function getPrivateKey(): Promise<string | null> {
+    return await window.settings.get('auth.privateKey', null);
 }
 
-function setNewToken(token: string) {
-    localStorage.setItem("token", JSON.stringify({
-        token: token,
-        refreshToken: getRefreshToken(),
-        refreshTokenId: getRefreshTokenId(),
-        accountId: getAccountId(),
-        privateKey: getPrivateKey()
-    }))
+async function setNewToken(token: string) {
+    await window.settings.set('auth.token', token);
 }
 
 export async function refreshIp() {
@@ -108,13 +101,13 @@ export async function refreshIp() {
             text.split('\n').forEach(line => {
                 line.split('=').forEach((value, index) => {
                     if (value === 'ip') {
-                        ip = (line.split('=')[1])
+                        ip = (line.split('=')[1]);
                     }
-                })
-            })
-        })
+                });
+            });
+        });
 
-    return ip
+    return ip;
 }
 
 export class ResponseError extends Error {
@@ -122,13 +115,13 @@ export class ResponseError extends Error {
         code: string;
         message: string;
     } = {
-        code: "UNKNOWN",
-        message: "Unknown error"
+        code: 'UNKNOWN',
+        message: 'Unknown error'
     };
 
     constructor(message: string, public response: Response) {
         super(message);
-        this.name = "ResponseError";
+        this.name = 'ResponseError';
 
         try {
             const json = JSON.parse(message);

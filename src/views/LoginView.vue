@@ -102,13 +102,14 @@ export default {
                         console.debug('Error parsing token', e);
                     }
 
-                    localStorage.setItem('token', JSON.stringify({
+                    await window.settings.set('auth', {
                         token: token,
                         refreshToken: refreshToken,
                         refreshTokenId: refreshTokenId,
                         accountId: accountId,
                         privateKey: privateKey
-                    }));
+                    });
+
                     this.$router.push({name: 'startup'});
                 }
             ).catch((e) => {

@@ -38,6 +38,13 @@ export default {
         };
     },
     setup() {
+        const oldTokenObject = JSON.parse(localStorage.getItem('token') || '{}');
+        if (oldTokenObject.token) {
+            window.settings.set('auth', oldTokenObject);
+            localStorage.removeItem('token');
+            console.log('Migrated token from localStorage to settings');
+        }
+
         const currentServer = useCurrentServerStore();
         const settings = useSettingsStore();
         return {
