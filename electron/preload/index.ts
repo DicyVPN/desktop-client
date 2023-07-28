@@ -143,15 +143,15 @@ const api = {
         return await app.getFileIcon(path, {size: 'large'}).then(image => {
             return image.toDataURL();
         });
-    },
+    }
+};
 
-    settings: {
-        async get<T>(key: string, defaultValue: T): Promise<T> {
-            return ipcRenderer.invoke('get-setting', key, defaultValue);
-        },
-        async set(key: string, value: Value): Promise<void> {
-            return await ipcRenderer.invoke('set-setting', key, value);
-        }
+const settings = {
+    async get<T>(key: string, defaultValue: T): Promise<T> {
+        return ipcRenderer.invoke('get-setting', key, defaultValue);
+    },
+    async set(key: string, value: Value): Promise<void> {
+        return await ipcRenderer.invoke('set-setting', key, value);
     }
 };
 
@@ -159,6 +159,7 @@ if (process.contextIsolated) {
     try {
         contextBridge.exposeInMainWorld('electron', electronAPI);
         contextBridge.exposeInMainWorld('api', api);
+        contextBridge.exposeInMainWorld('settings', settings);
         contextBridge.exposeInMainWorld('ping', ping);
     } catch (error) {
         console.error(error);
@@ -166,8 +167,10 @@ if (process.contextIsolated) {
 } else {
     window.electron = electronAPI;
     window.api = api;
+    window.settings = settings;
     window.ping = ping;
 }
 
 export type API = typeof api;
+export type Settings = typeof settings;
 export type Ping = typeof ping;
