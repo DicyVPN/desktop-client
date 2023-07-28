@@ -6,14 +6,19 @@ type Settings = {
 }
 
 export type Value = null | boolean | string | number | Settings | Value[];
+let loadedSettings: Settings | null = null;
 
 function rawLoadSettingsFile(): Settings {
+    if (loadedSettings !== null) {
+        return loadedSettings;
+    }
     const settingsFilePath = DATA_PATH + '/settings.json';
     if (!fs.existsSync(settingsFilePath)) {
         return {};
     }
     const rawSettings = fs.readFileSync(settingsFilePath, 'utf8');
-    return JSON.parse(rawSettings);
+    loadedSettings = JSON.parse(rawSettings);
+    return loadedSettings!;
 }
 
 function rawSaveSettingsFile(settings: Settings) {
@@ -34,7 +39,7 @@ export default {
             if (value === null || typeof value !== 'object') {
                 return defaultValue;
             }
-            value = value[k];
+            value = value[k] as Settings;
         }
         return value === null || value === undefined ? defaultValue : value;
     },
