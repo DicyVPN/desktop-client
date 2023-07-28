@@ -147,11 +147,11 @@ const api = {
 };
 
 const settings = {
-    async get<T>(key: string, defaultValue: T): Promise<T> {
+    get<T>(key: string, defaultValue: T): Promise<T> {
         return ipcRenderer.invoke('get-setting', key, defaultValue);
     },
-    async set(key: string, value: Value): Promise<void> {
-        return await ipcRenderer.invoke('set-setting', key, value);
+    set(key: string, value: Value): Promise<void> {
+        return ipcRenderer.invoke('set-setting', key, value);
     }
 };
 
