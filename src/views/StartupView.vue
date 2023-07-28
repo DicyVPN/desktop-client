@@ -9,7 +9,7 @@ import {getRefreshToken} from "@/assets/api";
 
 export default {
     async mounted() {
-        if (await getRefreshToken()) {
+        if (await getRefreshToken(window.settings)) {
             this.$router.push({name: "home"});
         } else {
             this.$router.push({name: "login"});

@@ -82,7 +82,7 @@ const api = {
         const previousServer = getCurrentServer();
         await ipcRenderer.invoke('before-connect');
 
-        const con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'wireguard'}))
+        const con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'wireguard'}), true, settings)
             .then((r) => r.json());
 
         const splitTunneling = JSON.parse(localStorage.getItem('settings') || '{}').splitTunneling ?? {};
@@ -94,7 +94,7 @@ const api = {
         await ipcRenderer.invoke('connect-to-wireguard', {
             serverIp: con.serverIp,
             port: con.ports.wireguard.udp[0],
-            privateKey: await getPrivateKey(),
+            privateKey: await getPrivateKey(settings),
             publicKey: con.publicKey,
             internalIp: con.internalIp,
             ips: ips,
@@ -124,7 +124,7 @@ const api = {
                 await apiPost('/v1/servers/disconnect/' + id, JSON.stringify({
                     'type': type,
                     'protocol': protocol
-                }));
+                }), true, settings);
             } catch (e) {
                 console.error(e);
             }

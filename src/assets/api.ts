@@ -1,12 +1,14 @@
+import type {Settings} from '../../electron/preload';
+
 const apiUrl = 'https://api.dicyvpn.com';
 
-export async function apiGet(path: string, shouldRefreshToken = true): Promise<Response> {
+export async function apiGet(path: string, shouldRefreshToken = true, settings: Settings = window.settings): Promise<Response> {
     return await fetch(apiUrl + path, {
         method: 'GET',
-        headers: await getHeaders()
+        headers: await getHeaders(settings)
     }).then(async (res) => {
         if (res.status === 401 && shouldRefreshToken) {
-            return apiRefresh(await getRefreshToken()).then(() => {
+            return apiRefresh(await getRefreshToken(settings), settings).then(() => {
                 return apiGet(path, false);
             });
         }
@@ -17,15 +19,15 @@ export async function apiGet(path: string, shouldRefreshToken = true): Promise<R
     });
 }
 
-export async function apiPost(path: string, body: any, shouldRefreshToken = true): Promise<Response> {
+export async function apiPost(path: string, body: any, shouldRefreshToken = true, settings: Settings = window.settings): Promise<Response> {
     return await fetch(apiUrl + path, {
         method: 'POST',
         body: body,
-        headers: await getHeaders()
+        headers: await getHeaders(settings)
     }).then(async (res) => {
         if (res.status === 401 && shouldRefreshToken) {
-            return apiRefresh(await getRefreshToken()).then(() => {
-                return apiPost(path, body, false);
+            return apiRefresh(await getRefreshToken(settings), settings).then(() => {
+                return apiPost(path, body, false, settings);
             });
         }
         if (!res.ok) {
@@ -35,20 +37,20 @@ export async function apiPost(path: string, body: any, shouldRefreshToken = true
     });
 }
 
-async function apiRefresh(rToken: string) {
+async function apiRefresh(rToken: string, settings: Settings) {
     let res = await fetch(apiUrl + '/v1/public/refresh-token', {
         method: 'POST',
-        headers: await getHeaders(),
+        headers: await getHeaders(settings),
         body: JSON.stringify({
             refreshToken: rToken,
-            refreshTokenId: await getRefreshTokenId(),
-            accountId: await getAccountId()
+            refreshTokenId: await getRefreshTokenId(settings),
+            accountId: await getAccountId(settings)
         })
     });
 
     if (res.status === 401) {
         console.debug('Refresh Token expired');
-        await window.settings.set('auth', null);
+        await settings.set('auth', null);
         return;
     }
 
@@ -57,39 +59,39 @@ async function apiRefresh(rToken: string) {
     }
 
     const newToken = await res.headers.get('X-Auth-Token') || '';
-    await setNewToken(newToken);
+    await setNewToken(newToken, settings);
 }
 
-async function getHeaders() {
+async function getHeaders(settings: Settings) {
     return {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + (await getToken() || '')
+        'Authorization': 'Bearer ' + (await getToken(settings) || '')
     };
 }
 
-export async function getRefreshToken(): Promise<string> {
-    return await window.settings.get('auth.refreshToken', '');
+export async function getRefreshToken(settings: Settings): Promise<string> {
+    return await settings.get('auth.refreshToken', '');
 }
 
 
-async function getToken(): Promise<string | null> {
-    return await window.settings.get('auth.token', null);
+async function getToken(settings: Settings): Promise<string | null> {
+    return await settings.get('auth.token', null);
 }
 
-async function getAccountId(): Promise<string | null> {
-    return await window.settings.get('auth.accountId', null);
+async function getAccountId(settings: Settings): Promise<string | null> {
+    return await settings.get('auth.accountId', null);
 }
 
-async function getRefreshTokenId(): Promise<string | null> {
-    return await window.settings.get('auth.refreshTokenId', null);
+async function getRefreshTokenId(settings: Settings): Promise<string | null> {
+    return await settings.get('auth.refreshTokenId', null);
 }
 
-export async function getPrivateKey(): Promise<string | null> {
-    return await window.settings.get('auth.privateKey', null);
+export async function getPrivateKey(settings: Settings): Promise<string | null> {
+    return await settings.get('auth.privateKey', null);
 }
 
-async function setNewToken(token: string) {
-    await window.settings.set('auth.token', token);
+async function setNewToken(token: string, settings: Settings) {
+    await settings.set('auth.token', token);
 }
 
 export async function refreshIp() {
