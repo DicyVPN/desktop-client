@@ -216,22 +216,27 @@ function stopVPNFromPidFile(pidFile: string): Promise<void> {
             process.kill(pid, 'SIGTERM');
         } catch (e) {
             // the process does not exist anymore
+            if (fs.existsSync(pidFile)) {
+                fs.unlinkSync(pidFile);
+            }
             resolve();
         }
 
         let count = 0;
-        setInterval(() => {
+        const interval = setInterval(() => {
             try {
                 process.kill(pid, 0);
             } catch (e) {
                 // the process does not exist anymore
-                resolve();
                 if (fs.existsSync(pidFile)) {
                     fs.unlinkSync(pidFile);
                 }
+                clearInterval(interval);
+                resolve();
             }
 
             if ((count += 100) > 10000) {
+                clearInterval(interval);
                 reject(new Error('Timeout process kill'));
             }
         }, 100);
