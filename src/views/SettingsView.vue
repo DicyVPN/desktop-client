@@ -43,7 +43,7 @@
 <script>
 import OptionTitle from '@/components/settings/SettingCategory.vue';
 import Button from '@/components/icons/Button.vue';
-import {apiGet} from '@/utils/api';
+import useApi from '@/composables/useApi';
 import {throwError} from '@/global';
 
 export default {
@@ -63,7 +63,7 @@ export default {
             }
 
             this.loadingLogout = true;
-            apiGet('/v1/logout').then(async () => {
+            useApi().get('/v1/logout').then(async () => {
                 await window.settings.set('auth', null);
                 this.$router.push('/login');
             }).catch(e => {

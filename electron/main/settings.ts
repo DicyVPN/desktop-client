@@ -26,22 +26,22 @@ function rawSaveSettingsFile(settings: Settings) {
     fs.writeFileSync(settingsFilePath, JSON.stringify(settings, null, 2));
 }
 
-export default {
+const settingsApi = {
     /**
      * @param key The key to get the value for. Can be a nested key, e.g. `foo.bar.baz` or `foo[0].bar`.
      * @param defaultValue The value to return if the key does not exist.
      */
-    get(key: string, defaultValue: Value): Value {
+    get<T extends Value | undefined>(key: string, defaultValue?: T): T {
         const settings = rawLoadSettingsFile();
         const keys = key.split(/[.\[\]]/).filter(k => k.length > 0);
         let value: Value = settings;
         for (const k of keys) {
             if (value === null || typeof value !== 'object') {
-                return defaultValue;
+                return defaultValue as T;
             }
             value = value[k] as Settings;
         }
-        return value === null || value === undefined ? defaultValue : value;
+        return value === null || value === undefined ? defaultValue as T : value as T;
     },
     /**
      * @param key The key to set the value for. Can be a nested key, e.g. `foo.bar.baz` or `foo[0].bar`.
@@ -61,3 +61,6 @@ export default {
         rawSaveSettingsFile(settings);
     }
 };
+
+export default settingsApi;
+export type SettingsAPI = typeof settingsApi;

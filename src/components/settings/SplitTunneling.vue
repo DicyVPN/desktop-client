@@ -102,7 +102,7 @@ export default defineComponent({
                         name: i.name,
                         path: i.path,
                         enabled: true,
-                        icon: await window.api.getIcon(i.path)
+                        icon: await window.preload.getIcon(i.path)
                     });
                     this.saveChange();
                 }
@@ -116,7 +116,7 @@ export default defineComponent({
                 return;
             }
 
-            switch (window.api.isIp(ip[0])) {
+            switch (window.preload.isIp(ip[0])) {
                 case 0:
                     throwError('L\'indirizzo IP inserito non è valido');
                     return;

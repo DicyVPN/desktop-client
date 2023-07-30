@@ -53,14 +53,14 @@ export default {
         };
     },
     async beforeMount() {
-        window.api.on('status-change', this.onStatusChange);
+        window.preload.on('status-change', this.onStatusChange);
 
         this.currentServer.$patch({
-            status: await window.api.isRunning() ? Status.CONNECTED : Status.NOT_RUNNING
+            status: await window.preload.isRunning() ? Status.CONNECTED : Status.NOT_RUNNING
         });
     },
     beforeUnmount() {
-        window.api.removeListener('status-change', this.onStatusChange);
+        window.preload.removeListener('status-change', this.onStatusChange);
     },
     methods: {
         onStatusChange(event: Electron.IpcRendererEvent, status: Status) {

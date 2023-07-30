@@ -5,15 +5,13 @@
 </template>
 
 <script>
-import {getRefreshToken} from "@/utils/api";
-
 export default {
     async mounted() {
-        if (await getRefreshToken(window.settings)) {
-            this.$router.push({name: "home"});
+        if (window.settings.get('auth.refreshToken')) {
+            this.$router.push({name: 'home'});
         } else {
-            this.$router.push({name: "login"});
+            this.$router.push({name: 'login'});
         }
     }
-}
+};
 </script>

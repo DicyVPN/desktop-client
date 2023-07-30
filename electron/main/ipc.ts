@@ -66,11 +66,12 @@ export function registerAll() {
         return false;
     });
 
-    ipcMain.handle('get-setting', (event, key, defaultValue) => {
-        return settings.get(key, defaultValue);
+    ipcMain.on('settings-get', (event, key, defaultValue) => {
+        event.returnValue = settings.get(key, defaultValue);
     });
 
-    ipcMain.handle('set-setting', (event, key, value) => {
+    ipcMain.on('settings-set', (event, key, value) => {
         settings.set(key, value);
+        event.returnValue = null;
     });
 }

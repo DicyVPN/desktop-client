@@ -4,14 +4,14 @@ import * as electron from 'electron';
 import {contextBridge, ipcRenderer} from 'electron';
 import {app} from '@electron/remote';
 import {electronAPI} from '@electron-toolkit/preload';
-import {apiPost, getPrivateKey, refreshIp, ResponseError} from '@/utils/api';
-import {getCurrentServer} from '@/utils/storageUtils';
+import {createApi, refreshIp, ResponseError} from '../../src//utils/api';
+import {getCurrentServer} from '../../src/utils/storageUtils';
 import {Status} from '../main/vpn/status';
-import type {Value} from '../main/settings';
+import type {SettingsAPI, Value} from '../main/settings';
 
 
 ipcRenderer.on('disconnect', async () => {
-    await api.stopVPN();
+    await preload.stopVPN();
 });
 
 ipcRenderer.on('reconnect-preload', () => {
@@ -21,10 +21,10 @@ ipcRenderer.on('reconnect-preload', () => {
     let id = currentServer.id;
     let type = currentServer.type;
 
-    api.startVPN(id, type).then(r => console.log(r));
+    preload.startVPN(id, type).then(r => console.log(r));
 });
 
-const api = {
+const preload = {
     on(channel: string, listener: (event: electron.IpcRendererEvent, ...args: any[]) => void) {
         ipcRenderer.on(channel, listener);
     },
@@ -40,9 +40,9 @@ const api = {
         // TODO: Check if wiresock or openvpn is installed
         try {
             if (type == 'secondary') {
-                await api.startOpenVPN(id, type);
+                await preload.startOpenVPN(id, type);
             } else {
-                await api.startWireGuard(id, type);
+                await preload.startWireGuard(id, type);
             }
         } catch (e) {
             if (e instanceof ResponseError) {
@@ -60,8 +60,7 @@ const api = {
         const previousServer = getCurrentServer();
         await ipcRenderer.invoke('before-connect');
 
-        let con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'openvpn'}))
-            .then((r) => r.json());
+        let con = await api.post<any>('/v1/servers/connect/' + id, {'type': type, 'protocol': 'openvpn'});
 
         await ipcRenderer.invoke('connect-to-openvpn', {
             serverIp: con.serverIp,
@@ -70,7 +69,7 @@ const api = {
             username: con.username,
             password: con.password
         });
-        await api.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
+        await preload.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
         await refreshIp();
     },
 
@@ -82,8 +81,7 @@ const api = {
         const previousServer = getCurrentServer();
         await ipcRenderer.invoke('before-connect');
 
-        const con = await apiPost('/v1/servers/connect/' + id, JSON.stringify({'type': type, 'protocol': 'wireguard'}), true, settings)
-            .then((r) => r.json());
+        const con = await api.post<any>('/v1/servers/connect/' + id, {'type': type, 'protocol': 'wireguard'});
 
         const splitTunneling = JSON.parse(localStorage.getItem('settings') || '{}').splitTunneling ?? {};
         const ips = splitTunneling.ipList ?? [];
@@ -94,7 +92,7 @@ const api = {
         await ipcRenderer.invoke('connect-to-wireguard', {
             serverIp: con.serverIp,
             port: con.ports.wireguard.udp[0],
-            privateKey: await getPrivateKey(settings),
+            privateKey: api.getPrivateKey(),
             publicKey: con.publicKey,
             internalIp: con.internalIp,
             ips: ips,
@@ -103,7 +101,7 @@ const api = {
             isAppsAllowlist: isAppsAllowlist
         });
 
-        await api.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
+        await preload.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
         await refreshIp();
     },
 
@@ -114,17 +112,17 @@ const api = {
     async stopVPN() {
         const previousServer = getCurrentServer();
         await ipcRenderer.invoke('disconnect');
-        await api.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
+        await preload.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
     },
 
     // to be called when user disconnects from a server, or after switching servers
     async sendDisconnect(id: string, type: string, protocol: string, status: Status) {
         if (status === Status.CONNECTED || status === Status.CONNECTING) {
             try {
-                await apiPost('/v1/servers/disconnect/' + id, JSON.stringify({
+                await api.post('/v1/servers/disconnect/' + id, {
                     'type': type,
                     'protocol': protocol
-                }), true, settings);
+                });
             } catch (e) {
                 console.error(e);
             }
@@ -146,19 +144,21 @@ const api = {
     }
 };
 
-const settings = {
-    get<T>(key: string, defaultValue: T): Promise<T> {
-        return ipcRenderer.invoke('get-setting', key, defaultValue);
+const settings: SettingsAPI = {
+    get<T>(key: string, defaultValue?: T): T {
+        return ipcRenderer.sendSync('settings-get', key, defaultValue);
     },
-    set(key: string, value: Value): Promise<void> {
-        return ipcRenderer.invoke('set-setting', key, value);
+    set(key: string, value: Value) {
+        return ipcRenderer.sendSync('settings-set', key, value);
     }
 };
+
+const api = createApi(settings);
 
 if (process.contextIsolated) {
     try {
         contextBridge.exposeInMainWorld('electron', electronAPI);
-        contextBridge.exposeInMainWorld('api', api);
+        contextBridge.exposeInMainWorld('preload', preload);
         contextBridge.exposeInMainWorld('settings', settings);
         contextBridge.exposeInMainWorld('ping', ping);
     } catch (error) {
@@ -166,11 +166,11 @@ if (process.contextIsolated) {
     }
 } else {
     window.electron = electronAPI;
-    window.api = api;
+    window.preload = preload;
     window.settings = settings;
     window.ping = ping;
 }
 
-export type API = typeof api;
+export type Preload = typeof preload;
 export type Settings = typeof settings;
 export type Ping = typeof ping;

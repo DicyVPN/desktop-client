@@ -41,7 +41,7 @@ export default {
             }
 
             try {
-                await window.api.startVPN(this.server.id, this.server.type).then(() => {
+                await window.preload.startVPN(this.server.id, this.server.type).then(() => {
                     this.currentServer.$patch({
                             id: this.server.id,
                             type: this.server.type,

@@ -55,7 +55,8 @@
 import ShowIcon from '@/views/ShowIcon.vue';
 import Button from '@/components/icons/Button.vue';
 import WorldMap from '@/components/home/map/WorldMap.vue';
-import {apiPost, ResponseError} from '@/utils/api';
+import {ResponseError} from '@/utils/api';
+import useApi from '@/composables/useApi';
 
 export default {
     components: {WorldMap, Button, ShowIcon},
@@ -80,65 +81,68 @@ export default {
         async login() {
             this.errorClass = '';
             this.loading = true;
-            apiPost('/v1/public/login', JSON.stringify({
-                email: this.email,
-                password: this.password,
-                isDevice: true
-            }), false).then(async (res) => {
+            useApi().rawRequest('/v1/public/login', {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: this.email,
+                    password: this.password,
+                    isDevice: true
+                })
+            }, false).then(async (res) => {
                     this.loading = false;
+                    if (res.ok) {
+                        let token = res.headers.get('X-Auth-Token');
+                        let refreshToken = res.headers.get('X-Auth-Refresh-Token');
+                        let privateKey = res.headers.get('X-Auth-Private-Key');
+                        let refreshTokenId = '';
+                        let accountId = '';
 
-                    let token = res.headers.get('X-Auth-Token');
-                    let refreshToken = res.headers.get('X-Auth-Refresh-Token');
-                    let privateKey = res.headers.get('X-Auth-Private-Key');
-                    let refreshTokenId = '';
-                    let accountId = '';
+                        try {
+                            const [, payload] = token.split('.');
+                            const json = JSON.parse(atob(payload));
+                            refreshTokenId = json.refreshTokenId;
+                            accountId = json._id;
+                        } catch (e) {
+                            console.debug('Error parsing token', e);
+                        }
 
-                    try {
-                        const [, payload] = token.split('.');
-                        const json = JSON.parse(atob(payload));
-                        refreshTokenId = json.refreshTokenId;
-                        accountId = json._id;
-                    } catch (e) {
-                        console.debug('Error parsing token', e);
+                        window.settings.set('auth', {
+                            token: token,
+                            refreshToken: refreshToken,
+                            refreshTokenId: refreshTokenId,
+                            accountId: accountId,
+                            privateKey: privateKey
+                        });
+
+                        this.$router.push({name: 'startup'});
+                    } else {
+                        if (res.status === 400 || res.status === 401) {
+                            this.errorClass = 'border-red-400 border-2 rounded';
+                            return;
+                        }
+
+                        const e = new ResponseError(await res.text(), res);
+                        switch (e.reply.code) {
+                            case 'NO_SUBSCRIPTION':
+                                this.dialogMessage = 'Non hai un abbonamento attivo';
+                                this.dialogLink = 'https://dicyvpn.com/prices';
+                                this.dialogLinkText = 'Vedi gli abbonamenti';
+                                this.$refs.dialog.showModal();
+                                return;
+                            case 'DEVICES_LIMIT_REACHED':
+                                this.dialogMessage = 'Hai raggiunto il limite di dispositivi';
+                                this.dialogLink = 'https://dicyvpn.com/account';
+                                this.dialogLinkText = 'Controlla la lista dei dispositivi';
+                                this.$refs.dialog.showModal();
+                                return;
+                        }
+                        alert(e.reply.message);
                     }
-
-                    await window.settings.set('auth', {
-                        token: token,
-                        refreshToken: refreshToken,
-                        refreshTokenId: refreshTokenId,
-                        accountId: accountId,
-                        privateKey: privateKey
-                    });
-
-                    this.$router.push({name: 'startup'});
                 }
             ).catch((e) => {
                 this.loading = false;
                 console.error(e);
-                if (e instanceof ResponseError) {
-                    if (e.status === 400 || e.status === 401) {
-                        this.errorClass = 'border-red-400 border-2 rounded';
-                        return;
-                    }
-
-                    switch (e.reply.code) {
-                        case 'NO_SUBSCRIPTION':
-                            this.dialogMessage = 'Non hai un abbonamento attivo';
-                            this.dialogLink = 'https://dicyvpn.com/prices';
-                            this.dialogLinkText = 'Vedi gli abbonamenti';
-                            this.$refs.dialog.showModal();
-                            return;
-                        case 'DEVICES_LIMIT_REACHED':
-                            this.dialogMessage = 'Hai raggiunto il limite di dispositivi';
-                            this.dialogLink = 'https://dicyvpn.com/account';
-                            this.dialogLinkText = 'Controlla la lista dei dispositivi';
-                            this.$refs.dialog.showModal();
-                            return;
-                    }
-                    alert(e.reply.message);
-                } else {
-                    alert('Errore di connessione');
-                }
+                alert('Errore di connessione');
             });
         }
     }

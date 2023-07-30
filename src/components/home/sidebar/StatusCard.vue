@@ -72,12 +72,12 @@ export default {
             }
 
             if (this.currentServer.status === Status.CONNECTED) {
-                window.api.stopVPN().then(() => {
+                window.preload.stopVPN().then(() => {
                     setTimeout(() => this.refreshIp(), 2000);
                 });
             } else {
                 try {
-                    await window.api.startVPN(this.currentServer.id, this.currentServer.type);
+                    await window.preload.startVPN(this.currentServer.id, this.currentServer.type);
                 } catch (e) {
                     if (e.message === 'NO_SUBSCRIPTION') {
                         showMissingSubscription.value = true;

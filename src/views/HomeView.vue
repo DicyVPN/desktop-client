@@ -30,7 +30,7 @@ import Logo from "@/components/icons/Logo.vue";
 import Sidebar from "@/components/home/sidebar/Sidebar.vue";
 import InformationCard from "@/components/home/InformationCard.vue";
 import WorldMap from "@/components/home/map/WorldMap.vue";
-import {apiGet} from "@/utils/api";
+import useApi from '@/composables/useApi';
 
 const scaleModifier = 0.5;
 export default {
@@ -48,7 +48,7 @@ export default {
         };
     },
     async mounted() {
-        this.serverList = await apiGet("/v1/servers/list").then(res => res.json());
+        this.serverList = await useApi().get("/v1/servers/list");
 
         this.loadingStatus = false;
     },

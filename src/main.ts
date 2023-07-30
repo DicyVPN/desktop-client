@@ -1,7 +1,7 @@
 import {createApp, watch} from 'vue'
 import {createPinia} from 'pinia'
 import type {ElectronAPI} from '@electron-toolkit/preload';
-import type {API, Settings, Ping} from '../electron/preload';
+import type {Preload, Settings, Ping} from '../electron/preload';
 import App from './App.vue'
 import router from './router'
 
@@ -78,7 +78,7 @@ declare global {
     // noinspection JSUnusedGlobalSymbols
     interface Window {
         electron: ElectronAPI;
-        api: API;
+        preload: Preload;
         settings: Settings;
         ping: Ping;
     }
