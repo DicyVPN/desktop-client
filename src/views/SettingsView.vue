@@ -43,7 +43,7 @@
 <script>
 import OptionTitle from '@/components/settings/SettingCategory.vue';
 import Button from '@/components/icons/Button.vue';
-import {apiGet} from '@/assets/api';
+import {apiGet} from '@/utils/api';
 import {throwError} from '@/global';
 
 export default {

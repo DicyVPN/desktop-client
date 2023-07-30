@@ -4,8 +4,8 @@ import * as electron from 'electron';
 import {contextBridge, ipcRenderer} from 'electron';
 import {app} from '@electron/remote';
 import {electronAPI} from '@electron-toolkit/preload';
-import {apiPost, getPrivateKey, refreshIp, ResponseError} from '../../src/assets/api';
-import {getCurrentServer} from '../../src/assets/storageUtils';
+import {apiPost, getPrivateKey, refreshIp, ResponseError} from '@/utils/api';
+import {getCurrentServer} from '@/utils/storageUtils';
 import {Status} from '../main/vpn/status';
 import type {Value} from '../main/settings';
 

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {getRefreshToken} from "@/assets/api";
+import {getRefreshToken} from "@/utils/api";
 
 export default {
     async mounted() {

@@ -30,7 +30,7 @@ import Logo from "@/components/icons/Logo.vue";
 import Sidebar from "@/components/home/sidebar/Sidebar.vue";
 import InformationCard from "@/components/home/InformationCard.vue";
 import WorldMap from "@/components/home/map/WorldMap.vue";
-import {apiGet} from "@/assets/api";
+import {apiGet} from "@/utils/api";
 
 const scaleModifier = 0.5;
 export default {
