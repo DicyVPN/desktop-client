@@ -11,6 +11,7 @@ import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
 import settings from './settings';
 import {getCurrentMonitor} from './vpn/monitor';
 import {Status} from './vpn/status';
+import {connect} from './vpn/vpn';
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
@@ -24,6 +25,7 @@ if (app.requestSingleInstanceLock()) {
     app.quit();
 }
 
+const isStartup = process.argv.includes('--startup');
 const isSilentStart = process.argv.includes('--silent');
 let isQuitting = false;
 
@@ -106,7 +108,6 @@ export function sendToRenderer(channel: string, ...args: any[]) {
     });
 }
 
-let tray: Tray;
 app.whenReady().then(() => {
     app.on('browser-window-created', (_, window) => {
         optimizer.watchWindowShortcuts(window);
@@ -128,6 +129,19 @@ app.whenReady().then(() => {
     trayMaker();
 });
 
+if (isStartup && settings.get('app.connectOnStartup') && settings.get('auth.token')) {
+    const lastServer = settings.get<{id: string, type: string, protocol: 'wireguard' | 'openvpn'}>('lastServer');
+    if (!lastServer) {
+        console.info('No last server found, skipping startup connection');
+    } else {
+        console.info('Connecting to last server on startup, id:', lastServer.id, 'type:', lastServer.type);
+        connect(lastServer.id, lastServer.type, lastServer.protocol, {}).then(() => {
+            console.info('Startup connection successful');
+        });
+    }
+}
+
+let tray: Tray;
 let connectionBottom: string = 'Riconnetti';
 
 export function updateTray(isConnected: boolean) {

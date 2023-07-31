@@ -12,11 +12,21 @@ export interface VPN {
 
 const api = createApi(settings);
 
-export async function connectToWireGuard(id: string, type: string, splitTunneling: {
+type SplitTunneling = {
     authorization?: 'allow' | 'deny';
     appList?: {name: string; path: string, enabled: boolean}[];
     ipList?: {ip: string, enabled: boolean}[];
-}) {
+};
+
+export async function connect(id: string, type: string, protocol: 'wireguard' | 'openvpn', splitTunneling: SplitTunneling) {
+    if (protocol === 'wireguard') {
+        await connectToWireGuard(id, type, splitTunneling);
+    } else {
+        await connectToOpenVPN(id, type);
+    }
+}
+
+export async function connectToWireGuard(id: string, type: string, splitTunneling: SplitTunneling) {
     try {
         const info = await api.post<any>('/v1/servers/connect/' + id, {'type': type, 'protocol': 'wireguard'});
 
