@@ -11,7 +11,6 @@
 <script>
 import Server from "@/components/home/sidebar/serverList/Server.vue";
 import DropdownTitle from "@/components/home/sidebar/serverList/secondary/dropdown/DropdownTitle.vue";
-import {useCurrentServerStore} from "@/stores/currentServer";
 
 export default {
     name: 'Dropdown',
@@ -33,12 +32,6 @@ export default {
                 this.selectedCountry = null
             } else this.selectedCountry = country
         },
-    },
-    setup() {
-        const currentServer = useCurrentServerStore();
-        return {
-            currentServer
-        }
     }
 }
 </script>
