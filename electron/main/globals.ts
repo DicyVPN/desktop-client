@@ -2,7 +2,7 @@ import {spawnSync} from 'child_process';
 import {app} from 'electron';
 
 export const DATA_PATH = app.getPath('userData');
-export const EXECUTABLE_NAME = 'DicyVPN.exe';
+export const EXECUTABLE_NAME = app.getPath('exe');
 
 export const PID_FILE_WIREGUARD = DATA_PATH + '/wireguard.pid';
 export const PID_FILE_OPENVPN = DATA_PATH + '/openvpn.pid';

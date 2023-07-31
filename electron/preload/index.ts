@@ -57,19 +57,8 @@ const preload = {
      *  @param type - type of the server (Primary or Secondary)
      */
     async startOpenVPN(id: string, type: string) {
-        const previousServer = getCurrentServer();
         await ipcRenderer.invoke('before-connect');
-
-        let con = await api.post<any>('/v1/servers/connect/' + id, {'type': type, 'protocol': 'openvpn'});
-
-        await ipcRenderer.invoke('connect-to-openvpn', {
-            serverIp: con.serverIp,
-            port: con.ports.openvpn.tcp[0],
-            protocol: 'tcp',
-            username: con.username,
-            password: con.password
-        });
-        await preload.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
+        await ipcRenderer.invoke('connect-to-openvpn', {id, type});
         await refreshIp();
     },
 
@@ -78,30 +67,9 @@ const preload = {
      *  @param type - type of the server (Primary or Secondary)
      */
     async startWireGuard(id: string, type: string) {
-        const previousServer = getCurrentServer();
         await ipcRenderer.invoke('before-connect');
-
-        const con = await api.post<any>('/v1/servers/connect/' + id, {'type': type, 'protocol': 'wireguard'});
-
         const splitTunneling = JSON.parse(localStorage.getItem('settings') || '{}').splitTunneling ?? {};
-        const ips = splitTunneling.ipList ?? [];
-        const isIpsAllowlist = splitTunneling.authorization === 'allow';
-        const apps = (splitTunneling.appList ?? []).filter((app: any) => app.enabled).map((app: any) => app.name);
-        const isAppsAllowlist = splitTunneling.authorization === 'allow';
-
-        await ipcRenderer.invoke('connect-to-wireguard', {
-            serverIp: con.serverIp,
-            port: con.ports.wireguard.udp[0],
-            privateKey: api.getPrivateKey(),
-            publicKey: con.publicKey,
-            internalIp: con.internalIp,
-            ips: ips,
-            isIpsAllowlist: isIpsAllowlist,
-            apps: apps,
-            isAppsAllowlist: isAppsAllowlist
-        });
-
-        await preload.sendDisconnect(previousServer.id, previousServer.type, previousServer.protocol, previousServer.status);
+        await ipcRenderer.invoke('connect-to-wireguard', {id, type, splitTunneling});
         await refreshIp();
     },
 

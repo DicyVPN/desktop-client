@@ -1,7 +1,6 @@
 import {ipcMain} from 'electron';
-import {sendToRenderer, stopVPN, updateTray} from './index';
-import {OpenVPN, WireGuard} from './vpn/vpn';
-import {OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './vpn/monitor';
+import {sendToRenderer, stopVPN} from './index';
+import {connectToOpenVPN, connectToWireGuard} from './vpn/vpn';
 import {Status} from './vpn/status';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
 import fs from 'fs';
@@ -13,34 +12,14 @@ export function registerAll() {
         sendToRenderer('status-change', Status.CONNECTING);
     });
 
-    ipcMain.handle('connect-to-wireguard', async (event, args) => {
-        await stopVPN(true);
-
-        console.log('Connecting to a WireGuard server', args);
-        const {serverIp, port, privateKey, publicKey, internalIp, ips, isIpsAllowlist, apps, isAppsAllowlist} = args;
-        const wireguard = new WireGuard(
-            serverIp, port, privateKey, publicKey, internalIp,
-            ips, isIpsAllowlist, apps, isAppsAllowlist
-        );
-
-        await wireguard.start();
-
-        setCurrentMonitor(new WireGuardMonitor(Status.CONNECTING, status => sendToRenderer('status-change', status)));
-        updateTray(true);
-        console.log('WireGuard instance started');
+    ipcMain.handle('connect-to-wireguard', (event, args) => {
+        const {id, type, splitTunneling} = args;
+        return connectToWireGuard(id, type, splitTunneling);
     });
 
-    ipcMain.handle('connect-to-openvpn', async (event, args) => {
-        await stopVPN(true);
-
-        console.log('Connecting to an OpenVPN server', args);
-        const {serverIp, port, protocol, username, password} = args;
-        const openvpn = new OpenVPN(serverIp, port, protocol, username, password);
-
-        await openvpn.start();
-        setCurrentMonitor(new OpenVPNMonitor(Status.CONNECTING, status => sendToRenderer('status-change', status)));
-        updateTray(true);
-        console.log('OpenVPN instance started');
+    ipcMain.handle('connect-to-openvpn', (event, args) => {
+        const {id, type} = args;
+        return connectToOpenVPN(id, type);
     });
 
     ipcMain.handle('disconnect', () => stopVPN());
