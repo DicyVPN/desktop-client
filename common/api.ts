@@ -2,7 +2,7 @@ import type {SettingsAPI} from '../electron/main/settings';
 
 const apiUrl = 'https://api.dicyvpn.com';
 
-export const createApi = (settings: SettingsAPI) => {
+export const createApi = (settings: SettingsAPI, onInvalidRefreshToken: () => void) => {
     return {
         async get<T>(path: string, isPublic = false): Promise<T> {
             const response = await this.rawRequest(path, {
@@ -51,6 +51,7 @@ export const createApi = (settings: SettingsAPI) => {
             if (response.status === 401) {
                 console.debug('Refresh token expired/invalid');
                 settings.set('auth', null);
+                onInvalidRefreshToken();
                 throw new UnauthorizedError('Refresh token is invalid');
             }
             if (!response.ok) {

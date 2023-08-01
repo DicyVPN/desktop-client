@@ -5,12 +5,13 @@ import {OpenVPN} from './openvpn';
 import {OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './monitor';
 import {Status} from './status';
 import {createApi} from '../../../common/api';
+import {INVALID_REFRESH_TOKEN} from '../../../common/channels';
 
 export interface VPN {
     start(): Promise<void>;
 }
 
-const api = createApi(settings);
+const api = createApi(settings, () => sendToRenderer(INVALID_REFRESH_TOKEN));
 
 type SplitTunneling = {
     authorization?: 'allow' | 'deny';

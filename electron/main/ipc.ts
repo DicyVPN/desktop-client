@@ -5,6 +5,7 @@ import {Status} from './vpn/status';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
 import fs from 'fs';
 import settings from './settings';
+import {SEND_TO_RENDERER} from '../../common/channels';
 
 export function registerAll() {
     // called before any API call, signals to the UI the intent to connect
@@ -52,5 +53,9 @@ export function registerAll() {
     ipcMain.on('settings-set', (event, key, value) => {
         settings.set(key, value);
         event.returnValue = null;
+    });
+
+    ipcMain.handle(SEND_TO_RENDERER, (event, channel, ...args) => {
+        sendToRenderer(channel, ...args);
     });
 }

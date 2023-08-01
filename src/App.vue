@@ -26,6 +26,7 @@ import Message from '@/components/Message.vue';
 import {message, showMissingSubscription, showSecondaryServersAgreement} from '@/global';
 import {Status} from '../electron/main/vpn/status';
 import Modal from '@/components/Modal.vue';
+import {INVALID_REFRESH_TOKEN} from '../common/channels';
 
 
 export default {
@@ -54,6 +55,10 @@ export default {
     },
     async beforeMount() {
         window.preload.on('status-change', this.onStatusChange);
+        window.preload.on(INVALID_REFRESH_TOKEN, () => {
+            console.debug(INVALID_REFRESH_TOKEN, 'event received');
+            this.$router.push('/');
+        });
 
         this.currentServer.$patch({
             status: await window.preload.isRunning() ? Status.CONNECTED : Status.NOT_RUNNING

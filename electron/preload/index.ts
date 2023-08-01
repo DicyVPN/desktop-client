@@ -8,6 +8,7 @@ import {createApi, refreshIp, ResponseError} from '../../common/api';
 import {getCurrentServer} from '../../src/utils/storageUtils';
 import {Status} from '../main/vpn/status';
 import type {SettingsAPI, Value} from '../main/settings';
+import {INVALID_REFRESH_TOKEN, SEND_TO_RENDERER} from '../../common/channels';
 
 
 ipcRenderer.on('disconnect', async () => {
@@ -121,7 +122,7 @@ const settings: SettingsAPI = {
     }
 };
 
-const api = createApi(settings);
+const api = createApi(settings, () => ipcRenderer.invoke(SEND_TO_RENDERER, INVALID_REFRESH_TOKEN));
 
 if (process.contextIsolated) {
     try {
