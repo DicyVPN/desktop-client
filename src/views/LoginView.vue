@@ -55,7 +55,7 @@
 import ShowIcon from '@/views/ShowIcon.vue';
 import Button from '@/components/icons/Button.vue';
 import WorldMap from '@/components/home/map/WorldMap.vue';
-import {ResponseError} from '@/utils/api';
+import {ResponseError} from '../../common/api';
 import useApi from '@/composables/useApi';
 
 export default {

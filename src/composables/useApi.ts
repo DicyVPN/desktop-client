@@ -1,4 +1,4 @@
-import {type API, createApi} from '@/utils/api';
+import {type API, createApi} from '../../common/api';
 
 let instance: API;
 

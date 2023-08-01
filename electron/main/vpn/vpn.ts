@@ -4,7 +4,7 @@ import {WireGuard} from './wireguard';
 import {OpenVPN} from './openvpn';
 import {OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './monitor';
 import {Status} from './status';
-import {createApi} from '../../../src/utils/api';
+import {createApi} from '../../../common/api';
 
 export interface VPN {
     start(): Promise<void>;

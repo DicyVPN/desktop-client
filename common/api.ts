@@ -1,4 +1,4 @@
-import type {SettingsAPI} from '../../electron/main/settings';
+import type {SettingsAPI} from '../electron/main/settings';
 
 const apiUrl = 'https://api.dicyvpn.com';
 

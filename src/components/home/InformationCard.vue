@@ -30,7 +30,7 @@
 </template>
 <script>
 import {useInformationStore} from "@/stores/information";
-import {refreshIp} from "@/utils/api";
+import {refreshIp} from "../../../common/api";
 import {useCurrentServerStore} from "@/stores/currentServer";
 import {connectionTime} from "@/global";
 import {Status} from '../../../electron/main/vpn/status';
