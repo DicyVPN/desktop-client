@@ -1,9 +1,9 @@
 <template>
     <div class="flex justify-center items-center min-h-screen select-none">
-        <div class="inset-0 overflow-hidden absolute mix-blend-overlay opacity-70">
+        <div class="inset-0 overflow-hidden absolute mix-blend-overlay opacity-70 -z-10">
             <img src="@/components/icons/world.svg" class="background-map h-full w-full object-cover">
         </div>
-        <div class="bg-gray-600 rounded px-24 py-16 w-320 flex flex-col gap-16 z-10">
+        <div class="bg-gray-600 rounded px-24 py-16 w-320 flex flex-col gap-16">
             <div class="flex justify-center py-36">
                 <font-awesome-icon icon="fa-solid fa-user" class="bg-gray-500 text-blue-100 rounded-full p-28 w-48 h-48 shadow-4"/>
             </div>
