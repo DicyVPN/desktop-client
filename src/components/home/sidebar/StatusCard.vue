@@ -3,7 +3,8 @@
         <div class="sidebar-card p-16 rounded grid gap-16">
             <div class="flex items-center gap-8">
                 <div class="flex relative">
-                    <span v-if="isLoading" class="animate-ping absolute h-full w-full rounded-full opacity-75" :class="{'bg-red-200': currentServer.status !== Status.CONNECTED, 'bg-green-100': currentServer.status === Status.CONNECTED}"></span>
+                    <span v-if="isLoading" class="animate-ping absolute h-full w-full rounded-full opacity-75"
+                          :class="{'bg-red-200': currentServer.status !== Status.CONNECTED, 'bg-green-100': currentServer.status === Status.CONNECTED}"></span>
                     <font-awesome-icon v-if="currentServer.status === Status.CONNECTED" icon="fa-solid fa-check-circle" class="text-bright-green"/>
                     <font-awesome-icon v-else icon="fa-solid fa-circle-xmark" class="text-red-300"/>
                 </div>
@@ -38,13 +39,11 @@
     </div>
 </template>
 <script>
-import CheckCircle from "@/components/icons/CheckCircle.vue";
-import Flag from "@/components/icons/Flag.vue";
-import Button from "@/components/icons/Button.vue";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {useCurrentServerStore} from "@/stores/currentServer";
-import {useInformationStore} from "@/stores/information";
-import {refreshIp} from "../../../../common/api";
+import CheckCircle from '@/components/icons/CheckCircle.vue';
+import Flag from '@/components/icons/Flag.vue';
+import Button from '@/components/icons/Button.vue';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
+import {useCurrentServerStore} from '@/stores/currentServer';
 import {showMissingSubscription, throwError} from '@/global';
 import {Status} from '../../../../electron/main/vpn/status';
 
@@ -58,12 +57,10 @@ export default {
     },
     setup() {
         const currentServer = useCurrentServerStore();
-        const information = useInformationStore();
         return {
             currentServer,
-            information,
             Status
-        }
+        };
     },
     methods: {
         async connectToLastServer() {
@@ -72,9 +69,7 @@ export default {
             }
 
             if (this.currentServer.status === Status.CONNECTED) {
-                window.preload.stopVPN().then(() => {
-                    setTimeout(() => this.refreshIp(), 2000);
-                });
+                await window.preload.stopVPN();
             } else {
                 try {
                     await window.preload.startVPN(this.currentServer.id, this.currentServer.type);
@@ -89,15 +84,7 @@ export default {
                         status: Status.NOT_RUNNING
                     });
                 }
-
             }
-        },
-        refreshIp() {
-            refreshIp().then((ip) => {
-                this.information.$patch({
-                    ip: ip
-                })
-            })
         }
     },
     computed: {
@@ -117,7 +104,7 @@ export default {
             }
         }
     }
-}
+};
 </script>
 
 <style scoped>

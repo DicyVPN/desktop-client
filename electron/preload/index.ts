@@ -4,7 +4,7 @@ import * as electron from 'electron';
 import {contextBridge, ipcRenderer} from 'electron';
 import {app} from '@electron/remote';
 import {electronAPI} from '@electron-toolkit/preload';
-import {createApi, refreshIp, ResponseError} from '../../common/api';
+import {createApi, ResponseError} from '../../common/api';
 import {getCurrentServer} from '../../src/utils/storageUtils';
 import {Status} from '../main/vpn/status';
 import type {SettingsAPI, Value} from '../main/settings';
@@ -60,7 +60,6 @@ const preload = {
     async startOpenVPN(id: string, type: string) {
         await ipcRenderer.invoke('before-connect');
         await ipcRenderer.invoke('connect-to-openvpn', {id, type});
-        await refreshIp();
     },
 
     /** Start WireGuard
@@ -71,7 +70,6 @@ const preload = {
         await ipcRenderer.invoke('before-connect');
         const splitTunneling = JSON.parse(localStorage.getItem('settings') || '{}').splitTunneling ?? {};
         await ipcRenderer.invoke('connect-to-wireguard', {id, type, splitTunneling});
-        await refreshIp();
     },
 
 

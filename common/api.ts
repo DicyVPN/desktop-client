@@ -79,24 +79,6 @@ export const createApi = (settings: SettingsAPI, onInvalidRefreshToken: () => vo
 
 export type API = ReturnType<typeof createApi>;
 
-export async function refreshIp() {
-    let ip = '';
-
-    await fetch('https://dicyvpn.com/cdn-cgi/trace')
-        .then(response => response.text())
-        .then(text => {
-            text.split('\n').forEach(line => {
-                line.split('=').forEach((value, index) => {
-                    if (value === 'ip') {
-                        ip = (line.split('=')[1]);
-                    }
-                });
-            });
-        });
-
-    return ip;
-}
-
 export class ResponseError extends Error {
     public reply: {
         code: string;
