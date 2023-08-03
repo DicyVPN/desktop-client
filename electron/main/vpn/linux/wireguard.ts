@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import fs from 'fs';
 import { WireGuard } from '../wireguard';
-import {DATA_PATH, EXECUTABLE_NAME, getWireGuardClientPath, PID_FILE_WIREGUARD} from '../../globals';
+import {EXECUTABLE_NAME, PID_FILE_WIREGUARD} from '../../globals';
 
 export class WireGuardLinux extends WireGuard {
     constructor(
