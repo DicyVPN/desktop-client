@@ -6,6 +6,7 @@ import {OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './monitor';
 import {Status} from './status';
 import {createApi} from '../../../common/api';
 import {INVALID_REFRESH_TOKEN} from '../../../common/channels';
+import {WireGuardWindows} from './windows/wireguard';
 
 export interface VPN {
     start(): Promise<void>;
@@ -39,7 +40,7 @@ export async function connectToWireGuard(id: string, type: string, splitTunnelin
         await stopVPN(true);
 
         console.log('Connecting to a WireGuard server', id, type, info, ips, isIpsAllowlist, apps, isAppsAllowlist);
-        const wireguard = new WireGuard(
+        const wireguard = getNewWireGuardInstance(
             info.serverIp, info.ports.wireguard.udp[0], api.getPrivateKey()!, info.publicKey, info.internalIp,
             ips, isIpsAllowlist, apps, isAppsAllowlist
         );
@@ -101,4 +102,12 @@ async function sendDisconnect(server?: {id: string; type: string; protocol: stri
     } catch (e) {
         console.error(e);
     }
+}
+
+function getNewWireGuardInstance(serverIp: string, port: number, privateKey: string, publicKey: string, internalIp: string, ips: string[], isIpsAllowlist: boolean, apps: string[], isAppsAllowlist: boolean): WireGuard {
+    switch (process.platform) {
+        case 'win32':
+            return new WireGuardWindows(serverIp, port, privateKey, publicKey, internalIp, ips, isIpsAllowlist, apps, isAppsAllowlist);
+    }
+    throw new Error('Unsupported platform');
 }
