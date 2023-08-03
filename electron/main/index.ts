@@ -150,7 +150,7 @@ export function updateTray(isConnected: boolean) {
 }
 
 function trayMaker() {
-    tray = new Tray(path.join(__dirname, '../../public/tray-icon.ico'));
+    tray = new Tray(path.join(__dirname, process.platform === 'win32' ? '../../public/tray-icon.ico' : '../../public/tray-icon.png'));
     tray.setToolTip('DicyVPN');
     tray.setContextMenu(contextMenu());
     tray.on('double-click', focusWindow);
