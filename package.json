@@ -50,6 +50,7 @@
     "i18n-iso-countries": "^7.6.0",
     "ping": "^0.4.2",
     "pinia": "^2.1.6",
+    "sudo-prompt": "^9.2.1",
     "svg-pan-zoom-container": "^0.6.1",
     "tail": "^2.2.6",
     "vue": "^3.2.45",

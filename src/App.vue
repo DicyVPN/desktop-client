@@ -60,9 +60,11 @@ export default {
             this.$router.push('/');
         });
 
-        this.currentServer.$patch({
-            status: await window.preload.isRunning() ? Status.CONNECTED : Status.NOT_RUNNING
-        });
+        if (window.electron.process.platform !== 'linux') {
+            this.currentServer.$patch({
+                status: await window.preload.isRunning() ? Status.CONNECTED : Status.NOT_RUNNING
+            });
+        }
     },
     beforeUnmount() {
         window.preload.removeListener('status-change', this.onStatusChange);
