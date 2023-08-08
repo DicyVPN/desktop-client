@@ -10,6 +10,8 @@ export const PID_FILE_OPENVPN = DATA_PATH + '/openvpn.pid';
 export const DOT_LOG_OPENVPN = 'openvpn.log';
 export const LOG_FILE_OPENVPN = DATA_PATH + '/' + DOT_LOG_OPENVPN;
 
+export const DEFAULT_DNS = ['1.1.1.1', '1.0.0.1'];
+
 export function getWireGuardClientPath() {
     if (process.platform !== 'win32') {
         throw new Error('WireGuard is only supported on Windows');
