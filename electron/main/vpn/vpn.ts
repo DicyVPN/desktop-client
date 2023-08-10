@@ -1,5 +1,6 @@
 import {sendToRenderer, stopVPN, updateTray} from '../index';
 import settings from '../settings';
+import {DEFAULT_DNS} from '../globals';
 import {WireGuard} from './wireguard';
 import {OpenVPN} from './openvpn';
 import {OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './monitor';
@@ -43,7 +44,7 @@ export async function connectToWireGuard(id: string, type: string, splitTunnelin
         console.log('Connecting to a WireGuard server', id, type, info, ips, isIpsAllowlist, apps, isAppsAllowlist);
         const wireguard = getNewWireGuardInstance(
             info.serverIp, info.ports.wireguard.udp[0], api.getPrivateKey()!, info.publicKey, info.internalIp,
-            ips, isIpsAllowlist, apps, isAppsAllowlist
+            ips, isIpsAllowlist, apps, isAppsAllowlist, getDns()
         );
 
         await wireguard.start();
@@ -72,7 +73,7 @@ export async function connectToOpenVPN(id: string, type: string) {
     await stopVPN(true);
 
     console.log('Connecting to an OpenVPN server', id, type, info);
-    const openvpn = new OpenVPN(info.serverIp, info.ports.openvpn.tcp[0], 'tcp', info.username, info.password);
+    const openvpn = new OpenVPN(info.serverIp, info.ports.openvpn.tcp[0], 'tcp', info.username, info.password, getDns());
 
     await openvpn.start();
 
@@ -105,12 +106,25 @@ async function sendDisconnect(server?: {id: string; type: string; protocol: stri
     }
 }
 
-function getNewWireGuardInstance(serverIp: string, port: number, privateKey: string, publicKey: string, internalIp: string, ips: string[], isIpsAllowlist: boolean, apps: string[], isAppsAllowlist: boolean): WireGuard {
+function getNewWireGuardInstance(serverIp: string, port: number, privateKey: string, publicKey: string, internalIp: string, ips: string[], isIpsAllowlist: boolean, apps: string[], isAppsAllowlist: boolean, dns: string[]): WireGuard {
     switch (process.platform) {
         case 'win32':
-            return new WireGuardWindows(serverIp, port, privateKey, publicKey, internalIp, ips, isIpsAllowlist, apps, isAppsAllowlist);
+            return new WireGuardWindows(
+                serverIp, port, privateKey, publicKey, internalIp,
+                ips, isIpsAllowlist, apps, isAppsAllowlist, dns
+            );
         case 'linux':
             return new WireGuardLinux(serverIp, port, privateKey, publicKey, internalIp, ips, isIpsAllowlist, apps, isAppsAllowlist);
     }
     throw new Error('Unsupported platform');
+}
+
+function getDns(): string[] {
+    if (settings.get('vpn.useCustomDns')) {
+        const dns = settings.get<string[]>('vpn.dns');
+        if (dns && dns.length > 0) {
+            return dns;
+        }
+    }
+    return DEFAULT_DNS;
 }

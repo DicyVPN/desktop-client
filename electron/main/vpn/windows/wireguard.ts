@@ -14,7 +14,8 @@ export class WireGuardWindows extends WireGuard {
         private ips: string[],
         private isIpsAllowlist: boolean,
         private apps: string[],
-        private isAppsAllowlist: boolean
+        private isAppsAllowlist: boolean,
+        private dns: string[]
     ) {
         super();
     }
@@ -67,7 +68,7 @@ export class WireGuardWindows extends WireGuard {
             [Interface]
             PrivateKey = ${this.privateKey}
             Address = ${this.internalIp}/32
-            DNS = 1.1.1.1, 1.0.0.1
+            DNS = ${this.dns.join(', ')}
 
             [Peer]
             PublicKey = ${this.publicKey}

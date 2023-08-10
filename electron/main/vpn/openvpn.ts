@@ -9,7 +9,8 @@ export class OpenVPN implements VPN {
         private port: number,
         private protocol: 'tcp' | 'udp',
         private username: string,
-        private password: string
+        private password: string,
+        private dns: string[]
     ) {
     }
 
@@ -43,11 +44,25 @@ export class OpenVPN implements VPN {
     }
 
     private getConfig(): string {
+        const dnsV4String = this.dns.filter(ip => !ip.includes(':'))
+            .map(ip => `dhcp-option DNS ${ip}`)
+            .join('\n');
+        const dnsV6String = this.dns.filter(ip => ip.includes(':'))
+            .map(ip => `dhcp-option DNS6 ${ip}`)
+            .join('\n');
         return `client
 dev tun
 remote ${this.ip} ${this.port} ${this.protocol}
 auth-user-pass openvpn-user
 auth-nocache
+
+register-dns
+block-outside-dns
+pull-filter ignore "dhcp-option DNS"
+pull-filter ignore "dhcp-option DNS6"
+${dnsV4String}
+${dnsV6String}
+
 nobind
 auth SHA256
 cipher AES-256-GCM
