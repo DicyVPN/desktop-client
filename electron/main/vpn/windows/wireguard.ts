@@ -42,9 +42,9 @@ export class WireGuardWindows extends WireGuard {
         let allowedIPs = 'AllowedIPs = ';
         if (this.ips.length > 0) { // enable split tunneling for IPs
             if (this.isIpsAllowlist) { // allowlist
-                allowedIPs += this.apps.join(',');
+                allowedIPs += this.ips.join(', ');
             } else { // denylist
-                disallowedIPs = 'DisallowedIPs = ' + this.ips.join(',');
+                disallowedIPs = 'DisallowedIPs = ' + this.ips.join(', ');
                 allowedIPs += '0.0.0.0/1, 128.0.0.0/1'; // route all traffic through the VPN
             }
         } else {
@@ -57,9 +57,9 @@ export class WireGuardWindows extends WireGuard {
         let allowedApps = '';
         if (this.apps.length > 0) {
             if (this.isAppsAllowlist) { // allowlist
-                allowedApps = 'AllowedApps = ' + this.apps.join(',');
+                allowedApps = 'AllowedApps = ' + this.apps.join(', ');
             } else { // denylist
-                disallowedApps += ',' + this.apps.join(',');
+                disallowedApps += ',' + this.apps.join(', ');
             }
         }
 
