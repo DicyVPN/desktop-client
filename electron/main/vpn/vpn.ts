@@ -114,7 +114,10 @@ function getNewWireGuardInstance(serverIp: string, port: number, privateKey: str
                 ips, isIpsAllowlist, apps, isAppsAllowlist, dns
             );
         case 'linux':
-            return new WireGuardLinux(serverIp, port, privateKey, publicKey, internalIp, ips, isIpsAllowlist, apps, isAppsAllowlist);
+            return new WireGuardLinux(
+                serverIp, port, privateKey, publicKey, internalIp,
+                ips, isIpsAllowlist, dns
+            );
     }
     throw new Error('Unsupported platform');
 }

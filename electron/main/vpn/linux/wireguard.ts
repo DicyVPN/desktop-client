@@ -1,5 +1,5 @@
 import sudo from 'sudo-prompt';
-import { WireGuard } from '../wireguard';
+import {WireGuard} from '../wireguard';
 import {DATA_PATH} from '../../globals';
 
 export class WireGuardLinux extends WireGuard {
@@ -11,8 +11,7 @@ export class WireGuardLinux extends WireGuard {
         private internalIp: string,
         private ips: string[],
         private isIpsAllowlist: boolean,
-        private apps: string[],
-        private isAppsAllowlist: boolean
+        private dns: string[]
     ) {
         super();
     }
@@ -38,7 +37,7 @@ export class WireGuardLinux extends WireGuard {
         let allowedIPs = 'AllowedIPs = ';
         if (this.ips.length > 0) { // enable split tunneling for IPs
             if (this.isIpsAllowlist) { // allowlist
-                allowedIPs += this.apps.join(',');
+                allowedIPs += this.ips.join(', ');
             }
         } else {
             allowedIPs += '0.0.0.0/0';
@@ -50,7 +49,7 @@ export class WireGuardLinux extends WireGuard {
             [Interface]
             PrivateKey = ${this.privateKey}
             Address = ${this.internalIp}/32
-            DNS = 1.1.1.1, 1.0.0.1
+            DNS = ${this.dns.join(', ')}
 
             [Peer]
             PublicKey = ${this.publicKey}
