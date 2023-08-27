@@ -21,7 +21,7 @@ export class WireGuardWindows extends WireGuard {
     }
 
     async start(): Promise<void> {
-        this.writeConfig();
+        this.writeConfig('wireguard.conf');
         const exe = getWireGuardClientPath();
         const args = ['run', '-config', `${DATA_PATH}/wireguard.conf`, '-log-level', 'info'];
         const child = spawn(exe, args);

@@ -8,6 +8,7 @@ import {Status} from './status';
 import {createApi} from '../../../common/api';
 import {INVALID_REFRESH_TOKEN} from '../../../common/channels';
 import {WireGuardWindows} from './windows/wireguard';
+import {WireGuardLinux} from "./linux/wireguard";
 
 export interface VPN {
     start(): Promise<void>;
@@ -111,6 +112,11 @@ function getNewWireGuardInstance(serverIp: string, port: number, privateKey: str
             return new WireGuardWindows(
                 serverIp, port, privateKey, publicKey, internalIp,
                 ips, isIpsAllowlist, apps, isAppsAllowlist, dns
+            );
+        case 'linux':
+            return new WireGuardLinux(
+                serverIp, port, privateKey, publicKey, internalIp,
+                ips, isIpsAllowlist, dns
             );
     }
     throw new Error('Unsupported platform');

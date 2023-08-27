@@ -5,9 +5,11 @@ import * as electronRemote from '@electron/remote/main';
 import {is, optimizer} from '@electron-toolkit/utils';
 import windowStateKeeper from 'electron-window-state';
 import {autoUpdater} from 'electron-updater';
+import log from 'electron-log/main';
+import sudo from 'sudo-prompt';
 import './appinfo';
 import * as ipc from './ipc';
-import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
+import {DATA_PATH, PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
 import settings from './settings';
 import {getCurrentMonitor} from './vpn/monitor';
 import {Status} from './vpn/status';
@@ -31,6 +33,8 @@ let isQuitting = false;
 
 electronRemote.initialize();
 ipc.registerAll();
+log.initialize({preload: true});
+Object.assign(console, log.functions);
 
 /** window creation */
 function createWindow(): void {
@@ -208,10 +212,26 @@ export async function stopVPN(isSwitchingServer = false): Promise<void> {
     if (!isSwitchingServer) {
         getCurrentMonitor()?.setStatus(Status.DISCONNECTING);
     }
-    await Promise.all([
-        stopVPNFromPidFile(PID_FILE_WIREGUARD),
-        stopVPNFromPidFile(PID_FILE_OPENVPN)
-    ]);
+    if (process.platform === 'linux') {
+        sudo.exec(`wg-quick down "${DATA_PATH}/dicyvpn.conf"`, {
+            name: 'DicyVPN'
+        }, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`[WireGuard] error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`[WireGuard stderr] ${stderr}`);
+                return;
+            }
+            console.log(`[WireGuard stdout] ${stdout}`);
+        });
+    } else {
+        await Promise.all([
+            stopVPNFromPidFile(PID_FILE_WIREGUARD),
+            stopVPNFromPidFile(PID_FILE_OPENVPN)
+        ]);
+    }
     updateTray(false);
 }
 
