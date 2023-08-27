@@ -5,6 +5,7 @@ import * as electronRemote from '@electron/remote/main';
 import {is, optimizer} from '@electron-toolkit/utils';
 import windowStateKeeper from 'electron-window-state';
 import {autoUpdater} from 'electron-updater';
+import log from 'electron-log/main';
 import sudo from 'sudo-prompt';
 import './appinfo';
 import * as ipc from './ipc';
@@ -32,6 +33,8 @@ let isQuitting = false;
 
 electronRemote.initialize();
 ipc.registerAll();
+log.initialize({preload: true});
+Object.assign(console, log.functions);
 
 /** window creation */
 function createWindow(): void {

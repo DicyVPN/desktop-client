@@ -45,6 +45,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
+    "electron-log": "^5.0.0-beta.28",
     "electron-updater": "^6.1.1",
     "electron-window-state": "^5.0.3",
     "i18n-iso-countries": "^7.6.0",
