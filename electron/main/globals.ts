@@ -20,8 +20,11 @@ export function getWireGuardClientPath() {
         encoding: 'utf8',
         shell: true
     });
-    const split = execution.stdout.split('\r\n')[2].split('    ');
-    const path = split[split.length - 1];
+    let path = 'C:\\Program Files\\WireSock VPN Client\\';
+    if (execution.stdout && execution.stdout.includes('InstallLocation')) {
+        const split = execution.stdout.split('\r\n')[2].split('    ');
+        path = split[split.length - 1];
+    }
     return path + 'bin\\wiresock-client.exe';
 }
 
