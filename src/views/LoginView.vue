@@ -3,7 +3,7 @@
         <div class="inset-0 overflow-hidden absolute mix-blend-overlay opacity-70 -z-10">
             <img src="@/components/icons/world.svg" class="background-map h-full w-full object-cover">
         </div>
-        <div class="bg-gray-600 rounded px-24 py-16 w-320 flex flex-col gap-16">
+        <div class="bg-gray-600 rounded px-24 py-16 w-320 flex flex-col gap-16 shadow-4-lg">
             <div class="flex justify-center py-36">
                 <font-awesome-icon icon="fa-solid fa-user" class="bg-gray-500 text-blue-100 rounded-full p-28 w-48 h-48 shadow-4"/>
             </div>
@@ -45,7 +45,7 @@
             <p>{{ dialogMessage }}</p>
             <div class="flex gap-12 mt-12 justify-end">
                 <button class="font-semibold text-gray-500 hover:text-gray-700" @click="$refs.dialog.close()">Chiudi</button>
-                <Button size="normal" color="blue" theme="dark" @click="openLink(dialogLink)"><span>{{ dialogLinkText }}</span></Button>
+                <Button size="normal" color="blue" theme="dark"><a :href="dialogLink" target="_blank">{{ dialogLinkText }}</a></Button>
             </div>
         </dialog>
     </div>
