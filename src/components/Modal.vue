@@ -46,6 +46,11 @@ export default defineComponent({
             this.$emit('action');
         }
     },
+    mounted() {
+        if (this.show) {
+            this.$refs.dialog.showModal();
+        }
+    },
     watch: {
         show(value) {
             if (value) {

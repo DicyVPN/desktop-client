@@ -16,6 +16,9 @@
            secondary-label="Chiudi" @secondary="showSecondaryServersAgreement = false">
         L'utilizzo dei server secondari consentono la navigazione web di base, ma non sono adatti per i giochi online, i server primari sono consigliati per un'esperienza ottimale.
     </Modal>
+    <Modal :show="showServerConnectionTimeout" title="Connessione al server scaduta" secondary-label="Chiudi" @secondary="showServerConnectionTimeout = false">
+        La connessione al server è scaduta, prova a riconnetterti o riprova con un altro server.
+    </Modal>
 </template>
 
 <script lang="ts">
@@ -35,7 +38,8 @@ export default {
         return {
             message,
             showMissingSubscription,
-            showSecondaryServersAgreement
+            showSecondaryServersAgreement,
+            showServerConnectionTimeout: false
         };
     },
     setup() {
@@ -58,6 +62,9 @@ export default {
         window.preload.on(INVALID_REFRESH_TOKEN, () => {
             console.debug(INVALID_REFRESH_TOKEN, 'event received');
             this.$router.push('/');
+        });
+        window.preload.on('server-connection-timeout', () => {
+            this.showServerConnectionTimeout = true;
         });
 
         this.currentServer.$patch({

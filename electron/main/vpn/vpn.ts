@@ -3,7 +3,7 @@ import settings from '../settings';
 import {DEFAULT_DNS} from '../globals';
 import {WireGuard} from './wireguard';
 import {OpenVPN} from './openvpn';
-import {OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './monitor';
+import {getCurrentMonitor, OpenVPNMonitor, setCurrentMonitor, WireGuardMonitor} from './monitor';
 import {Status} from './status';
 import {createApi} from '../../../common/api';
 import {INVALID_REFRESH_TOKEN} from '../../../common/channels';
@@ -14,6 +14,8 @@ export interface VPN {
 }
 
 const api = createApi(settings, () => sendToRenderer(INVALID_REFRESH_TOKEN));
+const CONNECT_TIMEOUT = 20000;
+export let connectionTimeout: number | NodeJS.Timeout = 0;
 
 type SplitTunneling = {
     authorization?: 'allow' | 'deny';
@@ -51,6 +53,7 @@ export async function connectToWireGuard(id: string, type: string, splitTunnelin
         setCurrentMonitor(new WireGuardMonitor(Status.CONNECTING, status => sendToRenderer('status-change', status)));
         updateTray(true);
         console.log('WireGuard instance started');
+        setupConnectionTimeout();
 
         const previousServer = settings.get('lastServer');
         settings.set('lastServer', {
@@ -79,6 +82,7 @@ export async function connectToOpenVPN(id: string, type: string) {
     setCurrentMonitor(new OpenVPNMonitor(Status.CONNECTING, status => sendToRenderer('status-change', status)));
     updateTray(true);
     console.log('OpenVPN instance started');
+    setupConnectionTimeout();
 
     const previousServer = settings.get('lastServer');
     settings.set('lastServer', {
@@ -124,4 +128,14 @@ function getDns(): string[] {
         }
     }
     return DEFAULT_DNS;
+}
+
+function setupConnectionTimeout() {
+    connectionTimeout = setTimeout(() => {
+        if (getCurrentMonitor().isRunning() === Status.CONNECTING) {
+            console.warn('Connection timed out, stopping VPN');
+            stopVPN(false).then(() => console.log('VPN stopped after connection timeout'));
+            sendToRenderer('server-connection-timeout');
+        }
+    }, CONNECT_TIMEOUT);
 }

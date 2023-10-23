@@ -12,7 +12,7 @@ import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
 import settings from './settings';
 import {getCurrentMonitor} from './vpn/monitor';
 import {Status} from './vpn/status';
-import {connect} from './vpn/vpn';
+import {connect, connectionTimeout} from './vpn/vpn';
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
@@ -208,6 +208,7 @@ app.on('before-quit', async () => {
 
 
 export async function stopVPN(isSwitchingServer = false): Promise<void> {
+    clearTimeout(connectionTimeout);
     if (!isSwitchingServer) {
         getCurrentMonitor()?.setStatus(Status.DISCONNECTING);
     }
