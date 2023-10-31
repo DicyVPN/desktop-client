@@ -6,7 +6,12 @@
 
         <div class="option-card">
             <label>
-                <input class="align-text-bottom mr-8" type="checkbox" v-model="minimizeOnClose">
+                <input class="align-text-bottom mr-8" type="checkbox" v-model="disconnectAndExitOnClose">
+                Disconnetti e chiudi l'applicazione quando si chiude la finestra
+            </label>
+            <br>
+            <label>
+                <input class="align-text-bottom mr-8 mt-8" type="checkbox" v-model="minimizeOnClose" :disabled="disconnectAndExitOnClose">
                 Riduci a icona la finestra invece di chiuderla
             </label>
         </div>
@@ -48,12 +53,16 @@
 import {ref, watch} from 'vue';
 import {throwError} from '@/global';
 
+const disconnectAndExitOnClose = ref(window.settings.get('app.disconnectAndExitOnClose', false));
 const minimizeOnClose = ref(window.settings.get('app.minimizeOnClose', false));
 const connectOnStartup = ref(window.settings.get('app.connectOnStartup', false));
 const useCustomDns = ref(window.settings.get('vpn.useCustomDns', false));
 const rawDns = window.settings.get<string[]>('vpn.dns', []);
 const dns = ref(rawDns); // workaround, because proxied array refs not working with settings
 
+watch(disconnectAndExitOnClose, (value) => {
+    window.settings.set('app.disconnectAndExitOnClose', value);
+});
 watch(minimizeOnClose, (value) => {
     window.settings.set('app.minimizeOnClose', value);
 });

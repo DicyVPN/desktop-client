@@ -60,7 +60,7 @@ input[type = "radio"] {
     transform: translateY(0.075em);
 }
 
-input[type = "radio"]:checked::before {
+input[type="radio"]:checked::before {
     content: "";
     position: absolute;
     @apply rounded-full bg-blue-500 inset-2;
@@ -76,6 +76,10 @@ input[type="checkbox"]:checked::before {
     content: "";
     position: absolute;
     @apply bg-blue-500 inset-2;
+}
+
+input[type="checkbox"]:disabled {
+    @apply opacity-50 cursor-not-allowed;
 }
 
 input[type="text"] {

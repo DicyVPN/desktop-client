@@ -76,7 +76,9 @@ function createWindow(): void {
 
     // before window close
     mainWindow.on('close', (e) => {
-        if (!isQuitting && settings.get('app.minimizeOnClose', false)) {
+        if (!isQuitting && settings.get('app.disconnectAndExitOnClose', false)) {
+            app.quit();
+        } else if (!isQuitting && settings.get('app.minimizeOnClose', false)) {
             e.preventDefault();
             mainWindow!.minimize();
         } else {
@@ -202,6 +204,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', async () => {
+    console.info('executing before-quit');
     isQuitting = true;
     await stopVPN();
 });
