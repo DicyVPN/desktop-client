@@ -1,7 +1,7 @@
 <template>
     <div class="bg-gray-600 h-screen p-8 flex flex-col gap-8 select-none shadow-4-lg">
         <StatusCard/>
-        <ServerListCard :list="list"/>
+        <ServerListCard :list="list" :reload="reload"/>
     </div>
 </template>
 
@@ -18,6 +18,10 @@ export default {
             type: Object,
             required: true
         },
+        reload: {
+            type: Function,
+            required: true
+        }
     }
 }
 </script>

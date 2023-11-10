@@ -1,11 +1,11 @@
 <template>
-    <div v-if="loadingStatus" class="flex inset-0 z-50 h-screen w-screen bg-gray-900 opacity-90 absolute justify-center items-center">
+    <div v-if="isLoadingServers" class="flex inset-0 z-50 h-screen w-screen bg-gray-900 opacity-90 absolute justify-center items-center">
         <font-awesome-icon icon="fa-solid fa-circle-notch" class="icon-animation h-64 w-64"/>
     </div>
 
 
     <div class="flex flex-1 min-h-screen max-h-screen min-w-screen max-w-screen select-none">
-        <Sidebar class="w-256" :list="serverList"/>
+        <Sidebar class="w-256" :list="serverList" :reload="loadServers"/>
         <div class="include-sidebar flex flex-col flex-1">
             <div class="p-8">
                 <div class="bg-gray-600 rounded p-8 shadow-4 flex justify-between items-center gap-8">
@@ -67,7 +67,7 @@ export default {
                 primary: [],
                 secondary: []
             },
-            loadingStatus: true,
+            isLoadingServers: false,
             hasUpdate: false,
             isDownloading: false,
             downloadProgress: 0,
@@ -81,8 +81,7 @@ export default {
         };
     },
     async beforeMount() {
-        this.serverList = await useApi().get('/v1/servers/list');
-        this.loadingStatus = false;
+        this.loadServers();
 
         this.hasUpdate = await window.preload.hasUpdate();
         window.preload.on(UPDATE_AVAILABLE, () => {
@@ -108,6 +107,16 @@ export default {
     },
 
     methods: {
+        loadServers() {
+            this.isLoadingServers = true;
+            useApi().get('/v1/servers/list').then(data => {
+                this.serverList = data;
+            }).catch(error => {
+                console.error(error);
+            }).finally(() => {
+                this.isLoadingServers = false;
+            });
+        },
         zoomController(type) {
             if (type) {
                 (this.zoom + scaleModifier > 3) ? this.zoom = 3 : this.zoom += scaleModifier;
