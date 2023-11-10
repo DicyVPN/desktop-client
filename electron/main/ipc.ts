@@ -1,11 +1,12 @@
+import fs from 'fs';
 import {ipcMain} from 'electron';
-import {sendToRenderer, stopVPN} from './index';
+import {autoUpdater} from 'electron-updater';
+import {hasUpdate, isUpdateDownloaded, sendToRenderer, stopVPN} from './index';
 import {connectToOpenVPN, connectToWireGuard} from './vpn/vpn';
 import {Status} from './vpn/status';
 import {PID_FILE_OPENVPN, PID_FILE_WIREGUARD} from './globals';
-import fs from 'fs';
 import settings from './settings';
-import {SEND_TO_RENDERER} from '../../common/channels';
+import {HAS_UPDATE, IS_UPDATE_DOWNLOADED, QUIT_AND_INSTALL_UPDATE, SEND_TO_RENDERER} from '../../common/channels';
 
 export function registerAll() {
     // called before any API call, signals to the UI the intent to connect
@@ -44,6 +45,18 @@ export function registerAll() {
             }
         }
         return false;
+    });
+
+    ipcMain.handle(HAS_UPDATE, () => {
+        return hasUpdate;
+    });
+
+    ipcMain.handle(IS_UPDATE_DOWNLOADED, () => {
+        return isUpdateDownloaded;
+    });
+
+    ipcMain.handle(QUIT_AND_INSTALL_UPDATE, () => {
+        autoUpdater.quitAndInstall(false);
     });
 
     ipcMain.on('settings-get', (event, key, defaultValue) => {

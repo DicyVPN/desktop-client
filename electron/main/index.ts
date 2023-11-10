@@ -13,6 +13,7 @@ import settings from './settings';
 import {getCurrentMonitor} from './vpn/monitor';
 import {Status} from './vpn/status';
 import {connect, connectionTimeout} from './vpn/vpn';
+import {UPDATE_AVAILABLE, UPDATE_DOWNLOAD_PROGRESS, UPDATE_DOWNLOADED, UPDATE_ERROR} from '../../common/channels';
 
 let mainWindow: BrowserWindow | null;
 let mainWindowState: windowStateKeeper.State;
@@ -29,6 +30,8 @@ if (app.requestSingleInstanceLock()) {
 const isStartup = process.argv.includes('--startup');
 const isSilentStart = process.argv.includes('--silent');
 let isQuitting = false;
+export let hasUpdate = false;
+export let isUpdateDownloaded = false;
 
 electronRemote.initialize();
 ipc.registerAll();
@@ -104,6 +107,24 @@ function createWindow(): void {
         console.log('update check result:', result);
     }).catch((err) => {
         console.log('update check error:', err);
+    });
+    autoUpdater.on('update-available', (info) => {
+        hasUpdate = true;
+        console.log('update available:', info);
+        sendToRenderer(UPDATE_AVAILABLE);
+    });
+    autoUpdater.on('download-progress', (progress) => {
+        console.log('update download progress:', progress);
+        sendToRenderer(UPDATE_DOWNLOAD_PROGRESS, progress);
+    });
+    autoUpdater.on('update-downloaded', (info) => {
+        console.log('update downloaded:', info);
+        isUpdateDownloaded = true;
+        sendToRenderer(UPDATE_DOWNLOADED);
+    });
+    autoUpdater.on('error', (err) => {
+        console.log('update error:', err);
+        sendToRenderer(UPDATE_ERROR);
     });
 }
 

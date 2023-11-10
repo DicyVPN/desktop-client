@@ -9,7 +9,7 @@ import {createApi, ResponseError} from '../../common/api';
 import {getCurrentServer} from '../../src/utils/storageUtils';
 import {Status} from '../main/vpn/status';
 import type {SettingsAPI, Value} from '../main/settings';
-import {INVALID_REFRESH_TOKEN, SEND_TO_RENDERER} from '../../common/channels';
+import {HAS_UPDATE, INVALID_REFRESH_TOKEN, IS_UPDATE_DOWNLOADED, QUIT_AND_INSTALL_UPDATE, SEND_TO_RENDERER} from '../../common/channels';
 
 
 ipcRenderer.on('disconnect', async () => {
@@ -111,6 +111,16 @@ const preload = {
         return await app.getFileIcon(path, {size: 'large'}).then(image => {
             return image.toDataURL();
         });
+    },
+
+    async hasUpdate() {
+        return await ipcRenderer.invoke(HAS_UPDATE);
+    },
+    async isUpdateDownloaded() {
+        return await ipcRenderer.invoke(IS_UPDATE_DOWNLOADED);
+    },
+    quitAndInstallUpdate() {
+        return ipcRenderer.invoke(QUIT_AND_INSTALL_UPDATE);
     }
 };
 

@@ -8,8 +8,23 @@
         <Sidebar class="w-256" :list="serverList"/>
         <div class="include-sidebar flex flex-col flex-1">
             <div class="p-8">
-                <div class="bg-gray-600 rounded p-8 shadow-4">
+                <div class="bg-gray-600 rounded p-8 shadow-4 flex justify-between items-center gap-8">
                     <Logo/>
+                    <div class="flex items-center gap-8 mr-4 select-text" v-if="hasUpdate">
+                        <div v-if="downloadError">
+                            An error occurred while updating. Restart the app or download the latest version from <a href="https://dicyvpn.com/download" target="_blank">dicyvpn.com</a>
+                        </div>
+                        <div v-else-if="!isDownloading && downloadProgress === 0">
+                            An update is available!
+                        </div>
+                        <div v-else-if="downloadProgress < 100">
+                            Downloading update: <span class="font-mono">{{ downloadProgress }}%</span>
+                        </div>
+                        <template v-else>
+                            Update downloaded. Restart the app to apply the update.
+                            <Button class="ml-4" theme="dark" color="blue" size="small" @click="installUpdate()"><span>Install</span></Button>
+                        </template>
+                    </div>
                 </div>
             </div>
             <div class="flex-1 overflow-hidden">
@@ -23,19 +38,28 @@
             <InformationCard/>
         </div>
     </div>
+
+    <Modal :show="showInstallUpdate" title="Disconnect and restart" action-label="Restart" @action="installUpdate()" secondary-label="Cancel" @secondary="showInstallUpdate = false">
+        You will be disconnected from the server and the app will restart to apply the update.
+    </Modal>
 </template>
 
 <script>
-import Logo from "@/components/icons/Logo.vue";
-import Sidebar from "@/components/home/sidebar/Sidebar.vue";
-import InformationCard from "@/components/home/InformationCard.vue";
-import WorldMap from "@/components/home/map/WorldMap.vue";
+import Logo from '@/components/icons/Logo.vue';
+import Sidebar from '@/components/home/sidebar/Sidebar.vue';
+import InformationCard from '@/components/home/InformationCard.vue';
+import WorldMap from '@/components/home/map/WorldMap.vue';
 import useApi from '@/composables/useApi';
+import Button from '@/components/icons/Button.vue';
+import {UPDATE_AVAILABLE, UPDATE_DOWNLOAD_PROGRESS, UPDATE_DOWNLOADED, UPDATE_ERROR} from '../../common/channels';
+import Modal from '@/components/Modal.vue';
+import {useCurrentServerStore} from '@/stores/currentServer';
+import {Status} from '../../electron/main/vpn/status';
 
 const scaleModifier = 0.5;
 export default {
-    name: "HomeView",
-    components: {WorldMap, Logo, InformationCard, Sidebar},
+    name: 'HomeView',
+    components: {Modal, Button, WorldMap, Logo, InformationCard, Sidebar},
     data() {
         return {
             zoom: 1,
@@ -44,13 +68,43 @@ export default {
                 secondary: []
             },
             loadingStatus: true,
-
+            hasUpdate: false,
+            isDownloading: false,
+            downloadProgress: 0,
+            downloadError: false,
+            showInstallUpdate: false
         };
     },
-    async mounted() {
-        this.serverList = await useApi().get("/v1/servers/list");
-
+    setup() {
+        return {
+            currentServer: useCurrentServerStore()
+        };
+    },
+    async beforeMount() {
+        this.serverList = await useApi().get('/v1/servers/list');
         this.loadingStatus = false;
+
+        this.hasUpdate = await window.preload.hasUpdate();
+        window.preload.on(UPDATE_AVAILABLE, () => {
+            this.hasUpdate = true;
+        });
+        window.preload.on(UPDATE_DOWNLOAD_PROGRESS, (_, progress) => {
+            this.isDownloading = true;
+            this.downloadError = false;
+            this.downloadProgress = Math.trunc(progress.percent);
+            console.log(progress.percent);
+        });
+        this.downloadProgress = await window.preload.isUpdateDownloaded() ? 100 : 0;
+        window.preload.on(UPDATE_DOWNLOADED, () => {
+            this.isDownloading = false;
+            this.downloadError = false;
+            this.downloadProgress = 100;
+        });
+        window.preload.on(UPDATE_ERROR, () => {
+            this.isDownloading = false;
+            this.downloadProgress = 0;
+            this.downloadError = true;
+        });
     },
 
     methods: {
@@ -58,9 +112,16 @@ export default {
             if (type) {
                 (this.zoom + scaleModifier > 3) ? this.zoom = 3 : this.zoom += scaleModifier;
             } else {
-                (this.zoom - scaleModifier < 1) ? this.zoom = 1 : this.zoom -= scaleModifier
+                (this.zoom - scaleModifier < 1) ? this.zoom = 1 : this.zoom -= scaleModifier;
             }
         },
+        installUpdate() {
+            if (!this.showInstallUpdate && this.currentServer.status !== Status.NOT_RUNNING) {
+                this.showInstallUpdate = true;
+            } else {
+                window.preload.quitAndInstallUpdate();
+            }
+        }
     }
 };
 </script>
