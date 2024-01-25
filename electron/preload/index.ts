@@ -48,9 +48,17 @@ const preload = {
             } else {
                 await preload.startWireGuard(id, type);
             }
-        } catch (e) {
-            if (e instanceof ResponseError) {
-                throw new Error(e.reply.code);
+        } catch (e: any) {
+            const errorMessageSplit = e.message.split(':');
+            const originalMessage = e.message.substring(errorMessageSplit[0].length + 1);
+            let parsed = null;
+            try {
+                parsed = JSON.parse(originalMessage);
+            } catch {
+                // this is not a response error
+            }
+            if (parsed && parsed.code && parsed.message) { // this is a response error
+                throw new Error(parsed.code);
             }
             throw e;
         }

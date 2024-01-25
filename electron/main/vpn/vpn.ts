@@ -62,35 +62,41 @@ export async function connectToWireGuard(id: string, type: string, splitTunnelin
             protocol: 'wireguard'
         });
         await sendDisconnect(previousServer as any);
-    } catch (e) {
+    } catch (e: any) {
         await stopVPN(false);
-        console.warn('Forcefully stopped VPN due to an error while connecting', e);
-        throw e;
+        console.warn('Forcefully stopped VPN due to an error while connecting', e, e.message);
+        throw e.reply ? JSON.stringify(e.reply) : e.message;
     }
 }
 
 export async function connectToOpenVPN(id: string, type: string) {
-    const info = await api.post<any>('/v1/servers/connect/' + id, {'type': type, 'protocol': 'openvpn'});
+    try {
+        const info = await api.post<any>('/v1/servers/connect/' + id, {'type': type, 'protocol': 'openvpn'});
 
-    await stopVPN(true);
+        await stopVPN(true);
 
-    console.log('Connecting to an OpenVPN server', id, type, info);
-    const openvpn = new OpenVPN(info.serverIp, info.ports.openvpn.tcp[0], 'tcp', info.username, info.password, getDns());
+        console.log('Connecting to an OpenVPN server', id, type, info);
+        const openvpn = new OpenVPN(info.serverIp, info.ports.openvpn.tcp[0], 'tcp', info.username, info.password, getDns());
 
-    await openvpn.start();
+        await openvpn.start();
 
-    setCurrentMonitor(new OpenVPNMonitor(Status.CONNECTING, status => sendToRenderer('status-change', status)));
-    updateTray(true);
-    console.log('OpenVPN instance started');
-    setupConnectionTimeout();
+        setCurrentMonitor(new OpenVPNMonitor(Status.CONNECTING, status => sendToRenderer('status-change', status)));
+        updateTray(true);
+        console.log('OpenVPN instance started');
+        setupConnectionTimeout();
 
-    const previousServer = settings.get('lastServer');
-    settings.set('lastServer', {
-        id,
-        type,
-        protocol: 'openvpn'
-    });
-    await sendDisconnect(previousServer as any);
+        const previousServer = settings.get('lastServer');
+        settings.set('lastServer', {
+            id,
+            type,
+            protocol: 'openvpn'
+        });
+        await sendDisconnect(previousServer as any);
+    } catch (e: any) {
+        await stopVPN(false);
+        console.warn('Forcefully stopped VPN due to an error while connecting', e, e.message);
+        throw e.reply ? JSON.stringify(e.reply) : e.message;
+    }
 }
 
 async function sendDisconnect(server?: {id: string; type: string; protocol: string}) {
