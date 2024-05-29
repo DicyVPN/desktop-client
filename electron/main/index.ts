@@ -160,10 +160,7 @@ if (isStartup && settings.get('app.connectOnStartup') && settings.get('auth.toke
     if (!lastServer) {
         console.info('No last server found, skipping startup connection');
     } else {
-        console.info('Connecting to last server on startup, id:', lastServer.id, 'type:', lastServer.type);
-        connect(lastServer.id, lastServer.type, lastServer.protocol, {}).then(() => {
-            console.info('Startup connection successful');
-        });
+        connectOnStartup(lastServer);
     }
 }
 
@@ -172,7 +169,7 @@ let connectionBottom: string = 'Riconnetti';
 
 export function updateTray(isConnected: boolean) {
     connectionBottom = isConnected ? 'Disconnetti' : 'Riconnetti';
-    tray.setContextMenu(contextMenu());
+    tray?.setContextMenu(contextMenu());
 }
 
 function trayMaker() {
@@ -282,5 +279,20 @@ function stopVPNFromPidFile(pidFile: string): Promise<void> {
                 reject(new Error('Timeout process kill'));
             }
         }, 100);
+    });
+}
+
+function connectOnStartup(lastServer: {id: string; type: string; protocol: 'wireguard' | 'openvpn'}) {
+    console.info('Connecting to last server on startup, id:', lastServer.id, 'type:', lastServer.type);
+    connect(lastServer.id, lastServer.type, lastServer.protocol, {}).then(() => {
+        console.info('Startup connection successful');
+    }).catch(e => {
+        console.error(e);
+        if (BrowserWindow.getAllWindows().length === 0) {
+            // retry after one second if no window is open
+            setTimeout(() => {
+                return connectOnStartup(lastServer);
+            }, 1000);
+        }
     });
 }
