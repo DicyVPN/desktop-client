@@ -64,8 +64,8 @@ export default {
         return {
             zoom: 1,
             serverList: {
-                primary: [],
-                secondary: []
+                primary: {},
+                secondary: {}
             },
             isLoadingServers: false,
             hasUpdate: false,

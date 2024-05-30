@@ -13,7 +13,6 @@ import Server from "@/components/home/sidebar/serverList/Server.vue";
 import DropdownTitle from "@/components/home/sidebar/serverList/secondary/dropdown/DropdownTitle.vue";
 
 export default {
-    name: 'Dropdown',
     components: {DropdownTitle, Server},
     props: {
         list: {

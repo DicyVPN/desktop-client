@@ -7,7 +7,6 @@
 import Server from "@/components/home/sidebar/serverList/Server.vue"
 
 export default {
-    name: 'PrimaryServers',
     components: {Server},
     props: {
         list: {
