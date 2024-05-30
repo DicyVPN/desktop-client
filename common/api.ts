@@ -1,6 +1,6 @@
 import type {SettingsAPI} from '../electron/main/settings';
 
-const apiUrl = 'https://api.dicyvpn.com';
+const apiUrl = 'http://127.0.0.1:8787';
 
 export const createApi = (settings: SettingsAPI, onInvalidRefreshToken: () => void) => {
     return {
@@ -57,9 +57,23 @@ export const createApi = (settings: SettingsAPI, onInvalidRefreshToken: () => vo
             if (!response.ok) {
                 throw new ResponseError(await response.text(), response);
             }
-            const token = await response.headers.get('X-Auth-Token');
+            const token = response.headers.get('X-Auth-Token');
             if (token) {
-                settings.set('auth.token', token);
+                try {
+                    const [, payload] = token.split('.');
+                    const json = JSON.parse(atob(payload));
+                    const refreshTokenId = json.refreshTokenId;
+                    const accountId = json._id;
+                    const plan = json.plan;
+
+                    settings.set('auth.refreshTokenId', refreshTokenId);
+                    settings.set('auth.accountId', accountId);
+                    settings.set('auth.plan', plan);
+                } catch (e) {
+                    console.debug('Error parsing token', e);
+                } finally {
+                    settings.set('auth.token', token);
+                }
             } else {
                 console.debug('No token in response');
                 settings.set('auth', null);

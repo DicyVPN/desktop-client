@@ -96,12 +96,14 @@ export default {
                         let privateKey = res.headers.get('X-Auth-Private-Key');
                         let refreshTokenId = '';
                         let accountId = '';
+                        let plan = '';
 
                         try {
                             const [, payload] = token.split('.');
                             const json = JSON.parse(atob(payload));
                             refreshTokenId = json.refreshTokenId;
                             accountId = json._id;
+                            plan = json.plan;
                         } catch (e) {
                             console.debug('Error parsing token', e);
                         }
@@ -111,7 +113,8 @@ export default {
                             refreshToken: refreshToken,
                             refreshTokenId: refreshTokenId,
                             accountId: accountId,
-                            privateKey: privateKey
+                            privateKey: privateKey,
+                            plan: plan
                         });
 
                         this.$router.push({name: 'startup'});
