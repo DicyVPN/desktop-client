@@ -9,15 +9,23 @@
             <template v-else>
                 <!-- Free section -->
                 <div v-if="isFreePlan" class="flex flex-col">
-                    <p class="m-8 font-light">Free Servers</p>
+                    <div class="flex items-center m-8">
+                        <div class="font-light">Free Servers</div>
+                        <font-awesome-icon icon="fa-solid fa-refresh" @click="refreshPlanAndServers" class="cursor-pointer ml-auto text-gray-200"/>
+                    </div>
                     <FreeServers :servers-by-country="list.primary" />
                     <p class="mt-16 mx-8 mb-0 font-light">Premium Servers</p>
                     <p class="ml-8 text-small text-gray-200">Upgrade your plan to access Premium servers</p>
-                    <Button class="mx-8 my-16" theme="dark" color="blue"><span>Upgrade</span></Button>
+                    <Button class="mx-8 my-16" theme="dark" color="blue" @click="refreshPlanAndServers">
+                        <a href="https://dicyvpn.com/prices" target="_blank">Upgrade</a>
+                    </Button>
                 </div>
                 <!-- Normal section -->
                 <div class="flex flex-col gap-8" :class="{blocked: isFreePlan}">
-                    <p class="ml-8 mt-8 text-small font-light">Server Consigliati</p>
+                    <div class="flex items-center mx-8 mt-8 text-small font-light">
+                        <div>Server Consigliati</div>
+                        <font-awesome-icon v-if="!isFreePlan" icon="fa-solid fa-refresh" @click="reload" class="cursor-pointer ml-auto text-gray-200"/>
+                    </div>
                     <PrimaryServers :list="list" />
                     <div>
                         <p class="ml-8 text-small font-light">Altri Server</p>
@@ -55,13 +63,23 @@ export default {
         return {
             showTopShadow: false,
             showBottomShadow: true,
-            isFreePlan: false
+            isFreePlan: false,
         };
+    },
+    beforeMount() {
+        this.updateFreePlan();
     },
     methods: {
         updateShadows({target: {scrollTop, clientHeight, scrollHeight}}) {
             this.showTopShadow = scrollTop > 12;
             this.showBottomShadow = scrollTop + clientHeight < scrollHeight - 12;
+        },
+        updateFreePlan() {
+            this.isFreePlan = window.settings.get('auth.plan') === 'free';
+        },
+        async refreshPlanAndServers() {
+            await this.reload(true);
+            this.updateFreePlan();
         }
     }
 };

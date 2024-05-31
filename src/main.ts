@@ -28,8 +28,9 @@ import {
     faCircleXmark,
     faCheckCircle,
     faTrash,
-    faArrowLeft
-} from '@fortawesome/free-solid-svg-icons'
+    faArrowLeft,
+    faRefresh
+} from '@fortawesome/free-solid-svg-icons';
 
 library.add(
     faEllipsisVertical,
@@ -47,7 +48,8 @@ library.add(
     faCircleXmark,
     faCheckCircle,
     faTrash,
-    faArrowLeft
+    faArrowLeft,
+    faRefresh
 )
 
 

@@ -9,7 +9,7 @@
         <Message :type="message.type" :text="message.text" v-if="message.show"/>
     </Transition>
     <Modal :show="showMissingSubscription " title="Non hai un abbonamento attivo" secondary-label="Chiudi" @secondary="showMissingSubscription = false">
-        Visita <a class="underline text-blue-600 hover:text-blue-700 cursor-pointer outline-none" href="https://dicyvpn.com/prices" target="_blank">dicyvpn.com/prices</a> per poter utilizzare DicyVPN
+        Visita <a class="underline text-blue-600 hover:text-blue-700 cursor-pointer outline-none" href="https://dicyvpn.com/prices" target="_blank">dicyvpn.com/prices</a> per poter utilizzare tutti i server di DicyVPN
     </Modal>
     <Modal :show="showSecondaryServersAgreement" class="max-w-md" title="Utilizzo dei server secondari"
            action-label="Non mostrare più" @action="saveSecondaryServersPreference(); showSecondaryServersAgreement = false"

@@ -10,7 +10,7 @@
                 </div>
                 <p class="text-small font-light">{{ currentServer.status === Status.CONNECTED ? 'Connesso' : 'Disconnesso' }}</p>
                 <router-link to="/settings" class="flex items-center w-full hover:text-gray-200 outline-none">
-                    <font-awesome-icon icon="fa-solid fa-gear" class="ml-auto"/>
+                    <font-awesome-icon icon="fa-solid fa-gear" class="ml-auto text-gray-200"/>
                 </router-link>
 
             </div>

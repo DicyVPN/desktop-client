@@ -107,15 +107,21 @@ export default {
     },
 
     methods: {
-        loadServers() {
+        async loadServers(refreshAccountInfo = false) {
             this.isLoadingServers = true;
-            useApi().get('/v1/servers/list').then(data => {
-                this.serverList = data;
-            }).catch(error => {
+            try {
+                if (refreshAccountInfo) {
+                    await useApi().refreshToken();
+                }
+
+                await useApi().get('/v1/servers/list').then(data => {
+                    this.serverList = data;
+                });
+            } catch (error) {
                 console.error(error);
-            }).finally(() => {
+            } finally {
                 this.isLoadingServers = false;
-            });
+            }
         },
         zoomController(type) {
             if (type) {
