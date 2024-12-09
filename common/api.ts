@@ -1,6 +1,6 @@
 import type {SettingsAPI} from '../electron/main/settings';
 
-const apiUrl = 'https://api.dicyvpn.com';
+const apiUrl = 'https://vpn-api.dicy.workers.dev';
 
 export const createApi = (settings: SettingsAPI, onInvalidRefreshToken: () => void) => {
     return {
