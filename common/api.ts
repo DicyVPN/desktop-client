@@ -1,6 +1,8 @@
 import type {SettingsAPI} from '../electron/main/settings';
 
-const apiUrl = 'https://vpn-api.dicy.workers.dev';
+const primaryUrl = 'https://api.dicyvpn.com';
+const backupUrl = 'https://vpn-api.dicy.workers.dev';
+let apiUrl = primaryUrl;
 
 export const createApi = (settings: SettingsAPI, onInvalidRefreshToken: () => void) => {
     return {
@@ -23,23 +25,42 @@ export const createApi = (settings: SettingsAPI, onInvalidRefreshToken: () => vo
             }
             return await response.json();
         },
-        async rawRequest(path: string, options: RequestInit, shouldRefreshToken = true): Promise<Response> {
-            const response = await fetch(apiUrl + path, {
-                ...options,
-                headers: {
-                    ...options.headers,
-                    ...this.getHeaders()
+        async rawRequest(path: string, options: RequestInit, shouldRefreshToken = true, useBackupUrl = false): Promise<Response> {
+            try {
+                const baseUrl = useBackupUrl ? backupUrl : apiUrl;
+                const response = await fetch(baseUrl + path, {
+                    ...options,
+                    headers: {
+                        ...options.headers,
+                        ...this.getHeaders()
+                    }
+                });
+                if (response.status === 401 && shouldRefreshToken) {
+                    await this.refreshToken(useBackupUrl);
+                    return await this.rawRequest(path, options, false);
                 }
-            });
-            if (response.status === 401 && shouldRefreshToken) {
-                await this.refreshToken();
-                return await this.rawRequest(path, options, false);
+                return response;
+            } catch (e) {
+                console.error('Error making request', e);
+                // attempt to switch to the backup API URL if not already done
+                if (!useBackupUrl && apiUrl == primaryUrl) {
+                    try {
+                        console.log('Retrying request with backup API URL');
+                        const response = await this.rawRequest(path, options, shouldRefreshToken, true);
+                        console.log('Permanently switching to the backup API URL');
+                        apiUrl = backupUrl;
+                        return response;
+                    } catch (e) {
+                        console.error('Error making request with backup API URL', e);
+                    }
+                }
+                throw e;
             }
-            return response;
         },
-        async refreshToken() {
+        async refreshToken(useBackupUrl = false) {
             console.debug('Refreshing token');
-            const response = await fetch(apiUrl + '/v1/public/refresh-token', {
+            const baseUrl = useBackupUrl ? backupUrl : apiUrl;
+            const response = await fetch(baseUrl + '/v1/public/refresh-token', {
                 method: 'POST',
                 headers: this.getHeaders(),
                 body: JSON.stringify({
